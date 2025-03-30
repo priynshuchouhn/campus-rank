@@ -1,7 +1,5 @@
-'use server';
-import { auth } from "@/auth";
-import { PrismaClient } from "@prisma/client";
-import { User } from "../interfaces";
+import { NextResponse } from "next/server";
+import { PrismaClient, User } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 const prisma = new PrismaClient();
@@ -58,18 +56,11 @@ async function fetchAndUpdateProfile(user: User) {
         }
 
         let gfgScore = 0;
-        let gfgProblemsSolved = 0;
         if (profileData.gfg?.codingScore) {
             gfgScore = parseFloat(profileData.gfg.codingScore) || 0;
         }
-        if (profileData.gfg?.solvedProblems) {
-            gfgProblemsSolved = profileData.gfg.solvedProblems;
-        }
 
         // Calculate overall score (weighted average)
-        // LeetCode is weighted highest (50%) since it's most widely used and has standardized difficulty levels
-        // HackerRank second (30%) due to its structured learning paths and verified certifications
-        // GeeksForGeeks third (20%) as it's more region-specific but still valuable
         const overallScore = (leetcodeScore * 0.5) + (hackerrankScore * 0.3) + (gfgScore * 0.2);
 
         // Update leaderboard stats
@@ -93,7 +84,7 @@ async function fetchAndUpdateProfile(user: User) {
         // Update user's solved problems count
         if (profileData.leetcode?.submitStats?.acSubmissionNum) {
             const stats = profileData.leetcode.submitStats.acSubmissionNum as LeetCodeSubmission[];
-            const totalSolved = stats.reduce((acc: number, curr: LeetCodeSubmission) => acc + curr.count, 0)+gfgProblemsSolved;
+            const totalSolved = stats.reduce((acc: number, curr: LeetCodeSubmission) => acc + curr.count, 0);
             const easySolved = stats.find((s: LeetCodeSubmission) => s.difficulty === 'Easy')?.count || 0;
             const mediumSolved = stats.find((s: LeetCodeSubmission) => s.difficulty === 'Medium')?.count || 0;
             const hardSolved = stats.find((s: LeetCodeSubmission) => s.difficulty === 'Hard')?.count || 0;
@@ -110,37 +101,58 @@ async function fetchAndUpdateProfile(user: User) {
             });
         }
     } catch (error) {
-        console.error('Error fetching and updating profile:', error);
-        // Don't throw the error to prevent blocking the user update
+        console.error(`Error fetching and updating profile for user ${user.email}:`, error);
     }
 }
 
-export async function getUser() {
-    const session = await auth();
-    const email = session?.user?.email;
-    if (!email) {
-        throw new Error("User not found");
-    }
-    const user = await prisma.user.findUnique({
-        where: { email: email },
+async function updateGlobalRanks() {
+    // Get all leaderboard stats ordered by overall score
+    const leaderboardStats = await prisma.leaderboardStats.findMany({
+        orderBy: {
+            overallScore: 'desc'
+        }
     });
-    return user;
+
+    // Update global ranks
+    for (let i = 0; i < leaderboardStats.length; i++) {
+        await prisma.leaderboardStats.update({
+            where: { id: leaderboardStats[i].id },
+            data: { globalRank: i + 1 }
+        });
+    }
 }
 
-export async function updateUser(values: User) {
-    const session = await auth();
-    const email = session?.user?.email;
-    if (!email) {
-        throw new Error("User not found");
+export async function GET() {
+    try {
+        // Get all users
+        const users = await prisma.user.findMany();
+
+        // Fetch and update profiles for all users
+        const updatePromises = users.map(user => fetchAndUpdateProfile(user));
+        await Promise.all(updatePromises);
+
+        // Update global ranks
+        await updateGlobalRanks();
+
+        // Get the updated leaderboard
+        const leaderboard = await prisma.leaderboardStats.findMany({
+            orderBy: { globalRank: 'asc' },
+            include: { user: true }
+        });
+
+        // Revalidate the leaderboard page
+        revalidatePath('/', 'page');
+
+        return NextResponse.json({ 
+            success: true, 
+            message: 'Leaderboard updated successfully',
+            leaderboard 
+        });
+    } catch (error) {
+        console.error('Error updating leaderboard:', error);
+        return NextResponse.json(
+            { success: false, message: 'Failed to update leaderboard' },
+            { status: 500 }
+        );
     }
-    const user = await prisma.user.update({
-        where: { email: email },
-        data: values,
-    });
-    
-    // Fetch profile and update leaderboard in the background
-    fetchAndUpdateProfile(user).catch(console.error);
-    
-    revalidatePath('/profile', 'page');
-    return user;
-}   
+}
