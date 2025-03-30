@@ -22,7 +22,6 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-
   // Coding platform profiles
   leetcodeUsername   String?
   hackerrankUsername String?

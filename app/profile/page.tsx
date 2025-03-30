@@ -1,25 +1,16 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Navbar from "@/components/ui/nav-bar";
 import { ProfileForm } from "@/components/ui/profile-form";
+import { getUser } from "@/lib/actions/users";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 
 
-// Mock user data for demonstration
-const mockUser = {
-  id: 1,
-  name: "Amit Sharma",
-  email: "amit@example.com",
-  leetcode_username: "amit_leetcode",
-  hackerrank_username: "amit_hackerrank",
-  gfg_username: "amit_gfg",
-  total_solved: 350,
-  easy: 150,
-  medium: 120,
-  hard: 80,
-  image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Amit%20Sharma",
-};
-
-export default function Profile() {
+export default async function Profile() {
+    const user = await getUser();
+    if (!user) {
+        redirect("/get-started");
+    }
   return (
     <main className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
@@ -38,35 +29,35 @@ export default function Profile() {
                 <div className="flex items-center space-x-4 mb-6">
                   <div className="w-24 h-24 rounded-full overflow-hidden">
                     <Image
-                      src={mockUser.image}
-                      alt={mockUser.name}
+                      src={user.image ?? ""}
+                      alt={user.name ?? ""}
                       className="w-full h-full object-cover"
                       width={96}
                       height={96}
                     />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-semibold">{mockUser.name}</h2>
-                    <p className="text-muted-foreground">{mockUser.email}</p>
+                    <h2 className="text-2xl font-semibold">{user.name}</h2>
+                    <p className="text-muted-foreground">{user.email}</p>
                   </div>
                 </div>
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div className="p-4 bg-muted rounded-lg">
                     <p className="text-sm text-muted-foreground">Easy</p>
                     <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                      {mockUser.easy}
+                      {user.easySolved}
                     </p>
                   </div>
                   <div className="p-4 bg-muted rounded-lg">
                     <p className="text-sm text-muted-foreground">Medium</p>
                     <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
-                      {mockUser.medium}
+                      {user.mediumSolved}
                     </p>
                   </div>
                   <div className="p-4 bg-muted rounded-lg">
                     <p className="text-sm text-muted-foreground">Hard</p>
                     <p className="text-2xl font-bold text-red-600 dark:text-red-400">
-                      {mockUser.hard}
+                      {user.hardSolved}
                     </p>
                   </div>
                 </div>
@@ -75,7 +66,7 @@ export default function Profile() {
           </div>
 
           <div>
-            <ProfileForm user={mockUser} />
+            <ProfileForm user={user} />
           </div>
         </div>
 

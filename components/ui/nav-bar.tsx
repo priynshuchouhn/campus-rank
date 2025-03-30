@@ -9,15 +9,22 @@ async function Navbar() {
     const user = session?.user;
   return (
     <div className="flex justify-between items-center mb-8">
-    <h1 className="text-4xl font-bold">CampusRank - Coding Leaderboard</h1>
+    <h1 className="text-4xl font-bold">Campus Rank - Coding Leaderboard</h1>
     <div className="flex items-center gap-2">
       <ThemeToggle />
       {user ? (
+        <>
+        <Link href="/profile">
+        <Button variant="outline">
+           My Profile
+          </Button>
+        </Link>
         <form action={signOutAction}>
           <Button variant="outline">
             logout
           </Button>
         </form>
+        </>
       ) : (
         <Link href="/profile">
           <Button variant="outline">

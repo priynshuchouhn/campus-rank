@@ -17,9 +17,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { User } from "@/lib/interfaces";
 
 const profileSchema = z.object({
-  leetcode_username: z.string().min(1, "LeetCode username is required"),
-  gfg_username: z.string().min(1, "GFG username is required"),
-  hackerrank_username: z.string().min(1, "HackerRank username is required"),
+  leetcodeUsername: z.string().min(1, "LeetCode username is required"),
+  hackerrankUsername: z.string().min(1, "GFG username is required"),
+  gfgUsername: z.string().min(1, "HackerRank username is required"),
 });
 
 interface ProfileFormProps {
@@ -30,9 +30,9 @@ export function ProfileForm({ user }: ProfileFormProps) {
   const form = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      leetcode_username: user.leetcode_username,
-      hackerrank_username: user.hackerrank_username,
-      gfg_username: user.gfg_username,
+      leetcodeUsername: user.leetcodeUsername || "",
+      hackerrankUsername: user.hackerrankUsername || "",
+      gfgUsername: user.gfgUsername || "",
     },
   });
 
@@ -50,7 +50,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
-              name="leetcode_username"
+              name="leetcodeUsername"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>LeetCode Username</FormLabel>
@@ -63,7 +63,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
             />
             <FormField
               control={form.control}
-              name="hackerrank_username"
+              name="hackerrankUsername"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>HackerRank Username</FormLabel>
@@ -79,7 +79,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
             />
             <FormField
               control={form.control}
-              name="gfg_username"
+              name="gfgUsername"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>GFG Username</FormLabel>

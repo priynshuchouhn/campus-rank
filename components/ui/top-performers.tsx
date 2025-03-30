@@ -12,7 +12,7 @@ interface TopPerformersProps {
 
 export function TopPerformers({ users }: TopPerformersProps) {
   const topThree = users
-    .sort((a, b) => b.total_solved - a.total_solved)
+    .sort((a, b) => b.totalSolved - a.totalSolved)
     .slice(0, 3);
 
   return (
@@ -53,19 +53,19 @@ export function TopPerformers({ users }: TopPerformersProps) {
                 <div>
                   <p className="text-sm text-muted-foreground">Easy</p>
                   <p className="text-lg font-semibold text-green-600 dark:text-green-400">
-                    {user.easy}
+                    {user.easySolved}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Medium</p>
                   <p className="text-lg font-semibold text-yellow-600 dark:text-yellow-400">
-                    {user.medium}
+                    {user.mediumSolved}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Hard</p>
                   <p className="text-lg font-semibold text-red-600 dark:text-red-400">
-                    {user.hard}
+                    {user.hardSolved}
                   </p>
                 </div>
               </div>

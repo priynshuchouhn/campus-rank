@@ -21,7 +21,7 @@ export function LeaderboardTable({ users, searchQuery }: LeaderboardTableProps) 
     .filter((user) =>
       user.name.toLowerCase().includes(searchQuery.toLowerCase())
     )
-    .sort((a, b) => b.total_solved - a.total_solved);
+    .sort((a, b) => b.totalSolved - a.totalSolved);
 
   return (
     <div className="w-full overflow-auto">
@@ -50,15 +50,15 @@ export function LeaderboardTable({ users, searchQuery }: LeaderboardTableProps) 
                 )}
               </TableCell>
               <TableCell>{user.name}</TableCell>
-              <TableCell className="text-right">{user.total_solved}</TableCell>
+              <TableCell className="text-right">{user.totalSolved}</TableCell>
               <TableCell className="text-right text-green-600 dark:text-green-400">
-                {user.easy}
+                {user.easySolved}
               </TableCell>
               <TableCell className="text-right text-yellow-600 dark:text-yellow-400">
-                {user.medium}
+                {user.mediumSolved}
               </TableCell>
               <TableCell className="text-right text-red-600 dark:text-red-400">
-                {user.hard}
+                {user.hardSolved}
               </TableCell>
             </TableRow>
           ))}
