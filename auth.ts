@@ -25,7 +25,12 @@ async function saveUserToDatabase(userInfo: {
               name: userInfo.name!,
               email: userInfo.email!,
               image: userInfo.image,
+              emailVerified: new Date()
             },
+          })
+          await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/email/welcome`, {
+            method: 'POST',
+            body: JSON.stringify({ name: user.name, email: user.email }),
           })
           return user;
         }

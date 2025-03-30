@@ -47,8 +47,6 @@ import { getLeaderboard } from "@/lib/actions/leaderboard";
 
 export default async function Home() {
   const leaderboard = await getLeaderboard();
-  console.log(leaderboard);
-
   return (
     <main className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
