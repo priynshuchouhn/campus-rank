@@ -5,21 +5,22 @@ import { Medal } from "lucide-react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { User } from "@/lib/interfaces";
+import { LeaderboardStats } from "@prisma/client";
 
 interface TopPerformersProps {
-  users: User[];
+  leaderboards: (LeaderboardStats & { user: User })[];
 }
 
-export function TopPerformers({ users }: TopPerformersProps) {
-  const topThree = users
-    .sort((a, b) => b.totalSolved - a.totalSolved)
+export function TopPerformers({ leaderboards }: TopPerformersProps) {
+  const topThree = leaderboards
+    .sort((a, b) => b.globalRank! - a.globalRank!)
     .slice(0, 3);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-      {topThree.map((user, index) => (
+      {topThree.map((leaderboard, index) => (
         <motion.div
-          key={user.id}
+          key={leaderboard.user.id}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.2 }}
@@ -35,17 +36,16 @@ export function TopPerformers({ users }: TopPerformersProps) {
                 <div className="w-24 h-24 rounded-full overflow-hidden mb-4">
                   <Image
                     src={
-                      user.image ||
-                      `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`
+                      leaderboard.user.image ||
+                      `https://api.dicebear.com/7.x/avataaars/svg?seed=${leaderboard.user.name}`
                     }
-                    alt={user.name}
+                    alt={leaderboard.user.name}
                     className="w-full h-full object-cover"
                     width={96}
                     height={96}
-                    
                   />
                 </div>
-                <CardTitle className="text-xl">{user.name}</CardTitle>
+                <CardTitle className="text-xl">{leaderboard.user.name}</CardTitle>
               </div>
             </CardHeader>
             <CardContent>
@@ -53,19 +53,19 @@ export function TopPerformers({ users }: TopPerformersProps) {
                 <div>
                   <p className="text-sm text-muted-foreground">Easy</p>
                   <p className="text-lg font-semibold text-green-600 dark:text-green-400">
-                    {user.easySolved}
+                    {leaderboard.user.easySolved}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Medium</p>
                   <p className="text-lg font-semibold text-yellow-600 dark:text-yellow-400">
-                    {user.mediumSolved}
+                    {leaderboard.user.mediumSolved}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Hard</p>
                   <p className="text-lg font-semibold text-red-600 dark:text-red-400">
-                    {user.hardSolved}
+                    {leaderboard.user.hardSolved}
                   </p>
                 </div>
               </div>
@@ -73,6 +73,32 @@ export function TopPerformers({ users }: TopPerformersProps) {
           </Card>
         </motion.div>
       ))}
+      {topThree.length < 3 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: topThree.length * 0.2 }}
+        >
+          <Card className="overflow-hidden border-2 border-dashed">
+            <CardHeader>
+              <div className="flex flex-col items-center">
+                <div className="w-24 h-24 rounded-full overflow-hidden mb-4 bg-muted flex items-center justify-center">
+                  <Medal className="h-12 w-12 text-muted-foreground" />
+                </div>
+                <CardTitle className="text-xl">This Spot is for You!</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center">
+                <p className="text-muted-foreground mb-4">Join us now and climb the ranks!</p>
+                <button className="bg-primary text-primary-foreground px-6 py-2 rounded-md hover:bg-primary/90 transition-colors">
+                  Get Started
+                </button>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
     </div>
   );
 }

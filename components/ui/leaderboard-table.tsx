@@ -9,19 +9,20 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { User } from "@/lib/interfaces";
+import { LeaderboardStats } from "@prisma/client";
 import { Medal } from "lucide-react";
 
 interface LeaderboardTableProps {
-  users: User[];
+  leaderboards: (LeaderboardStats & {user:User})[];
   searchQuery: string;
 }
 
-export function LeaderboardTable({ users, searchQuery }: LeaderboardTableProps) {
-  const filteredUsers = users
-    .filter((user) =>
-      user.name.toLowerCase().includes(searchQuery.toLowerCase())
+export function LeaderboardTable({ leaderboards, searchQuery }: LeaderboardTableProps) {
+  const filteredUsers = leaderboards
+    .filter((leaderboard) =>
+      leaderboard.user.name.toLowerCase().includes(searchQuery.toLowerCase())
     )
-    .sort((a, b) => b.totalSolved - a.totalSolved);
+    .sort((a, b) => b.globalRank! - a.globalRank!);
 
   return (
     <div className="w-full overflow-auto">
@@ -37,9 +38,9 @@ export function LeaderboardTable({ users, searchQuery }: LeaderboardTableProps) 
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredUsers.map((user, index) => (
+          {filteredUsers.map((leaderboard, index) => (
             <TableRow
-              key={user.id}
+              key={leaderboard.user.id}
               className="transition-colors hover:bg-muted/50 cursor-pointer"
             >
               <TableCell className="font-medium">
@@ -49,16 +50,16 @@ export function LeaderboardTable({ users, searchQuery }: LeaderboardTableProps) 
                   index + 1
                 )}
               </TableCell>
-              <TableCell>{user.name}</TableCell>
-              <TableCell className="text-right">{user.totalSolved}</TableCell>
+              <TableCell>{leaderboard.user.name}</TableCell>
+              <TableCell className="text-right">{leaderboard.user.totalSolved}</TableCell>
               <TableCell className="text-right text-green-600 dark:text-green-400">
-                {user.easySolved}
+                {leaderboard.user.easySolved}
               </TableCell>
               <TableCell className="text-right text-yellow-600 dark:text-yellow-400">
-                {user.mediumSolved}
+                {leaderboard.user.mediumSolved}
               </TableCell>
               <TableCell className="text-right text-red-600 dark:text-red-400">
-                {user.hardSolved}
+                {leaderboard.user.hardSolved}
               </TableCell>
             </TableRow>
           ))}

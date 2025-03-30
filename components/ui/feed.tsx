@@ -4,8 +4,9 @@ import React, { useState } from 'react'
 import { Input } from './input';
 import { LeaderboardTable } from './leaderboard-table';
 import { User } from '@/lib/interfaces';
+import { LeaderboardStats } from '@prisma/client';
 
-function Feed({users}: {users: User[]}) {
+function Feed({leaderboards}: {leaderboards: (LeaderboardStats & {user:User})[]}) {
     const [searchQuery, setSearchQuery] = useState("");
   return (
     <>
@@ -19,7 +20,7 @@ function Feed({users}: {users: User[]}) {
           />
         </div>
         
-        <LeaderboardTable users={users} searchQuery={searchQuery} />
+        <LeaderboardTable leaderboards={leaderboards} searchQuery={searchQuery} />
     </>
   )
 }
