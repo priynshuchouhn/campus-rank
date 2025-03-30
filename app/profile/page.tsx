@@ -29,7 +29,7 @@ export default async function Profile() {
                 <div className="flex items-center space-x-4 mb-6">
                   <div className="w-24 h-24 rounded-full overflow-hidden">
                     <Image
-                      src={user.image ?? ""}
+                      src={user.image ?? "https://api.dicebear.com/7.x/avataaars/svg?seed=Amit%20Sharma"}
                       alt={user.name ?? ""}
                       className="w-full h-full object-cover"
                       width={96}
