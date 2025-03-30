@@ -30,7 +30,9 @@ export function AuthForm() {
                     <div className="grid grid-cols-2 gap-4">
                         <form action={async () => {
                             "use server"
-                            await signIn("github")
+                            await signIn("github", {
+                                redirectTo: "/profile",
+                            })
                         }}>
                             <Button variant="outline" className="w-full">
                                 <Github className="mr-2 h-4 w-4" />
@@ -39,7 +41,9 @@ export function AuthForm() {
                         </form>
                         <form action={async () => {
                             "use server"
-                            await signIn("google")
+                            await signIn("google", {
+                                redirectTo: "/profile",
+                            })
                         }}>
                             <Button variant="outline" className="w-full">
                                 Google
