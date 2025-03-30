@@ -70,7 +70,7 @@ export default async function Profile() {
           </div>
         </div>
 
-        <div className="mt-8">
+        {/* <div className="mt-8">
           <Card>
             <CardHeader>
               <CardTitle>Recent Contest History</CardTitle>
@@ -105,7 +105,7 @@ export default async function Profile() {
               </div>
             </CardContent>
           </Card>
-        </div>
+        </div> */}
       </div>
     </main>
   );

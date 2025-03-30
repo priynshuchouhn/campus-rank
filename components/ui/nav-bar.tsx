@@ -4,12 +4,14 @@ import { Button } from './button'
 import Link from 'next/link'
 import { auth } from '@/auth'
 import { signOutAction } from '@/lib/actions/signout'
+import Image from 'next/image'
 async function Navbar() {
     const session = await auth();
     const user = session?.user;
   return (
     <div className="flex justify-between items-center mb-8">
-    <h1 className="text-4xl font-bold">Campus Rank - Coding Leaderboard</h1>
+    <h1 className="text-4xl font-bold md:block hidden">Campus Rank - Coding Leaderboard</h1>
+    <Image src="/logo.jpg" alt="Campus Rank" className='md:hidden w-16 h-16 rounded-full' width={100} height={100} />
     <div className="flex items-center gap-2">
       <ThemeToggle />
       {user ? (
