@@ -1,3 +1,4 @@
+'use server';
 import { auth } from "@/auth";
 import { PrismaClient } from "@prisma/client";
 import { User } from "../interfaces";
