@@ -1,0 +1,143 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  image         String?
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+
+  // Coding platform profiles
+  leetcodeUsername   String?
+  hackerrankUsername String?
+  gfgUsername        String?
+
+  // Coding stats
+  totalSolved  Int @default(0)
+  easySolved   Int @default(0)
+  mediumSolved Int @default(0)
+  hardSolved   Int @default(0)
+
+  // Last fetch time for each platform
+  lastLeetcodeFetch   DateTime?
+  lastHackerrankFetch DateTime?
+  lastGfgFetch        DateTime?
+
+  // Relations to platform profiles
+  leetcodeProfile   LeetCodeProfile?
+  hackerrankProfile HackerRankProfile?
+  gfgProfile        GFGProfile?
+
+  // Leaderboard stats
+  leaderboardStats LeaderboardStats?
+}
+
+model LeetCodeProfile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  username    String  @unique
+  githubUrl   String?
+  twitterUrl  String?
+  linkedinUrl String?
+
+  realName   String?
+  userAvatar String?
+  ranking    Int?
+
+  // Submission stats
+  totalSolved       Int @default(0)
+  totalSubmissions  Int @default(0)
+  easySolved        Int @default(0)
+  easySubmissions   Int @default(0)
+  mediumSolved      Int @default(0)
+  mediumSubmissions Int @default(0)
+  hardSolved        Int @default(0)
+  hardSubmissions   Int @default(0)
+
+  updatedAt DateTime @updatedAt
+}
+
+model HackerRankProfile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  username String  @unique
+  name     String?
+  about    String?
+
+  // Skills and badges
+  skills String[]
+  badges HackerRankBadge[]
+
+  updatedAt DateTime @updatedAt
+}
+
+model HackerRankBadge {
+  id                  String            @id @default(cuid())
+  hackerrankProfileId String
+  profile             HackerRankProfile @relation(fields: [hackerrankProfileId], references: [id], onDelete: Cascade)
+
+  name  String
+  stars String
+
+  @@unique([hackerrankProfileId, name])
+}
+
+model GFGProfile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  username       String  @unique
+  name           String?
+  institution    String?
+  rank           String?
+  solvedProblems String?
+  codingScore    String?
+
+  updatedAt DateTime @updatedAt
+}
+
+model LeaderboardStats {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Overall score (weighted combination of platform scores)
+  overallScore Float @default(0)
+
+  // Platform-specific scores
+  leetcodeScore   Float @default(0)
+  hackerrankScore Float @default(0)
+  gfgScore        Float @default(0)
+
+  // Global ranking
+  globalRank Int?
+
+  // Platform-specific rankings
+  leetcodeRank   Int?
+  hackerrankRank Int?
+  gfgRank        Int?
+
+  // Last update timestamp
+  lastUpdated DateTime @updatedAt
+}
