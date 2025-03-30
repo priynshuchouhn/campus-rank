@@ -22,6 +22,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async session({ session, user }) {
       session.user.id = user.id
+      console.log("session",session);
       return session
     },
     async signIn({ user }) {
@@ -47,6 +48,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         console.error("Error during sign in:", error)
         return false
       }
+    },
+    async redirect({ url, baseUrl }) {
+      // Allows relative callback URLs
+      if (url.startsWith("/")) return `${baseUrl}${url}`
+      // Allows callback URLs on the same origin
+      else if (new URL(url).origin === baseUrl) return url
+      // Redirect to profile page after successful login
+      return `${baseUrl}/profile`
     },
   },
 })

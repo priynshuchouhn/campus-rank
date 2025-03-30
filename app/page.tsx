@@ -1,11 +1,6 @@
-"use client";
-
-import { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { LeaderboardTable } from "../components/ui/leaderboard-table";
-import { Search } from "lucide-react";
 import { TopPerformers } from "../components/ui/top-performers";
 import Navbar from "@/components/ui/nav-bar";
+import Feed from "@/components/ui/feed";
 
 const mockUsers = [
   {
@@ -47,7 +42,6 @@ const mockUsers = [
 ];
 
 export default function Home() {
-  const [searchQuery, setSearchQuery] = useState("");
 
   return (
     <main className="min-h-screen bg-background">
@@ -56,17 +50,7 @@ export default function Home() {
         
         <TopPerformers users={mockUsers} />
         
-        <div className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-          <Input
-            placeholder="Search by name..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-        
-        <LeaderboardTable users={mockUsers} searchQuery={searchQuery} />
+        <Feed users={mockUsers} />
       </div>
     </main>
   );
