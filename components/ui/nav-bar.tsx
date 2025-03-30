@@ -19,9 +19,9 @@ async function Navbar() {
           </Button>
         </form>
       ) : (
-        <Link href="/get-started">
+        <Link href="/profile">
           <Button variant="outline">
-            Login
+            Get Started
           </Button>
         </Link>
       )}
