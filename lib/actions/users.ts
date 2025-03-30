@@ -2,6 +2,7 @@
 import { auth } from "@/auth";
 import { PrismaClient } from "@prisma/client";
 import { User } from "../interfaces";
+import { revalidatePath } from "next/cache";
 
 const prisma = new PrismaClient();
 
@@ -105,6 +106,7 @@ async function fetchAndUpdateProfile(user: User) {
         console.error('Error fetching and updating profile:', error);
         // Don't throw the error to prevent blocking the user update
     }
+
 }
 
 export async function getUser() {
@@ -116,6 +118,7 @@ export async function getUser() {
     const user = await prisma.user.findUnique({
         where: { email: email },
     });
+    revalidatePath('/profile', 'page');
     return user;
 }
 
@@ -132,6 +135,6 @@ export async function updateUser(values: User) {
     
     // Fetch profile and update leaderboard in the background
     fetchAndUpdateProfile(user).catch(console.error);
-    
+    revalidatePath('/profile', 'page');
     return user;
 }   
