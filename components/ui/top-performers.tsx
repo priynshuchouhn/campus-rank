@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { User } from "@/lib/interfaces";
 import { LeaderboardStats } from "@prisma/client";
+import Link from "next/link";
 
 interface TopPerformersProps {
   leaderboards: (LeaderboardStats & { user: User })[];
@@ -25,7 +26,7 @@ export function TopPerformers({ leaderboards }: TopPerformersProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.2 }}
         >
-          <Card className="overflow-hidden">
+          <Card className="h-full overflow-hidden">
             <CardHeader className="relative">
               <Medal
                 className={`absolute top-4 right-4 h-6 w-6 ${getMedalColor(
@@ -91,9 +92,11 @@ export function TopPerformers({ leaderboards }: TopPerformersProps) {
             <CardContent>
               <div className="text-center">
                 <p className="text-muted-foreground mb-4">Join us now and climb the ranks!</p>
-                <button className="bg-primary text-primary-foreground px-6 py-2 rounded-md hover:bg-primary/90 transition-colors">
-                  Get Started
-                </button>
+                <Link href="/profile">
+                  <button className="bg-primary text-primary-foreground px-6 py-2 rounded-md hover:bg-primary/90 transition-colors">
+                    Get Started
+                  </button>
+                </Link>
               </div>
             </CardContent>
           </Card>
