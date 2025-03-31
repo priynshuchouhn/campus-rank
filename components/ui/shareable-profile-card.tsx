@@ -64,7 +64,7 @@ export function ShareableProfileCard({
                     <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#d32f2f' }}>#{leetcodeRank}</p>
                 </div>
                 <div style={{ backgroundColor: '#fff3e0', padding: '16px', borderRadius: '8px', textAlign: 'center' }}>
-                    <p style={{ fontSize: '14px', color: '#666666' }}>GFG Rank</p>
+                    <p style={{ fontSize: '14px', color: '#666666' }}>GFG Institute Rank</p>
                     <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#f57c00' }}>#{gfgRank}</p>
                 </div>
             </div>
