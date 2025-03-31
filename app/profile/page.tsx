@@ -130,7 +130,7 @@ export default async function Profile() {
 
                   {user.leaderboardStats && (
                     <div>
-                      <h3 className="text-lg font-semibold mb-3">Global Ranking</h3>
+                      <h3 className="text-lg font-semibold mb-3">Campus Ranking</h3>
                       <div className="p-4 bg-muted rounded-lg text-center">
                         <p className="text-sm text-muted-foreground">Current Rank</p>
                         <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
