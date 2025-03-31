@@ -18,7 +18,7 @@ export default async function UserProfile({
     }
 
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="mx-auto px-4 py-8">
             <div className="max-w-4xl mx-auto">
                 {/* Profile Header */}
                 <Card className="mb-8">
@@ -36,10 +36,10 @@ export default async function UserProfile({
                                     className="w-full h-full object-cover"
                                 />
                             </div>
-                            <div className="text-center md:text-left flex-1">
-                                <div className="flex justify-between items-start">
+                            <div className="text-left flex-1">
+                                <div className="flex justify-center md:justify-between gap-4 items-start">
                                     <div>
-                                        <h1 className="text-3xl font-bold mb-2">{user.name}</h1>
+                                        <h1 className="md:text-3xl text-xl font-bold mb-2">{user.name}</h1>
                                         <p className="text-muted-foreground mb-4">@{user.username}</p>
                                     </div>
                                     <ShareButton
