@@ -257,8 +257,8 @@ async function fetchGFGProfile(username:string, userId:string): Promise<GFGProfi
       name: $('.header_user_profile h1').text().trim(),
       institution: $('.educationDetails_head_left--text__tgi9I').text().trim(),
       rank: $('.educationDetails_head_left_userRankContainer--text__wt81s').text().trim(),
-      solvedProblems: $('.scoreCard_head_left--score__oSi_x').eq(0).text().trim(),
-      codingScore: $('.scoreCard_head_left--score__oSi_x').eq(1).text().trim(),
+      solvedProblems: $('.scoreCard_head_left--score__oSi_x').eq(1).text().trim(),
+      codingScore: $('.scoreCard_head_left--score__oSi_x').eq(0).text().trim(),
     };
     
     await prisma.gFGProfile.upsert ({
