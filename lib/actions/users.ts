@@ -1,7 +1,6 @@
 'use server';
 import { auth } from "@/auth";
 import { PrismaClient } from "@prisma/client";
-import { User } from "../interfaces";
 import { revalidatePath } from "next/cache";
 
 const prisma = new PrismaClient();
@@ -18,7 +17,7 @@ interface HackerRankBadge {
 }
 
 
-export async function fetchAndUpdateProfile(user: User) {
+export async function fetchAndUpdateProfile(user: any) {
     try {
         // Call the fetch-profile API endpoint
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/fetch-profile`, {
@@ -136,7 +135,7 @@ export async function getUser() {
     return user;
 }
 
-export async function updateUser(values: User) {
+export async function updateUser(values: any) {
     const session = await auth();
     const email = session?.user?.email;
     if (!email) {
@@ -145,6 +144,16 @@ export async function updateUser(values: User) {
     const user = await prisma.user.update({
         where: { email: email },
         data: values,
+        include: {
+            leetcodeProfile: true,
+            hackerrankProfile: {
+                include: {
+                    badges: true
+                }
+            },
+            gfgProfile: true,
+            leaderboardStats: true
+        }
     });
     
     // Fetch profile and update leaderboard in the background

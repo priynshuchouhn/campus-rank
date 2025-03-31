@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { User } from "@/lib/interfaces";
 import toast from "react-hot-toast";
 import { useState } from "react";
 import { updateUser } from "@/lib/actions/users";
@@ -25,11 +24,10 @@ const profileSchema = z.object({
   gfgUsername: z.string().min(1, "GFG username is required"),
 });
 
-interface ProfileFormProps {
-  user: User;
-}
 
-export function ProfileForm({ user }: ProfileFormProps) {
+
+
+export function ProfileForm({ user }: any) {
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
   const form = useForm<z.infer<typeof profileSchema>>({
