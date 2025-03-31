@@ -151,9 +151,27 @@ export async function updateUser(values: any) {
     if (!email) {
         throw new Error("User not found");
     }
+    // Extract usernames from URLs if needed
+    const leetcodeUsername = values.leetcodeUsername?.includes('leetcode.com')
+        ? values.leetcodeUsername.split(/[\/u\/|\/]/).filter(Boolean).pop()
+        : values.leetcodeUsername;
+    
+    const hackerrankUsername = values.hackerrankUsername?.includes('hackerrank.com')
+        ? values.hackerrankUsername.split(/[\/profile\/|\/]/).filter(Boolean).pop()
+        : values.hackerrankUsername;
+        
+    const gfgUsername = values.gfgUsername?.includes('geeksforgeeks.org')
+        ? values.gfgUsername.split(/[\/user\/|\/]/).filter(Boolean).pop()
+        : values.gfgUsername;
+
     const user = await prisma.user.update({
         where: { email: email },
-        data: values,
+        data: {
+            ...values,
+            leetcodeUsername,
+            hackerrankUsername, 
+            gfgUsername
+        },
         include: {
             leetcodeProfile: true,
             hackerrankProfile: {
