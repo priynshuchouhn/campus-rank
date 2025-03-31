@@ -22,7 +22,11 @@ export function LeaderboardTable({ leaderboards, searchQuery }: LeaderboardTable
     .filter((leaderboard) =>
       leaderboard.user.name.toLowerCase().includes(searchQuery.toLowerCase())
     )
-    .sort((a, b) => a.globalRank! - b.globalRank!);
+    .sort((a: any, b: any) => {
+      if (!a.globalRank) return 1;
+      if (!b.globalRank) return -1;
+      return a.globalRank - b.globalRank;
+    });
 
   return (
     <div className="w-full overflow-auto">

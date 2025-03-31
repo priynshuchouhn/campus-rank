@@ -10,7 +10,11 @@ import Link from "next/link";
 
 export function TopPerformers({ leaderboards }: any) {
   const topThree = leaderboards
-    .sort((a: any, b: any) => a.globalRank! - b.globalRank!)
+    .sort((a: any, b: any) => {
+      if (!a.globalRank) return 1;
+      if (!b.globalRank) return -1;
+      return a.globalRank - b.globalRank;
+    })
     .slice(0, 3);
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
