@@ -119,7 +119,7 @@ export default async function UserProfile({
                             <div className="text-center p-4 rounded-lg bg-purple-100 dark:bg-purple-900/20 relative overflow-hidden">
                                 <p className="text-sm text-muted-foreground">Campus Rank</p>
                                 <p className="text-2xl font-bold text-purple-500">
-                                    {user.leaderboardStats?.globalRank || 0}
+                                    #{user.leaderboardStats?.globalRank || 0}
                                 </p>
                             </div>
                             <div className="text-center p-4 rounded-lg bg-rose-100 dark:bg-rose-900/20 relative overflow-hidden">

@@ -57,7 +57,7 @@ export function ShareableProfileCard({
                 </div>
                 <div style={{ backgroundColor: '#f3e5f5', padding: '16px', borderRadius: '8px', textAlign: 'center' }}>
                     <p style={{ fontSize: '14px', color: '#666666' }}>Campus Rank</p>
-                    <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#7b1fa2' }}>#{campusRank}</p>
+                    <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#7b1fa2' }}>#{campusRank > 0 ? campusRank : 'N/A'}</p>
                 </div>
                 <div style={{ backgroundColor: '#ffebee', padding: '16px', borderRadius: '8px', textAlign: 'center' }}>
                     <p style={{ fontSize: '14px', color: '#666666' }}>LeetCode Rank</p>
