@@ -12,7 +12,6 @@ export function TopPerformers({ leaderboards }: any) {
   const topThree = leaderboards
     .sort((a: any, b: any) => a.globalRank! - b.globalRank!)
     .slice(0, 3);
-  console.log(topThree);
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
       {topThree.map((leaderboard: any, index: number) => (
@@ -47,7 +46,7 @@ export function TopPerformers({ leaderboards }: any) {
             </CardHeader>
             <CardContent>
               <div>
-                <p className="text-sm font-semibold text-muted-foreground mb-3">Leetcode Solved</p>
+                <p className="text-sm font-semibold text-muted-foreground mb-3">LeetCode Solved</p>
                 <div className="mt-4 grid grid-cols-3 gap-4 text-center">
                   <div>
                     <p className="text-sm text-muted-foreground">Easy</p>
@@ -98,7 +97,7 @@ export function TopPerformers({ leaderboards }: any) {
               )} */}
               {leaderboard.user.hackerrankProfile?.badges.length > 0 && (
                 <div className="mt-6">
-                  <p className="text-sm font-semibold text-muted-foreground mb-3">Hackerrank Badges</p>
+                  <p className="text-sm font-semibold text-muted-foreground mb-3">HackerRank Badges</p>
                   <div className="grid grid-cols-5 gap-2">
                     {leaderboard.user.hackerrankProfile.badges.map((badge: any, idx: number) => {
                       const stars = parseInt(badge.stars);

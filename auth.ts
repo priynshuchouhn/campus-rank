@@ -1,9 +1,8 @@
 import NextAuth from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 import GithubProvider from "next-auth/providers/github"
-import { PrismaClient } from "@prisma/client"
+import { prisma } from "./lib/prisma";
 
-const prisma = new PrismaClient()
 
 async function saveUserToDatabase(userInfo: {
   name: string | null;
@@ -20,12 +19,35 @@ async function saveUserToDatabase(userInfo: {
 
         // If userInfo doesn't exist, create them
         if (!existingUser) {
-          const user =await prisma.user.create({
+          const baseUsername = userInfo.name 
+            ? userInfo.name.toLowerCase().replace(/[^a-z0-9]/g, '')
+            : userInfo.email!.split('@')[0];
+
+          // Keep trying until we find a unique username
+          let username = baseUsername;
+          let counter = 1;
+          let isUnique = false;
+
+          while (!isUnique) {
+            const existingUser = await prisma.user.findUnique({
+              where: { username }
+            });
+
+            if (existingUser) {
+              username = `${baseUsername}${counter}`;
+              counter++;
+            } else {
+              isUnique = true;
+            }
+          }
+
+          const user = await prisma.user.create({
             data: {
               name: userInfo.name!,
               email: userInfo.email!,
               image: userInfo.image,
-              emailVerified: new Date()
+              emailVerified: new Date(),
+              username: username
             },
           })
           await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/email/welcome`, {

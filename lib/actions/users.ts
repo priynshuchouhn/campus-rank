@@ -1,9 +1,8 @@
 'use server';
 import { auth } from "@/auth";
-import { PrismaClient } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { prisma } from "../prisma";
 
-const prisma = new PrismaClient();
 
 interface LeetCodeSubmission {
     difficulty: string;
@@ -189,4 +188,31 @@ export async function updateUser(values: any) {
     
     revalidatePath('/profile', 'page');
     return user;
-}   
+}  
+
+export async function getUserProfile(username: string) {
+    try {
+        const user = await prisma.user.findMany({
+            where: {
+                username: username,
+        },
+        include: {
+            leaderboardStats: true,
+            gfgProfile: true,
+            leetcodeProfile: true,
+            hackerrankProfile: {
+                    include: {
+                        badges: true,
+                    },
+                },
+            },
+        });
+        if (user.length === 0) {
+            return null;
+        }
+        return user[0];
+    } catch (error) {
+        console.error(`Error fetching user profile for username ${username}:`, error);
+        return null;
+    }
+}

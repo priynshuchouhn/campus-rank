@@ -1,9 +1,8 @@
 import EmailTemplate from '@/components/ui/email-template';
 import { getLeaderboard } from '@/lib/actions/leaderboard';
+import { prisma } from '@/lib/prisma';
 import { Resend } from 'resend';
-import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function GET() {

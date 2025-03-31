@@ -25,7 +25,7 @@ async function Navbar() {
         </Link>
         <form action={signOutAction}>
           <Button variant="outline">
-            logout
+            Logout
           </Button>
         </form>
         </>

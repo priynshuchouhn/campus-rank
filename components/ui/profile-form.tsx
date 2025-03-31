@@ -19,9 +19,15 @@ import { useState } from "react";
 import { updateUser } from "@/lib/actions/users";
 import { useRouter } from "next/navigation";
 const profileSchema = z.object({
-  leetcodeUsername: z.string().min(1, "LeetCode username is required"),
-  hackerrankUsername: z.string().min(1, "Hackerrank username is required"),
-  gfgUsername: z.string().min(1, "GFG username is required"),
+  leetcodeUsername: z.string()
+    .min(1, "LeetCode username is required")
+    .refine(val => !val.includes('/'), "Please enter only your username, not the full profile URL"),
+  hackerrankUsername: z.string()
+    .min(1, "Hackerrank username is required")
+    .refine(val => !val.includes('/'), "Please enter only your username, not the full profile URL"),
+  gfgUsername: z.string()
+    .min(1, "GFG username is required")
+    .refine(val => !val.includes('/'), "Please enter only your username, not the full profile URL"),
 });
 
 
@@ -72,7 +78,7 @@ export function ProfileForm({ user }: any) {
               name="leetcodeUsername"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Leetcode Username</FormLabel>
+                  <FormLabel>LeetCode Username</FormLabel>
                   <FormControl>
                     <Input placeholder="Enter your Leetcode username" {...field} />
                   </FormControl>
@@ -85,7 +91,7 @@ export function ProfileForm({ user }: any) {
               name="hackerrankUsername"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Hackerrank Username</FormLabel>
+                  <FormLabel>HackerRank Username</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Enter your Hackerrank username"

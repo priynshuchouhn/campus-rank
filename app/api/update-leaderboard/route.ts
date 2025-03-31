@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { fetchAndUpdateProfile } from "@/lib/actions/users";
+import { prisma } from "@/lib/prisma";
 
-const prisma = new PrismaClient();
 
 
 async function updateGlobalRanks() {
