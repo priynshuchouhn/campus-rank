@@ -82,29 +82,6 @@ export function ShareButton({
             // Wait for the component to render
             await new Promise(resolve => setTimeout(resolve, 100));
 
-            // Wait for the image to load with timeout
-            if (image) {
-                try {
-                    await Promise.race([
-                        new Promise((resolve, reject) => {
-                            const img = new Image();
-                            img.onload = resolve;
-                            img.onerror = reject;
-                            img.src = image;
-                        }),
-                        new Promise((_, reject) =>
-                            setTimeout(() => reject(new Error('Image load timeout')), 3000)
-                        )
-                    ]);
-                } catch (error) {
-                    console.log('Image load failed or timed out, using dummy image', error);
-                    // Update the component with dummy image
-                    const imgElement = root.querySelector('img');
-                    if (imgElement) {
-                        imgElement.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`;
-                    }
-                }
-            }
 
             // Create image from the rendered component
             const dataUrl = await domtoimage.toPng(root, {
