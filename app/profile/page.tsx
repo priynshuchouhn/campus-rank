@@ -154,9 +154,9 @@ export default async function Profile() {
                 <div>
                   <h3 className="text-lg font-semibold mb-3">Profile Views</h3>
                   <div className="p-4 bg-muted rounded-lg text-center">
-                    <p className="text-2xl font-bold text-fuschia-600 dark:text-fuschia-400 flex items-center gap-2">
+                    <p className="text-xl font-bold text-slate-600 dark:text-slate-400 flex items-center gap-2">
                       <span>{user.profileView?.length || 0} Views</span>
-                      <Eye className="w-4 h-4" />
+                      <Eye className="w-6 h-6" />
                     </p>
                   </div>
                 </div>
