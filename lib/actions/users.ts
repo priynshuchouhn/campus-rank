@@ -17,7 +17,8 @@ interface HackerRankBadge {
     stars: string;
 }
 
-async function fetchAndUpdateProfile(user: User) {
+
+export async function fetchAndUpdateProfile(user: User) {
     try {
         // Call the fetch-profile API endpoint
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/fetch-profile`, {
@@ -29,6 +30,7 @@ async function fetchAndUpdateProfile(user: User) {
                 leetcodeUsername: user.leetcodeUsername,
                 hackerrankUsername: user.hackerrankUsername,
                 gfgUsername: user.gfgUsername,
+                userId: user.id,
             }),
         });
 
@@ -58,18 +60,13 @@ async function fetchAndUpdateProfile(user: User) {
         }
 
         let gfgScore = 0;
-        let gfgProblemsSolved = 0;
+        let gfgSolved = 0;
         if (profileData.gfg?.codingScore) {
             gfgScore = parseFloat(profileData.gfg.codingScore) || 0;
-        }
-        if (profileData.gfg?.solvedProblems) {
-            gfgProblemsSolved = profileData.gfg.solvedProblems;
+            gfgSolved = profileData.gfg.solvedProblems || 0;
         }
 
         // Calculate overall score (weighted average)
-        // LeetCode is weighted highest (50%) since it's most widely used and has standardized difficulty levels
-        // HackerRank second (30%) due to its structured learning paths and verified certifications
-        // GeeksForGeeks third (20%) as it's more region-specific but still valuable
         const overallScore = (leetcodeScore * 0.5) + (hackerrankScore * 0.3) + (gfgScore * 0.2);
 
         // Update leaderboard stats
@@ -90,13 +87,14 @@ async function fetchAndUpdateProfile(user: User) {
             },
         });
 
+        let totalSolved = isNaN(parseInt(`${gfgSolved}`,10)) ? 0 : parseInt(`${gfgSolved}`,10);
         // Update user's solved problems count
         if (profileData.leetcode?.submitStats?.acSubmissionNum) {
             const stats = profileData.leetcode.submitStats.acSubmissionNum as LeetCodeSubmission[];
-            const totalSolved = stats.reduce((acc: number, curr: LeetCodeSubmission) => acc + curr.count, 0)+gfgProblemsSolved;
             const easySolved = stats.find((s: LeetCodeSubmission) => s.difficulty === 'Easy')?.count || 0;
             const mediumSolved = stats.find((s: LeetCodeSubmission) => s.difficulty === 'Medium')?.count || 0;
             const hardSolved = stats.find((s: LeetCodeSubmission) => s.difficulty === 'Hard')?.count || 0;
+            totalSolved += stats.reduce((acc: number, curr: LeetCodeSubmission) => acc + curr.count, 0);
 
             await prisma.user.update({
                 where: { id: user.id },
@@ -106,12 +104,23 @@ async function fetchAndUpdateProfile(user: User) {
                     mediumSolved,
                     hardSolved,
                     lastLeetcodeFetch: new Date(),
+                    lastGfgFetch: new Date(),
+                    lastHackerrankFetch: new Date(),
+                },
+            });
+        }else{
+            await prisma.user.update({
+                where: { id: user.id },
+                data: {
+                    lastLeetcodeFetch: new Date(),
+                    totalSolved,
+                    lastGfgFetch: new Date(),
+                    lastHackerrankFetch: new Date(),
                 },
             });
         }
     } catch (error) {
-        console.error('Error fetching and updating profile:', error);
-        // Don't throw the error to prevent blocking the user update
+        console.error(`Error fetching and updating profile for user ${user.email}:`, error);
     }
 }
 

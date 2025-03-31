@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Github } from "lucide-react";
 import { signIn } from "@/auth";
+import Image from "next/image";
 
 
 
@@ -11,8 +12,9 @@ export function AuthForm() {
     return (
         <Card className="w-full max-w-md mx-auto">
             <CardHeader>
-                <CardTitle className="text-2xl text-center">
-                    Welcome to Campus Rank
+                <CardTitle className="flex flex-col justify-center items-center gap-4">
+                <Image src="/logo.jpg" alt="Campus Rank" className='w-16 h-16 rounded-full' width={250} height={250} />
+                    <p className="text-2xl font-bold">Welcome to Campus Rank</p>
                 </CardTitle>
             </CardHeader>
             <CardContent>

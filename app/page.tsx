@@ -1,5 +1,4 @@
 import { TopPerformers } from "../components/ui/top-performers";
-import Navbar from "@/components/ui/nav-bar";
 import Feed from "@/components/ui/feed";
 import { getLeaderboard } from "@/lib/actions/leaderboard";
 
@@ -48,14 +47,9 @@ import { getLeaderboard } from "@/lib/actions/leaderboard";
 export default async function Home() {
   const leaderboard = await getLeaderboard();
   return (
-    <main className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <Navbar />
-        
-        <TopPerformers leaderboards={leaderboard} />
-        
-        <Feed leaderboards={leaderboard} />
-      </div>
+    <main>
+      <TopPerformers leaderboards={leaderboard} />
+      <Feed leaderboards={leaderboard} />
     </main>
   );
 }

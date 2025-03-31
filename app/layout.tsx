@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "react-hot-toast";
+import Footer from "@/components/ui/footer";
+import Navbar from "@/components/ui/nav-bar";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -60,7 +62,13 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <div className="min-h-screen bg-background">
+            <div className="container mx-auto px-4 py-8">
+              <Navbar />
+              {children}
+            </div>
+          </div>
+          <Footer />
           <Toaster />
         </ThemeProvider>
       </body>

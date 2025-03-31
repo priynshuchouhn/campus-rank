@@ -1,5 +1,4 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Navbar from "@/components/ui/nav-bar";
 import { ProfileForm } from "@/components/ui/profile-form";
 import { getUser } from "@/lib/actions/users";
 import Image from "next/image";
@@ -12,9 +11,7 @@ export default async function Profile() {
         redirect("/get-started");
     }
   return (
-    <main className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <Navbar />
+    <main>
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-2xl font-bold">Profile</h2>
         </div>
@@ -106,7 +103,6 @@ export default async function Profile() {
             </CardContent>
           </Card>
         </div> */}
-      </div>
     </main>
   );
 }

@@ -2,6 +2,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 interface LeetCodeProfile {
   username: string;
@@ -50,7 +53,11 @@ interface ProfileResults {
 
 export async function POST(request:NextRequest) {
   try {
-    const { leetcodeUsername, hackerrankUsername, gfgUsername } = await request.json();
+    const { leetcodeUsername, hackerrankUsername, gfgUsername, userId } = await request.json();
+
+    if(!userId){
+      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+    }
     
     const results: ProfileResults = {
       leetcode: null,
@@ -60,17 +67,17 @@ export async function POST(request:NextRequest) {
     
     // Fetch LeetCode data if username provided
     if (leetcodeUsername) {
-      results.leetcode = await fetchLeetCodeProfile(leetcodeUsername);
+      results.leetcode = await fetchLeetCodeProfile(leetcodeUsername, userId);
     }
     
     // Fetch HackerRank data if username provided
     if (hackerrankUsername) {
-      results.hackerrank = await fetchHackerRankProfile(hackerrankUsername);
+      results.hackerrank = await fetchHackerRankProfile(hackerrankUsername, userId);
     }
     
     // Fetch GeeksForGeeks data if username provided
     if (gfgUsername) {
-      results.gfg = await fetchGFGProfile(gfgUsername);
+      results.gfg = await fetchGFGProfile(gfgUsername, userId);
     }
     
     return NextResponse.json(results, { status: 200 });
@@ -80,7 +87,7 @@ export async function POST(request:NextRequest) {
   }
 }
 
-async function fetchLeetCodeProfile(username:string): Promise<LeetCodeProfile | null> {
+async function fetchLeetCodeProfile(username:string, userId:string): Promise<LeetCodeProfile | null> {
   try {
     // LeetCode GraphQL API
     const response = await axios.post('https://leetcode.com/graphql', {
@@ -114,6 +121,43 @@ async function fetchLeetCodeProfile(username:string): Promise<LeetCodeProfile | 
         'Content-Type': 'application/json'
       }
     });
+    await prisma.leetCodeProfile.upsert ({
+      where: {
+        userId:userId
+      },
+      update: {
+        username:response.data.data.matchedUser.username,
+        githubUrl:response.data.data.matchedUser.githubUrl,
+        twitterUrl:response.data.data.matchedUser.twitterUrl,
+        linkedinUrl:response.data.data.matchedUser.linkedinUrl,
+        realName:response.data.data.matchedUser.profile.realName,
+        userAvatar:response.data.data.matchedUser.profile.userAvatar,
+        ranking:response.data.data.matchedUser.profile.ranking,
+        totalSolved:response.data.data.matchedUser.submitStats.acSubmissionNum[0].count,
+        totalSubmissions:response.data.data.matchedUser.submitStats.acSubmissionNum[0].submissions,
+        easySolved:response.data.data.matchedUser.submitStats.acSubmissionNum[1].count,
+        easySubmissions:response.data.data.matchedUser.submitStats.acSubmissionNum[1].submissions,
+        mediumSolved:response.data.data.matchedUser.submitStats.acSubmissionNum[2].count,
+        mediumSubmissions:response.data.data.matchedUser.submitStats.acSubmissionNum[2].submissions,
+        
+      },
+      create: {
+        userId,
+        username:response.data.data.matchedUser.username,
+        githubUrl:response.data.data.matchedUser.githubUrl,
+        twitterUrl:response.data.data.matchedUser.twitterUrl,
+        linkedinUrl:response.data.data.matchedUser.linkedinUrl,
+        ranking:response.data.data.matchedUser.profile.ranking,
+        realName:response.data.data.matchedUser.profile.realName,
+        userAvatar:response.data.data.matchedUser.profile.userAvatar,
+        totalSolved:response.data.data.matchedUser.submitStats.acSubmissionNum[0].count,
+        totalSubmissions:response.data.data.matchedUser.submitStats.acSubmissionNum[0].submissions,
+        easySolved:response.data.data.matchedUser.submitStats.acSubmissionNum[1].count,
+        easySubmissions:response.data.data.matchedUser.submitStats.acSubmissionNum[1].submissions,
+        mediumSolved:response.data.data.matchedUser.submitStats.acSubmissionNum[2].count,
+        mediumSubmissions:response.data.data.matchedUser.submitStats.acSubmissionNum[2].submissions,
+      }
+    });
     
     return response.data.data.matchedUser;
   } catch (error) {
@@ -122,7 +166,7 @@ async function fetchLeetCodeProfile(username:string): Promise<LeetCodeProfile | 
   }
 }
 
-async function fetchHackerRankProfile(username:string): Promise<HackerRankProfile | null> {
+async function fetchHackerRankProfile(username:string, userId:string): Promise<HackerRankProfile | null> {
   try {
     // HackerRank doesn't have a public API, so we'll need to scrape the profile page
     const response = await axios.get(`https://www.hackerrank.com/${username}`, {
@@ -176,8 +220,26 @@ async function fetchHackerRankProfile(username:string): Promise<HackerRankProfil
         stars: $(el).find('.star-section .badge-star').length.toString()
       });
     });
-    
-    
+
+    await prisma.hackerRankProfile.upsert ({
+      where: {
+        userId
+      },
+      update: {
+        ...profileData,
+        badges: {
+          deleteMany: {},
+          create: profileData.badges
+        }
+      },
+      create: {
+        userId,
+        ...profileData,
+        badges: {
+          create: profileData.badges
+        }
+      },
+    });
     return profileData;
   } catch (error) {
     console.error('HackerRank scraping error:', error);
@@ -185,7 +247,7 @@ async function fetchHackerRankProfile(username:string): Promise<HackerRankProfil
   }
 }
 
-async function fetchGFGProfile(username:string): Promise<GFGProfile | null> {
+async function fetchGFGProfile(username:string, userId:string): Promise<GFGProfile | null> {
   try {
     // GeeksForGeeks doesn't have a public API, so we'll need to scrape the profile page
     const response = await axios.get(`https://www.geeksforgeeks.org/user/${username}`);
@@ -200,7 +262,18 @@ async function fetchGFGProfile(username:string): Promise<GFGProfile | null> {
       codingScore: $('.scoreCard_head_left--score__oSi_x').eq(1).text().trim(),
     };
     
-    
+    await prisma.gFGProfile.upsert ({
+      where: {
+        userId
+      },
+      update: {
+        ...profileData
+      },
+      create: {
+        userId,
+        ...profileData
+      },
+    });
     return profileData;
   } catch (error) {
     console.error('GeeksForGeeks scraping error:', error);

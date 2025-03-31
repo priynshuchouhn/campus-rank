@@ -14,9 +14,9 @@ interface TopPerformersProps {
 
 export function TopPerformers({ leaderboards }: TopPerformersProps) {
   const topThree = leaderboards
-    .sort((a, b) => b.globalRank! - a.globalRank!)
+    .sort((a, b) => a.globalRank! - b.globalRank!)
     .slice(0, 3);
-
+  console.log(topThree);
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
       {topThree.map((leaderboard, index) => (
