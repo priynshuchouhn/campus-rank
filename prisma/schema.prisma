@@ -46,6 +46,7 @@ model User {
 
   // Leaderboard stats
   leaderboardStats LeaderboardStats?
+  profileView      ProfileView[]
 }
 
 model LeetCodeProfile {
@@ -140,4 +141,36 @@ model LeaderboardStats {
 
   // Last update timestamp
   lastUpdated DateTime @updatedAt
+}
+
+model ProfileView {
+  id              String   @id @default(cuid())
+  username        String
+  user            User     @relation(fields: [username], references: [username], onDelete: Cascade)
+  createdAt       DateTime @default(now())
+  operatingSystem String?
+  browser         String?
+  device          String?
+}
+
+model ApplicationStats {
+  id String @id @default(cuid())
+
+  // Last leaderboard update timestamp
+  lastLeaderboardUpdate DateTime @default(now())
+
+  // Total profile views
+  totalProfileViews Int @default(0)
+
+  // Total questions solved
+  totalQuestionsSolved Int @default(0)
+
+  // Profile views since last update
+  profileViewsSinceLastUpdate Int @default(0)
+
+  // Questions solved since last update
+  questionsSolvedSinceLastUpdate Int @default(0)
+
+  // Last update timestamp
+  createdAt DateTime @default(now())
 }

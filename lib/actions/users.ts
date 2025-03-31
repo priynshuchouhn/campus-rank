@@ -2,6 +2,7 @@
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
 import { prisma } from "../prisma";
+import { headers } from "next/headers";
 
 
 interface LeetCodeSubmission {
@@ -37,7 +38,7 @@ export async function fetchAndUpdateProfile(user: any) {
         }
 
         const profileData = await response.json();
-        
+
         // Calculate scores based on fetched data
         let leetcodeScore = 0;
         if (profileData.leetcode?.submitStats?.acSubmissionNum) {
@@ -88,7 +89,7 @@ export async function fetchAndUpdateProfile(user: any) {
             },
         });
 
-        let totalSolved = isNaN(parseInt(`${gfgSolved}`,10)) ? 0 : parseInt(`${gfgSolved}`,10);
+        let totalSolved = isNaN(parseInt(`${gfgSolved}`, 10)) ? 0 : parseInt(`${gfgSolved}`, 10);
         // Update user's solved problems count
         if (profileData.leetcode?.submitStats?.acSubmissionNum) {
             const stats = profileData.leetcode.submitStats.acSubmissionNum as LeetCodeSubmission[];
@@ -109,7 +110,7 @@ export async function fetchAndUpdateProfile(user: any) {
                     lastHackerrankFetch: new Date(),
                 },
             });
-        }else{
+        } else {
             await prisma.user.update({
                 where: { id: user.id },
                 data: {
@@ -138,7 +139,7 @@ export async function getUser() {
             hackerrankProfile: {
                 include: {
                     badges: true
-                }   
+                }
             },
             gfgProfile: true,
             leaderboardStats: true
@@ -157,11 +158,11 @@ export async function updateUser(values: any) {
     const leetcodeUsername = values.leetcodeUsername?.includes('leetcode.com')
         ? values.leetcodeUsername.split(/[\/u\/|\/]/).filter(Boolean).pop()
         : values.leetcodeUsername;
-    
+
     const hackerrankUsername = values.hackerrankUsername?.includes('hackerrank.com')
         ? values.hackerrankUsername.split(/[\/profile\/|\/]/).filter(Boolean).pop()
         : values.hackerrankUsername;
-        
+
     const gfgUsername = values.gfgUsername?.includes('geeksforgeeks.org')
         ? values.gfgUsername.split(/[\/user\/|\/]/).filter(Boolean).pop()
         : values.gfgUsername;
@@ -171,7 +172,7 @@ export async function updateUser(values: any) {
         data: {
             ...values,
             leetcodeUsername,
-            hackerrankUsername, 
+            hackerrankUsername,
             gfgUsername
         },
         include: {
@@ -185,25 +186,27 @@ export async function updateUser(values: any) {
             leaderboardStats: true
         }
     });
-    
+
     // Fetch profile and update leaderboard in the background
     fetchAndUpdateProfile(user).catch(console.error);
-    
+
     revalidatePath('/profile', 'page');
     return user;
-}  
+}
 
 export async function getUserProfile(username: string) {
+    
+
     try {
         const user = await prisma.user.findMany({
             where: {
                 username: username,
-        },
-        include: {
-            leaderboardStats: true,
-            gfgProfile: true,
-            leetcodeProfile: true,
-            hackerrankProfile: {
+            },
+            include: {
+                leaderboardStats: true,
+                gfgProfile: true,
+                leetcodeProfile: true,
+                hackerrankProfile: {
                     include: {
                         badges: true,
                     },
@@ -213,9 +216,54 @@ export async function getUserProfile(username: string) {
         if (user.length === 0) {
             return null;
         }
+        updateProfileView(username);
         return user[0];
     } catch (error) {
         console.error(`Error fetching user profile for username ${username}:`, error);
         return null;
     }
+}
+
+export async function updateProfileView(username: string) {
+    const headersList = await headers();
+    const userAgent = headersList.get('user-agent');
+    const browser = userAgent ? (userAgent.includes("Chrome") ? "Chrome" :
+        userAgent.includes("Firefox") ? "Firefox" :
+            userAgent.includes("Safari") ? "Safari" :
+                userAgent.includes("MSIE") ? "Internet Explorer" : "Unknown Browser")
+        : "Unknown Browser";
+    const device = userAgent ? (/Mobi|Android/i.test(userAgent) ? "Mobile" : "Desktop") : "Unknown Device";
+    const os = userAgent ? (userAgent.includes("Win") ? "Windows" :
+        userAgent.includes("Mac") ? "MacOS" :
+            userAgent.includes("Linux") ? "Linux" :
+                userAgent.includes("Android") ? "Android" :
+                    userAgent.includes("iOS") ? "iOS" : "Unknown OS")
+        : "Unknown OS";
+    const lastProfileView = await prisma.profileView.findMany({
+        where: {
+            username,
+        },
+        orderBy: {
+            createdAt: 'desc',
+        },
+        take: 1,
+    });
+    if (lastProfileView.length > 0) {
+        const diff = new Date().getTime() - lastProfileView[0].createdAt.getTime();
+        if (diff < 1000 * 60) {
+            const lastView = lastProfileView[0];
+            if (lastView.browser === browser && lastView.device === device && lastView.operatingSystem === os) {
+                return; // Return if all are the same
+            }
+        }
+    }
+    const profileView = await prisma.profileView.create({
+        data: {
+            username,
+            browser,
+            device,
+            operatingSystem: os,
+        },
+    });
+    return profileView;
 }
