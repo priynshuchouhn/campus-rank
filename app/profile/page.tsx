@@ -15,17 +15,17 @@ export default async function Profile() {
     <main>
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-2xl font-bold">Profile</h2>
-        <ShareButton name={user.name || ""} 
-        username={user.username || ""} 
-        totalSolved={user.totalSolved || 0} 
-        campusRank={user.leaderboardStats?.globalRank || 0} 
-        leetcodeRank={user.leetcodeProfile?.ranking || 0} 
-        gfgRank={user.gfgProfile?.rank || '-'} 
-        easySolved={user.easySolved || 0} mediumSolved={user.mediumSolved || 0} 
-        hardSolved={user.hardSolved || 0} 
-        gfgSolved={Number(user.gfgProfile?.solvedProblems) || 0} 
-        gfgScore={Number(user.gfgProfile?.codingScore) || 0} 
-        badges={user.hackerrankProfile?.badges || []} />
+        <ShareButton name={user.name || ""}
+          username={user.username || ""}
+          totalSolved={user.totalSolved || 0}
+          campusRank={user.leaderboardStats?.globalRank || 0}
+          leetcodeRank={user.leetcodeProfile?.ranking || 0}
+          gfgRank={user.gfgProfile?.rank || '-'}
+          easySolved={user.easySolved || 0} mediumSolved={user.mediumSolved || 0}
+          hardSolved={user.hardSolved || 0}
+          gfgSolved={Number(user.gfgProfile?.solvedProblems) || 0}
+          gfgScore={Number(user.gfgProfile?.codingScore) || 0}
+          badges={user.hackerrankProfile?.badges || []} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -153,10 +153,12 @@ export default async function Profile() {
                 )}
                 <div>
                   <h3 className="text-lg font-semibold mb-3">Profile Views</h3>
-                  <p className="text-sm text-muted-foreground flex items-center gap-2">
-                    {user.profileView?.length || 0}
-                    <Eye className="w-4 h-4" />
-                  </p>
+                  <div className="p-4 bg-muted rounded-lg text-center">
+                    <p className="text-2xl font-bold text-fuschia-600 dark:text-fuschia-400 flex items-center gap-2">
+                      <span>{user.profileView?.length || 0} Views</span>
+                      <Eye className="w-4 h-4" />
+                    </p>
+                  </div>
                 </div>
               </div>
             </CardContent>
