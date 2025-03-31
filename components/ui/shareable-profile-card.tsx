@@ -37,22 +37,16 @@ export function ShareableProfileCard({
 }: ShareableProfileCardProps) {
     return (
         <div style={{ width: '800px', backgroundColor: '#ffffff', borderRadius: '8px', boxShadow: '0 2px 4px #cccccc', padding: '24px' }}>
+            {/* Title */}
+            <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+                <h1 style={{ fontSize: '40px', fontWeight: 'bold', color: '#1976d2', marginBottom: '8px' }}>Campus Rank</h1>
+                <p style={{ fontSize: '20px', color: '#666666', marginBottom: '4px' }}>College Coding Leaderboard</p>
+            </div>
+
             {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '24px', marginBottom: '32px' }}>
-                <div style={{ width: '96px', height: '96px', borderRadius: '50%', overflow: 'hidden', border: '4px solid #e0e0e0', backgroundColor: '#f8f9fa', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <div style={{
-                        width: '64px',
-                        height: '64px',
-                        backgroundImage: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTIgMkM2LjQ4IDIgMiA2LjQ4IDIgMTJzNC40OCAxMCAxMCAxMCAxMC00LjQ4IDEwLTEwUzE3LjUyIDIgMTIgMnptMCAxOGMtNC40MSAwLTgtMy41OS04LThzMy41OS04IDgtOCA4IDMuNTkgOCA4LTMuNTkgOC04IDh6IiBmaWxsPSIjMTk3NmQyIi8+PHBhdGggZD0iTTEyIDZjLTMuMzEgMC02IDIuNjktNiA2czIuNjkgNiA2IDYgNi0yLjY5IDYtNi0yLjY5LTYtNi02eiIgZmlsbD0iIzE5NzZkMiIvPjwvc3ZnPg==',
-                        backgroundSize: 'contain',
-                        backgroundRepeat: 'no-repeat',
-                        backgroundPosition: 'center'
-                    }} />
-                </div>
-                <div>
-                    <h1 style={{ fontSize: '30px', fontWeight: 'bold', color: '#000000' }}>{name}</h1>
-                    <p style={{ color: '#666666' }}>@{username}</p>
-                </div>
+            <div style={{ marginBottom: '32px' }}>
+                <h2 style={{ fontSize: '30px', fontWeight: 'bold', color: '#000000' }}>{name}</h2>
+                <p style={{ color: '#666666' }}>@{username}</p>
             </div>
 
             {/* Stats Grid */}
