@@ -131,6 +131,16 @@ export async function getUser() {
     }
     const user = await prisma.user.findUnique({
         where: { email: email },
+        include: {
+            leetcodeProfile: true,
+            hackerrankProfile: {
+                include: {
+                    badges: true
+                }   
+            },
+            gfgProfile: true,
+            leaderboardStats: true
+        }
     });
     return user;
 }

@@ -98,7 +98,7 @@ export function TopPerformers({ leaderboards }: any) {
               )} */}
               {leaderboard.user.hackerrankProfile?.badges.length > 0 && (
                 <div className="mt-6">
-                  <p className="text-sm font-semibold text-muted-foreground mb-3">Hacker Rank Badges</p>
+                  <p className="text-sm font-semibold text-muted-foreground mb-3">Hackerrank Badges</p>
                   <div className="grid grid-cols-5 gap-2">
                     {leaderboard.user.hackerrankProfile.badges.map((badge: any, idx: number) => {
                       const stars = parseInt(badge.stars);

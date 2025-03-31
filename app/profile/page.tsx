@@ -38,25 +38,107 @@ export default async function Profile() {
                     <p className="text-muted-foreground">{user.email}</p>
                   </div>
                 </div>
-                <div className="grid grid-cols-3 gap-4 text-center">
-                  <div className="p-4 bg-muted rounded-lg">
-                    <p className="text-sm text-muted-foreground">Easy</p>
-                    <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                      {user.easySolved}
-                    </p>
+
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-3">LeetCode Stats</h3>
+                    <div className="grid grid-cols-3 gap-4 text-center">
+                      <div className="p-4 bg-muted rounded-lg">
+                        <p className="text-sm text-muted-foreground">Easy</p>
+                        <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+                          {user.easySolved}
+                        </p>
+                      </div>
+                      <div className="p-4 bg-muted rounded-lg">
+                        <p className="text-sm text-muted-foreground">Medium</p>
+                        <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
+                          {user.mediumSolved}
+                        </p>
+                      </div>
+                      <div className="p-4 bg-muted rounded-lg">
+                        <p className="text-sm text-muted-foreground">Hard</p>
+                        <p className="text-2xl font-bold text-red-600 dark:text-red-400">
+                          {user.hardSolved}
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="p-4 bg-muted rounded-lg">
-                    <p className="text-sm text-muted-foreground">Medium</p>
-                    <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
-                      {user.mediumSolved}
-                    </p>
+
+                  {user.hackerrankProfile?.badges && user.hackerrankProfile.badges.length > 0 && (
+                    <div>
+                      <h3 className="text-lg font-semibold mb-3">Hackerrank Badges</h3>
+                      <div className="grid grid-cols-5 gap-2">
+                        {user.hackerrankProfile.badges.map((badge: any, idx: number) => {
+                          const stars = parseInt(badge.stars);
+                          const getBadgeColors = () => {
+                            if (stars === 5) {
+                              return {
+                                gradient: "from-amber-500/70 to-yellow-600/70",
+                                innerGradient: "from-amber-400/70 to-yellow-500/70",
+                                starColor: "text-yellow-300",
+                                borderColor: "border-yellow-500",
+                                bgColor: "bg-yellow-400"
+                              };
+                            } else if (stars === 4) {
+                              return {
+                                gradient: "from-slate-400 to-gray-500",
+                                innerGradient: "from-slate-300 to-gray-400",
+                                starColor: "text-slate-200",
+                                borderColor: "border-slate-500",
+                                bgColor: "bg-slate-400"
+                              };
+                            } else {
+                              return {
+                                gradient: "from-amber-700 to-amber-800",
+                                innerGradient: "from-amber-600 to-amber-700",
+                                starColor: "text-amber-200",
+                                borderColor: "border-amber-800",
+                                bgColor: "bg-amber-700"
+                              };
+                            }
+                          };
+                          const colors = getBadgeColors();
+                          return idx < 5 && (
+                            <div key={idx} className={`relative group w-full h-[80px] p-2 bg-gradient-to-br ${colors.gradient} rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1`}>
+                              <div className={`absolute inset-[2px] bg-gradient-to-br ${colors.innerGradient} rounded-[6px] flex flex-col items-center justify-center p-2`}>
+                                <div className={`absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-7 h-7 ${colors.bgColor} rounded-full flex items-center justify-center shadow-lg border-2 ${colors.borderColor}`}>
+                                  <span className="text-white text-sm font-bold flex items-center">{badge.stars} <span className={`${colors.starColor} shadow-lg text-xs`}>★</span></span>
+                                </div>
+                                <div className="mt-2 text-center flex flex-col items-center gap-1">
+                                  <span className="text-white/90">🏆</span>
+                                  <span className="text-[8px] font-semibold text-white/90 line-clamp-2 uppercase tracking-wide">
+                                    {badge.name}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  <div>
+                    <h3 className="text-lg font-semibold mb-3">GeeksForGeeks Stats</h3>
+                    <div className="p-4 bg-muted rounded-lg text-center">
+                      <p className="text-sm text-muted-foreground">Problems Solved</p>
+                      <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                        {user.gfgProfile?.solvedProblems || '0'}
+                      </p>
+                    </div>
                   </div>
-                  <div className="p-4 bg-muted rounded-lg">
-                    <p className="text-sm text-muted-foreground">Hard</p>
-                    <p className="text-2xl font-bold text-red-600 dark:text-red-400">
-                      {user.hardSolved}
-                    </p>
-                  </div>
+
+                  {user.leaderboardStats && (
+                    <div>
+                      <h3 className="text-lg font-semibold mb-3">Global Ranking</h3>
+                      <div className="p-4 bg-muted rounded-lg text-center">
+                        <p className="text-sm text-muted-foreground">Current Rank</p>
+                        <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                          #{user.leaderboardStats.globalRank || 'N/A'}
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
