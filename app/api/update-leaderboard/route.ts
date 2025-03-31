@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { fetchAndUpdateProfile } from "@/lib/actions/users";
 import { prisma } from "@/lib/prisma";
 import axios from "axios";
+import { updateApplicationStats } from "@/lib/actions/leaderboard";
 
 
 
@@ -42,6 +43,7 @@ export async function GET() {
         });
 
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/email/leaderboard`);
+        updateApplicationStats();
 
         // Revalidate the leaderboard page
         revalidatePath('/', 'page');

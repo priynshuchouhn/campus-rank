@@ -8,16 +8,21 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { User } from "@/lib/interfaces";
 import { LeaderboardStats } from "@prisma/client";
 import { Medal } from "lucide-react";
+import Link from "next/link";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink } from "./pagination";
+import { useState } from "react";
 
 interface LeaderboardTableProps {
-  leaderboards: (LeaderboardStats & {user:User})[];
+  leaderboards: (LeaderboardStats & {user:any})[];
   searchQuery: string;
 }
 
 export function LeaderboardTable({ leaderboards, searchQuery }: LeaderboardTableProps) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages] = useState(Math.ceil(leaderboards.length / 15));
+
   const filteredUsers = leaderboards
     .filter((leaderboard) =>
       leaderboard.user.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -27,6 +32,10 @@ export function LeaderboardTable({ leaderboards, searchQuery }: LeaderboardTable
       if (!b.globalRank) return -1;
       return a.globalRank - b.globalRank;
     });
+
+  const startIndex = (currentPage - 1) * 15;
+  const endIndex = startIndex + 15;
+  const currentUsers = filteredUsers.slice(startIndex, endIndex);
 
   return (
     <div className="w-full overflow-auto">
@@ -42,19 +51,19 @@ export function LeaderboardTable({ leaderboards, searchQuery }: LeaderboardTable
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredUsers.map((leaderboard, index) => (
+          {currentUsers.map((leaderboard, index) => (
             <TableRow
               key={leaderboard.user.id}
               className="transition-colors hover:bg-muted/50 cursor-pointer"
             >
               <TableCell className="font-medium">
-                {index < 3 ? (
-                  <Medal className={`h-5 w-5 ${getMedalColor(index)}`} />
+                {index+startIndex < 3 ? (
+                  <Medal className={`h-5 w-5 ${getMedalColor(index+startIndex)}`} />
                 ) : (
-                  index + 1
+                  index+startIndex+1
                 )}
               </TableCell>
-              <TableCell>{leaderboard.user.name}</TableCell>
+              <TableCell><Link href={`/user/${leaderboard.user.username}`}>{leaderboard.user.name}</Link></TableCell>
               <TableCell className="text-right">{leaderboard.user.totalSolved}</TableCell>
               <TableCell className="text-right text-green-600 dark:text-green-400">
                 {leaderboard.user.easySolved}
@@ -69,17 +78,28 @@ export function LeaderboardTable({ leaderboards, searchQuery }: LeaderboardTable
           ))}
         </TableBody>
       </Table>
-    </div>
+      <Pagination>
+        <PaginationContent>
+          {Array.from({ length: totalPages }, (_, index) => (
+            <PaginationItem key={index}>
+              <PaginationLink isActive={currentPage === index+1} onClick={() => setCurrentPage(index + 1)}>
+                {index + 1}
+              </PaginationLink>
+            </PaginationItem>
+          ))}
+        </PaginationContent>
+      </Pagination>
+    </div> 
   );
 }
 
 function getMedalColor(index: number): string {
   switch (index) {
-    case 0:
-      return "text-yellow-500";
     case 1:
-      return "text-gray-400";
+      return "text-yellow-500";
     case 2:
+      return "text-gray-400";
+    case 3:
       return "text-amber-600";
     default:
       return "";
