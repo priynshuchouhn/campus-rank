@@ -142,7 +142,8 @@ export async function getUser() {
                 }
             },
             gfgProfile: true,
-            leaderboardStats: true
+            leaderboardStats: true,
+            profileView: true,
         }
     });
     return user;

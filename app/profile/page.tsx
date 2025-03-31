@@ -4,6 +4,7 @@ import { getUser } from "@/lib/actions/users";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { ShareButton } from "@/components/ui/share-button";
+import { Eye } from "lucide-react";
 
 export default async function Profile() {
   const user = await getUser();
@@ -50,7 +51,6 @@ export default async function Profile() {
                   <p className="text-muted-foreground">@{user.username}</p>
                 </div>
               </div>
-
               <div className="space-y-6">
                 <div>
                   <h3 className="text-lg font-semibold mb-3">LeetCode Stats</h3>
@@ -151,6 +151,13 @@ export default async function Profile() {
                     </div>
                   </div>
                 )}
+                <div>
+                  <h3 className="text-lg font-semibold mb-3">Profile Views</h3>
+                  <p className="text-sm text-muted-foreground flex items-center gap-2">
+                    {user.profileView?.length || 0}
+                    <Eye className="w-4 h-4" />
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>
