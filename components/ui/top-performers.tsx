@@ -1,14 +1,18 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Medal } from "lucide-react";
+import { AlertCircle, Medal, X } from "lucide-react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { Alert, AlertDescription, AlertTitle } from "./alert";
+import { timeAgo } from "@/lib/utils";
+import { useState } from "react";
 
 
 
 export function TopPerformers({ leaderboards }: any) {
+  const [isDismissed, setIsDismissed] = useState(false);
   const topThree = leaderboards
     .sort((a: any, b: any) => {
       if (!a.globalRank) return 1;
@@ -17,62 +21,78 @@ export function TopPerformers({ leaderboards }: any) {
     })
     .slice(0, 3);
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-      {topThree.map((leaderboard: any, index: number) => (
-        <motion.div
-          key={leaderboard.user.id}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.2 }}
-        >
-          <Card className="h-full overflow-hidden">
-            <CardHeader className="relative">
-              <Medal
-                className={`absolute top-4 right-4 h-6 w-6 ${getMedalColor(
-                  index
-                )}`}
-              />
-              <div className="flex flex-col items-center">
-                <div className="w-24 h-24 rounded-full overflow-hidden mb-4">
-                  <Image
-                    src={
-                      leaderboard.user.image ||
-                      `https://api.dicebear.com/7.x/avataaars/svg?seed=${leaderboard.user.name}`
-                    }
-                    alt={leaderboard.user.name}
-                    className="w-full h-full object-cover"
-                    width={96}
-                    height={96}
-                  />
+    <>
+      {!isDismissed && (
+        <Alert variant="info" className="mb-4 bg-sky-600/10 border-sky-600/20 relative">
+          <button
+            onClick={() => setIsDismissed(true)}
+            className="absolute top-2 right-2 text-sky-600 hover:text-sky-700"
+          >
+            <X className="h-8 w-8 cursor-pointer" />
+          </button>
+          <AlertCircle className="h-5 w-5" />
+          <AlertTitle>Last Updated</AlertTitle>
+          <AlertDescription>
+            Leaderboard was last updated {timeAgo(topThree[1]?.lastUpdated)}
+          </AlertDescription>
+        </Alert>
+      )}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        {topThree.map((leaderboard: any, index: number) => (
+          <motion.div
+            key={leaderboard.user.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.2 }}
+          >
+            <Card className="h-full overflow-hidden">
+              <CardHeader className="relative">
+                <Medal
+                  className={`absolute top-4 right-4 h-6 w-6 ${getMedalColor(
+                    index
+                  )}`}
+                />
+                <div className="flex flex-col items-center">
+                  <div className="w-24 h-24 rounded-full overflow-hidden mb-4">
+                    <Image
+                      src={
+                        leaderboard.user.image ||
+                        `https://api.dicebear.com/7.x/avataaars/svg?seed=${leaderboard.user.name}`
+                      }
+                      alt={leaderboard.user.name}
+                      className="w-full h-full object-cover"
+                      width={96}
+                      height={96}
+                    />
+                  </div>
+                  <CardTitle className="text-xl">{leaderboard.user.name}</CardTitle>
                 </div>
-                <CardTitle className="text-xl">{leaderboard.user.name}</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div>
-                <p className="text-sm font-semibold text-muted-foreground mb-3">LeetCode Solved</p>
-                <div className="mt-4 grid grid-cols-3 gap-4 text-center">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Easy</p>
-                    <p className="text-lg font-semibold text-green-600 dark:text-green-400">
-                      {leaderboard.user.easySolved}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Medium</p>
-                    <p className="text-lg font-semibold text-yellow-600 dark:text-yellow-400">
-                      {leaderboard.user.mediumSolved}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Hard</p>
-                    <p className="text-lg font-semibold text-red-600 dark:text-red-400">
-                      {leaderboard.user.hardSolved}
-                    </p>
+              </CardHeader>
+              <CardContent>
+                <div>
+                  <p className="text-sm font-semibold text-muted-foreground mb-3">LeetCode Solved</p>
+                  <div className="mt-4 grid grid-cols-3 gap-4 text-center">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Easy</p>
+                      <p className="text-lg font-semibold text-green-600 dark:text-green-400">
+                        {leaderboard.user.easySolved}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Medium</p>
+                      <p className="text-lg font-semibold text-yellow-600 dark:text-yellow-400">
+                        {leaderboard.user.mediumSolved}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Hard</p>
+                      <p className="text-lg font-semibold text-red-600 dark:text-red-400">
+                        {leaderboard.user.hardSolved}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-              {/* {leaderboard.user.hackerrankProfile?.badges.length > 0 && (
+                {/* {leaderboard.user.hackerrankProfile?.badges.length > 0 && (
                 <div className="mt-6">
                   <p className="text-sm font-semibold text-muted-foreground mb-3">Hacker Rank Badges</p>
                   <div className="flex flex-wrap justify-center gap-2">
@@ -99,123 +119,132 @@ export function TopPerformers({ leaderboards }: any) {
                   </div>
                 </div>
               )} */}
-              {leaderboard.user.hackerrankProfile?.badges.length > 0 && (
-                <div className="mt-6">
-                  <p className="text-sm font-semibold text-muted-foreground mb-3">HackerRank Badges</p>
-                  <div className="grid grid-cols-5 gap-2">
-                    {leaderboard.user.hackerrankProfile.badges.map((badge: any, idx: number) => {
-                      const stars = parseInt(badge.stars);
-                      const getBadgeColors = () => {
-                        if (stars === 5) {
-                          return {
-                            gradient: "from-amber-500/70 to-yellow-600/70",
-                            innerGradient: "from-amber-400/70 to-yellow-500/70",
-                            starColor: "text-yellow-300",
-                            borderColor: "border-yellow-500",
-                            bgColor: "bg-yellow-400"
-                          };
-                        } else if (stars === 4) {
-                          return {
-                            gradient: "from-slate-400 to-gray-500",
-                            innerGradient: "from-slate-300 to-gray-400",
-                            starColor: "text-slate-200",
-                            borderColor: "border-slate-500",
-                            bgColor: "bg-slate-400"
-                          };
-                        } else {
-                          return {
-                            gradient: "from-amber-700 to-amber-800",
-                            innerGradient: "from-amber-600 to-amber-700",
-                            starColor: "text-amber-200",
-                            borderColor: "border-amber-800",
-                            bgColor: "bg-amber-700"
-                          };
-                        }
-                      };
-                      const colors = getBadgeColors();
-                      return idx < 5 && (
-                        <div key={idx} className={`relative group w-full h-[80px] p-2 bg-gradient-to-br ${colors.gradient} rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1`}>
-                          <div className={`absolute inset-[2px] bg-gradient-to-br ${colors.innerGradient} rounded-[6px] flex flex-col items-center justify-center p-2`}>
-                            <div className={`absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-7 h-7 ${colors.bgColor} rounded-full flex items-center justify-center shadow-lg border-2 ${colors.borderColor}`}>
-                              <span className="text-white text-sm font-bold flex items-center">{badge.stars}  <span className={`${colors.starColor} shadow-lg text-xs`}>★</span></span>
-                            </div>
-                            <div className="mt-2 text-center flex flex-col items-center gap-1">
-                              <span className="text-white/90">🏆</span>
-                              <span className="text-[8px] font-semibold text-white/90 line-clamp-2 uppercase tracking-wide">
-                                {badge.name}
-                              </span>
-                            </div>
-                            <div className="absolute bottom-1 flex items-center justify-center">
-                              {/* <div className="flex gap-0.5">
+                {leaderboard.user.hackerrankProfile?.badges.length > 0 && (
+                  <div className="mt-6">
+                    <p className="text-sm font-semibold text-muted-foreground mb-3">HackerRank Badges</p>
+                    <div className="mt-4 grid grid-cols-5 gap-2">
+                      {leaderboard.user.hackerrankProfile.badges.map((badge: any, idx: number) => {
+                        const stars = parseInt(badge.stars);
+                        const getBadgeColors = () => {
+                          if (stars === 5) {
+                            return {
+                              gradient: "from-amber-500/70 to-yellow-600/70",
+                              innerGradient: "from-amber-400/70 to-yellow-500/70",
+                              starColor: "text-yellow-300",
+                              borderColor: "border-yellow-500",
+                              bgColor: "bg-yellow-400"
+                            };
+                          } else if (stars === 4) {
+                            return {
+                              gradient: "from-slate-400 to-gray-500",
+                              innerGradient: "from-slate-300 to-gray-400",
+                              starColor: "text-slate-200",
+                              borderColor: "border-slate-500",
+                              bgColor: "bg-slate-400"
+                            };
+                          } else {
+                            return {
+                              gradient: "from-amber-700 to-amber-800",
+                              innerGradient: "from-amber-600 to-amber-700",
+                              starColor: "text-amber-200",
+                              borderColor: "border-amber-800",
+                              bgColor: "bg-amber-700"
+                            };
+                          }
+                        };
+                        const colors = getBadgeColors();
+                        return idx < 5 && (
+                          <div key={idx} className={`relative group w-full h-[80px] p-2 bg-gradient-to-br ${colors.gradient} rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1`}>
+                            <div className={`absolute inset-[2px] bg-gradient-to-br ${colors.innerGradient} rounded-[6px] flex flex-col items-center justify-center p-2`}>
+                              <div className={`absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-7 h-7 ${colors.bgColor} rounded-full flex items-center justify-center shadow-lg border-2 ${colors.borderColor}`}>
+                                <span className="text-white text-sm font-bold flex items-center">{badge.stars}  <span className={`${colors.starColor} shadow-lg text-xs`}>★</span></span>
+                              </div>
+                              <div className="mt-2 text-center flex flex-col items-center gap-1">
+                                <span className="text-white/90">🏆</span>
+                                <span className="text-[8px] font-semibold text-white/90 line-clamp-2 uppercase tracking-wide">
+                                  {badge.name}
+                                </span>
+                              </div>
+                              <div className="absolute bottom-1 flex items-center justify-center">
+                                {/* <div className="flex gap-0.5">
                                 {[...Array(stars)].map((_, i) => (
                                   <span key={i} className={`${colors.starColor} text-xs`}>★</span>
                                 ))}
                               </div> */}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="mt-4">
+                    <p className="text-sm font-semibold text-muted-foreground mb-3">GFG Solved</p>
+                    <p className="text-lg font-semibold text-sky-600 dark:text-sky-400">
+                      {leaderboard.user.gfgProfile?.solvedProblems || '0'}
+                    </p>
+                  </div>
+                  <div className="mt-4">
+                    <p className="text-sm font-semibold text-muted-foreground mb-3">GFG Score</p>
+                    <p className="text-lg font-semibold text-purple-600 dark:text-purple-400">
+                      {leaderboard.user.gfgProfile?.codingScore || '0'}
+                    </p>
                   </div>
                 </div>
-              )}
-              <div className="mt-4">
-                <p className="text-sm font-semibold text-muted-foreground">GFG Solved</p>
-                <p className="text-lg font-semibold text-purple-600 dark:text-purple-400">
-                  {leaderboard.user.gfgProfile?.solvedProblems || '0'}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-      ))}
-      {topThree.length < 3 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: topThree.length * 0.2 }}
-        >
-          <Card className="h-full overflow-hidden border-2 border-dashed">
-            <CardHeader>
-              <div className="flex flex-col items-center">
-                <div className="w-24 h-24 rounded-full overflow-hidden mb-4 bg-muted flex items-center justify-center">
-                  <Medal className="h-12 w-12 text-muted-foreground" />
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
+        {topThree.length < 3 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: topThree.length * 0.2 }}
+          >
+            <Card className="h-full overflow-hidden border-2 border-dashed">
+              <CardHeader>
+                <div className="flex flex-col items-center">
+                  <div className="w-24 h-24 rounded-full overflow-hidden mb-4 bg-muted flex items-center justify-center">
+                    <Medal className="h-12 w-12 text-muted-foreground" />
+                  </div>
+                  <CardTitle className="text-xl">This Spot is for You!</CardTitle>
                 </div>
-                <CardTitle className="text-xl">This Spot is for You!</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center">
-                <p className="text-muted-foreground mb-4">Join us now and climb the ranks!</p>
-                <p className="text-sm text-muted-foreground mb-6">
-                  Track your progress across LeetCode, HackerRank, and GeeksForGeeks. 
-                  Compete with fellow developers and showcase your problem-solving skills.
-                </p>
-                <div className="flex flex-col gap-4 items-center">
-                  <div className="flex items-center gap-2">
-                    <span className="text-yellow-500">⭐</span>
-                    <p className="text-sm">Earn badges and achievements</p>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center">
+                  <p className="text-muted-foreground mb-4">Join us now and climb the ranks!</p>
+                  <p className="text-sm text-muted-foreground mb-6">
+                    Track your progress across LeetCode, HackerRank, and GeeksForGeeks.
+                    Compete with fellow developers and showcase your problem-solving skills.
+                  </p>
+                  <div className="flex flex-col gap-4 items-center">
+                    <div className="flex items-center gap-2">
+                      <span className="text-yellow-500">⭐</span>
+                      <p className="text-sm">Earn badges and achievements</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-blue-500">📈</span>
+                      <p className="text-sm">Track your growth over time</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-green-500">🏆</span>
+                      <p className="text-sm">Compete for top positions</p>
+                    </div>
+                    <Link href="/profile" className="mt-2">
+                      <button className="bg-primary text-primary-foreground px-6 py-2 rounded-md hover:bg-primary/90 transition-colors">
+                        Get Started
+                      </button>
+                    </Link>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-blue-500">📈</span>
-                    <p className="text-sm">Track your growth over time</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-green-500">🏆</span>
-                    <p className="text-sm">Compete for top positions</p>
-                  </div>
-                  <Link href="/profile" className="mt-2">
-                    <button className="bg-primary text-primary-foreground px-6 py-2 rounded-md hover:bg-primary/90 transition-colors">
-                      Get Started
-                    </button>
-                  </Link>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-      )}
-    </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+      </div>
+    </>
   );
 }
 

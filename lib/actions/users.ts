@@ -52,8 +52,11 @@ export async function fetchAndUpdateProfile(user: any) {
         if (profileData.hackerrank?.badges) {
             // Calculate score based on badges
             const badges = profileData.hackerrank.badges as HackerRankBadge[];
+            // Calculate score based on stars per skill
             hackerrankScore = badges.reduce((acc: number, badge: HackerRankBadge) => {
-                return acc + (parseInt(badge.stars) || 0);
+                const stars = parseInt(badge.stars) || 0;
+                // 5 stars = 100 points, 4 stars = 80 points, 3 stars = 60 points, 2 stars = 40 points, 1 star = 20 points
+                return acc + (stars * 20);
             }, 0);
         }
 
