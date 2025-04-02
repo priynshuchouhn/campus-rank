@@ -23,6 +23,7 @@ model User {
   updatedAt     DateTime  @updatedAt
   username      String    @unique
   role          Role      @default(USER)
+  password      String?
 
   leetcodeUsername   String?
   hackerrankUsername String?
@@ -41,9 +42,11 @@ model User {
   hackerrankProfile HackerRankProfile?
   gfgProfile        GFGProfile?
 
-  leaderboardStats LeaderboardStats?
-  profileView      ProfileView[]
-  roadmap          Roadmap?
+  leaderboardStats   LeaderboardStats?
+  profileView        ProfileView[]
+  roadmap            Roadmap?
+  solvedQuestions    SolvedQuestion[]
+  QuestionSubmission QuestionSubmission[]
 }
 
 model LeetCodeProfile {
@@ -160,30 +163,47 @@ model Roadmap {
   sections  Section[] @relation("RoadmapSections")
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  topic     Topic[]
+  topics    Topic[]
 }
 
+// Admin creates predefined sections with predefined topics
+model PredefinedSection {
+  id          String            @id @default(cuid())
+  title       String
+  description String?
+  topics      PredefinedTopic[] @relation("PredefinedSectionTopics")
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+}
+
+// User sections are created from predefined sections
 model Section {
-  id        String   @id @default(cuid())
-  roadmapId String
-  roadmap   Roadmap  @relation("RoadmapSections", fields: [roadmapId], references: [id], onDelete: Cascade)
-  title     String
-  order     Int // To maintain the order of sections
-  topics    Topic[]  @relation("SectionTopics")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                  String   @id @default(cuid())
+  roadmapId           String
+  roadmap             Roadmap  @relation("RoadmapSections", fields: [roadmapId], references: [id], onDelete: Cascade)
+  title               String
+  description         String?
+  order               Int // To maintain the order of sections
+  topics              Topic[]  @relation("SectionTopics")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  predefinedSectionId String? // Optional reference to the predefined section
 
   @@unique([roadmapId, order]) // Ensures that each section in a roadmap has a unique order
 }
 
+// Admin creates predefined topics with resources
 model PredefinedTopic {
-  id          String     @id @default(cuid())
-  title       String     @unique
-  description String?
-  resources   Resource[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  topic       Topic[]
+  id                  String            @id @default(cuid())
+  title               String            @unique
+  description         String?
+  resources           Resource[]
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  topics              Topic[] // User topics created from this predefined topic
+  predefinedSectionId String
+  predefinedSection   PredefinedSection @relation("PredefinedSectionTopics", fields: [predefinedSectionId], references: [id], onDelete: Cascade)
+  questions           Question[] // Questions related to this topic
 }
 
 model Resource {
@@ -192,6 +212,7 @@ model Resource {
   topic     PredefinedTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)
   type      ResourceType
   url       String
+  title     String?
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
 }
@@ -201,29 +222,102 @@ enum ResourceType {
   ARTICLE
 }
 
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+// User topics created from predefined topics and added to user sections
 model Topic {
-  id                String           @id @default(cuid())
+  id                String          @id @default(cuid())
   sectionId         String
-  section           Section          @relation("SectionTopics", fields: [sectionId], references: [id], onDelete: Cascade)
+  section           Section         @relation("SectionTopics", fields: [sectionId], references: [id], onDelete: Cascade)
   roadmapId         String
-  roadmap           Roadmap          @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+  roadmap           Roadmap         @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
   predefinedTopicId String
-  predefinedTopic   PredefinedTopic  @relation(fields: [predefinedTopicId], references: [id], onDelete: Cascade)
+  predefinedTopic   PredefinedTopic @relation(fields: [predefinedTopicId], references: [id])
   order             Int // This field determines the sequence of topics in the section
-  completed         Boolean          @default(false)
-  codingQuestions   CodingQuestion[]
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
+  completed         Boolean         @default(false)
+  questions         Question[] // Link to questions inherited from predefined topic
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
 
   @@unique([sectionId, order]) // Ensures that each topic in a section has a unique order
 }
 
-model CodingQuestion {
+model SolvedQuestion {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  QuestionId String
+  Question   Question @relation(fields: [QuestionId], references: [id], onDelete: Cascade)
+  code       String // Field to store the user's code submission
+  createdAt  DateTime @default(now())
+}
+
+// Questions can be created by admin and linked to predefined topics
+model Question {
+  id                String               @id @default(cuid())
+  title             String
+  description       String
+  difficulty        Difficulty
+  timeComplexity    String
+  spaceComplexity   String
+  sampleCode        String
+  section           String // Section name (for display purposes)
+  topicName         String // Topic name (for display purposes)
+  predefinedTopicId String? // Link to predefined topic
+  predefinedTopic   PredefinedTopic?     @relation(fields: [predefinedTopicId], references: [id])
+  topicId           String? // Optional link to user topic
+  topic             Topic?               @relation(fields: [topicId], references: [id])
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  testCases         TestCase[]
+  constraints       Constraint[]
+  submissions       QuestionSubmission[]
+  solvedBy          SolvedQuestion[]
+}
+
+model TestCase {
   id          String   @id @default(cuid())
-  topicId     String
-  topic       Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
-  question    String
-  solutionUrl String? // Optional URL for a solution or explanation
+  questionId  String
+  question    Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  input       String
+  output      String
+  explanation String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Constraint {
+  id         String   @id @default(cuid())
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  value      String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model QuestionSubmission {
+  id            String           @id @default(cuid())
+  questionId    String
+  question      Question         @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  code          String
+  status        SubmissionStatus
+  createdAt     DateTime         @default(now())
+  executionTime Int? // in milliseconds
+  memoryUsed    Int? // in kilobytes
+}
+
+enum SubmissionStatus {
+  ACCEPTED
+  WRONG_ANSWER
+  TIME_LIMIT_EXCEEDED
+  MEMORY_LIMIT_EXCEEDED
+  RUNTIME_ERROR
+  COMPILATION_ERROR
+  PENDING
 }

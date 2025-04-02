@@ -5,6 +5,10 @@ export async function middleware(req: NextRequest) {
   const session = await auth(); // Get the authenticated user session
   const { pathname } = req.nextUrl;
 
+  if (pathname === "/admin/login") {
+    return NextResponse.next();
+  }
+
 
   if (!session) {
       return NextResponse.redirect(new URL("/get-started", req.url)); // Redirect unauthenticated users
@@ -17,7 +21,7 @@ export async function middleware(req: NextRequest) {
   }
 
   if (userRole === "ADMIN" && !pathname.startsWith("/admin")) {
-      return NextResponse.redirect(new URL("/admin", req.url)); // Admins can ONLY access /admin routes
+      return NextResponse.redirect(new URL("/admin/dashboard", req.url)); // Admins can ONLY access /admin routes
   }
 
   return NextResponse.next(); // Allow access
@@ -28,6 +32,6 @@ export async function middleware(req: NextRequest) {
 export const config = {
   matcher: [
     "/profile",
-    "/admin/:path*"
+    "/admin/:path*",
   ]
 }

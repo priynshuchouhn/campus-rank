@@ -1,4 +1,4 @@
-import { TopPerformers } from "../components/ui/top-performers";
+import { TopPerformers } from "../../components/ui/top-performers";
 import Feed from "@/components/ui/feed";
 import { getLeaderboard } from "@/lib/actions/leaderboard";
 

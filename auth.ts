@@ -2,8 +2,12 @@ import NextAuth, { DefaultSession } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 import GithubProvider from "next-auth/providers/github"
 import { prisma } from "./lib/prisma";
-
+import CredentialsProvider from "next-auth/providers/credentials";
+import axios from "axios";
 declare module "next-auth" {
+  interface User {
+    role: string;
+  }
   interface Session {
     user: {
       id: string;
@@ -13,6 +17,7 @@ declare module "next-auth" {
       role: string;
     } & DefaultSession["user"];
   }
+  
 }
 
 async function saveUserToDatabase(userInfo: {
@@ -67,10 +72,25 @@ async function saveUserToDatabase(userInfo: {
         }
         return existingUser;
       } catch (error) {
-        console.error("Error during sign in:", error)
+        console.error("Error during user sign in:", error)
         return null
       }
+}
+
+async function authorizeAdmin(credentials: { email: string, password: string }) {
+  const { email, password } = credentials;
+  if (!email || !password) {
+    throw new Error("Invalid credentials");
   }
+  const admin = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/auth`, {
+    email,
+    password,
+  })
+  if(admin.data.success) {
+    return admin.data.data;
+  }
+  return null;
+}
   
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -83,6 +103,30 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       clientId: process.env.AUTH_GITHUB_ID,
       clientSecret: process.env.AUTH_GITHUB_SECRET,
     }),
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        try {
+          const { email, password } = credentials;
+          if (!email || !password) {
+            throw new Error("Invalid credentials");
+        }
+        const admin = await authorizeAdmin({ email: email as string, password: password as string });
+        if (admin) {
+          return admin;
+        }
+        return null;
+        } catch (error) {
+          console.error("Error during admin sign in:", error)
+          return null;
+        }
+      },
+    }),
+
   ],
   pages: {
     signIn: "/get-started",
@@ -90,7 +134,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async signIn({ user}) {
         // This callback is triggered on successful sign-in.
-  
+        if (user && user.role === "ADMIN") {
+          return true;
+        }
+
         await saveUserToDatabase({
           name: user.name ?? null,
           email: user.email ?? null, 
@@ -100,6 +147,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         return true;
       },
       authorized({ auth, request: { nextUrl } }) {
+        console.log("auth",auth);
         const isLoggedIn = !!auth?.user;
         const isOnDashboard = nextUrl.pathname.startsWith('/profile');
         if (isOnDashboard) {
