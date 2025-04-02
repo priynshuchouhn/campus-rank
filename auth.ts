@@ -1,15 +1,24 @@
-import NextAuth from "next-auth"
+import NextAuth, { DefaultSession } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 import GithubProvider from "next-auth/providers/github"
 import { prisma } from "./lib/prisma";
 
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+      name: string | null;
+      email: string | null;
+      image: string | null;
+      role: string;
+    } & DefaultSession["user"];
+  }
+}
 
 async function saveUserToDatabase(userInfo: {
   name: string | null;
   email: string | null;
   image: string | null;
-  provider?: string;
-  providerAccountId?: string;
 }) {
     try {
         // Check if user already exists
@@ -79,15 +88,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     signIn: "/get-started",
   },
   callbacks: {
-    async signIn({ user, account }) {
+    async signIn({ user}) {
         // This callback is triggered on successful sign-in.
   
         await saveUserToDatabase({
           name: user.name ?? null,
           email: user.email ?? null, 
           image: user.image ?? null,
-          provider: account?.provider,
-          providerAccountId: account?.providerAccountId
         });
   
         return true;
@@ -106,20 +113,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
       async session({ session, token }) {
         session.user.id = token.id as string;
-        session.user.name = token.name;
+        session.user.name = token.name as string;
         session.user.email = token.email as string;
         session.user.image = token.image as string;
+        session.user.role = token.role as string;
         return session;
       },
-      async jwt({ token, user, account, }) {
+      async jwt({ token, user, }) {
         if (user) {
           
           const DbUser = await saveUserToDatabase({
             name: user.name ?? null,
             email: user.email ?? null,
             image: user.image ?? null,
-            provider: account?.provider,
-            providerAccountId: account?.providerAccountId
           });
           if (!DbUser) throw new Error("Failed to save user to database");
   
@@ -128,6 +134,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           token.name = DbUser.name;
           token.email = DbUser.email;
           token.image = DbUser.image;
+          token.role = DbUser.role;
+
         }
         return token;
       }

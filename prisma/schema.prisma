@@ -22,31 +22,28 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   username      String    @unique
+  role          Role      @default(USER)
 
-  // Coding platform profiles
   leetcodeUsername   String?
   hackerrankUsername String?
   gfgUsername        String?
 
-  // Coding stats
   totalSolved  Int @default(0)
   easySolved   Int @default(0)
   mediumSolved Int @default(0)
   hardSolved   Int @default(0)
 
-  // Last fetch time for each platform
   lastLeetcodeFetch   DateTime?
   lastHackerrankFetch DateTime?
   lastGfgFetch        DateTime?
 
-  // Relations to platform profiles
   leetcodeProfile   LeetCodeProfile?
   hackerrankProfile HackerRankProfile?
   gfgProfile        GFGProfile?
 
-  // Leaderboard stats
   leaderboardStats LeaderboardStats?
   profileView      ProfileView[]
+  roadmap          Roadmap?
 }
 
 model LeetCodeProfile {
@@ -63,7 +60,6 @@ model LeetCodeProfile {
   userAvatar String?
   ranking    Int?
 
-  // Submission stats
   totalSolved       Int @default(0)
   totalSubmissions  Int @default(0)
   easySolved        Int @default(0)
@@ -85,7 +81,6 @@ model HackerRankProfile {
   name     String?
   about    String?
 
-  // Skills and badges
   skills String[]
   badges HackerRankBadge[]
 
@@ -119,28 +114,18 @@ model GFGProfile {
 }
 
 model LeaderboardStats {
-  id     String @id @default(cuid())
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  // Overall score (weighted combination of platform scores)
-  overallScore Float @default(0)
-
-  // Platform-specific scores
-  leetcodeScore   Float @default(0)
-  hackerrankScore Float @default(0)
-  gfgScore        Float @default(0)
-
-  // Global ranking
-  globalRank Int?
-
-  // Platform-specific rankings
-  leetcodeRank   Int?
-  hackerrankRank Int?
-  gfgRank        Int?
-
-  // Last update timestamp
-  lastUpdated DateTime @updatedAt
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  overallScore    Float    @default(0)
+  leetcodeScore   Float    @default(0)
+  hackerrankScore Float    @default(0)
+  gfgScore        Float    @default(0)
+  globalRank      Int?
+  leetcodeRank    Int?
+  hackerrankRank  Int?
+  gfgRank         Int?
+  lastUpdated     DateTime @updatedAt
 }
 
 model ProfileView {
@@ -154,23 +139,91 @@ model ProfileView {
 }
 
 model ApplicationStats {
-  id String @id @default(cuid())
+  id                             String   @id @default(cuid())
+  lastLeaderboardUpdate          DateTime @default(now())
+  totalProfileViews              Int      @default(0)
+  totalQuestionsSolved           Int      @default(0)
+  profileViewsSinceLastUpdate    Int      @default(0)
+  questionsSolvedSinceLastUpdate Int      @default(0)
+  createdAt                      DateTime @default(now())
+}
 
-  // Last leaderboard update timestamp
-  lastLeaderboardUpdate DateTime @default(now())
+enum Role {
+  USER
+  ADMIN
+}
 
-  // Total profile views
-  totalProfileViews Int @default(0)
+model Roadmap {
+  id        String    @id @default(cuid())
+  userId    String    @unique
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sections  Section[] @relation("RoadmapSections")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  topic     Topic[]
+}
 
-  // Total questions solved
-  totalQuestionsSolved Int @default(0)
-
-  // Profile views since last update
-  profileViewsSinceLastUpdate Int @default(0)
-
-  // Questions solved since last update
-  questionsSolvedSinceLastUpdate Int @default(0)
-
-  // Last update timestamp
+model Section {
+  id        String   @id @default(cuid())
+  roadmapId String
+  roadmap   Roadmap  @relation("RoadmapSections", fields: [roadmapId], references: [id], onDelete: Cascade)
+  title     String
+  order     Int // To maintain the order of sections
+  topics    Topic[]  @relation("SectionTopics")
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([roadmapId, order]) // Ensures that each section in a roadmap has a unique order
+}
+
+model PredefinedTopic {
+  id          String     @id @default(cuid())
+  title       String     @unique
+  description String?
+  resources   Resource[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  topic       Topic[]
+}
+
+model Resource {
+  id        String          @id @default(cuid())
+  topicId   String
+  topic     PredefinedTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  type      ResourceType
+  url       String
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+}
+
+enum ResourceType {
+  VIDEO
+  ARTICLE
+}
+
+model Topic {
+  id                String           @id @default(cuid())
+  sectionId         String
+  section           Section          @relation("SectionTopics", fields: [sectionId], references: [id], onDelete: Cascade)
+  roadmapId         String
+  roadmap           Roadmap          @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+  predefinedTopicId String
+  predefinedTopic   PredefinedTopic  @relation(fields: [predefinedTopicId], references: [id], onDelete: Cascade)
+  order             Int // This field determines the sequence of topics in the section
+  completed         Boolean          @default(false)
+  codingQuestions   CodingQuestion[]
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@unique([sectionId, order]) // Ensures that each topic in a section has a unique order
+}
+
+model CodingQuestion {
+  id          String   @id @default(cuid())
+  topicId     String
+  topic       Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  question    String
+  solutionUrl String? // Optional URL for a solution or explanation
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

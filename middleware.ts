@@ -1,7 +1,33 @@
-export { auth as middleware } from "@/auth"
+import { auth } from "@/auth";
+import { NextRequest, NextResponse } from "next/server";
+
+export async function middleware(req: NextRequest) {
+  const session = await auth(); // Get the authenticated user session
+  const { pathname } = req.nextUrl;
+
+
+  if (!session) {
+      return NextResponse.redirect(new URL("/get-started", req.url)); // Redirect unauthenticated users
+  }
+
+  const userRole = session.user.role; // Assuming "user" or "admin"
+
+  if (userRole === "USER" && pathname.startsWith("/admin")) {
+      return NextResponse.redirect(new URL("/profile", req.url)); // Students cannot access /admin
+  }
+
+  if (userRole === "ADMIN" && !pathname.startsWith("/admin")) {
+      return NextResponse.redirect(new URL("/admin", req.url)); // Admins can ONLY access /admin routes
+  }
+
+  return NextResponse.next(); // Allow access
+}
+
+
 
 export const config = {
   matcher: [
-    "/profile"
+    "/profile",
+    "/admin/:path*"
   ]
 }
