@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import {
     Tabs,
@@ -176,6 +176,14 @@ const getDifficultyColor = (difficulty: string) => {
 };
 
 export default function PracticePage() {
+    return (
+        <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
+            <PracticePageContent />
+        </Suspense>
+    );
+}
+
+function PracticePageContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
 
