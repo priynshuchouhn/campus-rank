@@ -11,10 +11,10 @@ const sectionSchema = z.object({
 // GET a single predefined section
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const sectionId = params.id;
+    const sectionId = (await params).id;
     
     // Get predefined section
     const section = await prisma.predefinedSection.findUnique({
@@ -58,10 +58,10 @@ export async function GET(
 // Update a predefined section
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const sectionId = params.id;
+    const sectionId = (await params).id;
     
     // Check if predefined section exists
     const existingSection = await prisma.predefinedSection.findUnique({
@@ -124,10 +124,10 @@ export async function POST(
 // Delete a predefined section
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const sectionId = params.id;
+    const sectionId = (await params).id;
     
     // Check if predefined section exists
     const existingSection = await prisma.predefinedSection.findUnique({
