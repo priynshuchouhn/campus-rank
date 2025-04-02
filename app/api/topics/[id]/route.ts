@@ -20,10 +20,10 @@ const topicSchema = z.object({
 // GET a single topic by ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const topicId = params.id;
+    const topicId = (await params).id;
     
     // Get topic with resources and section info
     const topic = await prisma.predefinedTopic.findUnique({
@@ -69,12 +69,12 @@ export async function GET(
 }
 
 // Update a topic by ID
-export async function PUT(
+export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const topicId = params.id;
+    const topicId = (await params).id;
     
     // Check if topic exists
     const existingTopic = await prisma.predefinedTopic.findUnique({
@@ -187,10 +187,10 @@ export async function PUT(
 // Delete a topic by ID
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const topicId = params.id;
+    const topicId = (await params).id;
     
     // Check if topic exists
     const existingTopic = await prisma.predefinedTopic.findUnique({
