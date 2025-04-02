@@ -655,7 +655,7 @@ export default function PracticePage() {
 }
 
 // Fullscreen modal component
-export function FullScreenModal({ isOpen, onClose, children, title, language, onLanguageChange, languages }: {
+function FullScreenModal({ isOpen, onClose, children, title, language, onLanguageChange, languages }: {
     isOpen: boolean,
     onClose: () => void,
     children: React.ReactNode,
