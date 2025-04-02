@@ -56,7 +56,7 @@ export async function GET(
 }
 
 // Update a predefined section
-export async function PUT(
+export async function POST(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {

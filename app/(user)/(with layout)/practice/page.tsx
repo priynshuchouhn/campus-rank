@@ -662,7 +662,7 @@ function FullScreenModal({ isOpen, onClose, children, title, language, onLanguag
     title: string,
     language: string,
     onLanguageChange: (value: string) => void,
-    languages: { id: string, name: string, default: string }[]
+    languages: Array<{ id: string, name: string, default: string }>
 }) {
     if (!isOpen) return null;
 
