@@ -79,6 +79,7 @@ export interface AuthFormData {
 }
 
 export type Difficulty = "Easy" | "Medium" | "Hard";
+export type ProgrammingLanguage = "javascript" | "typescript" | "python" | "java" | "cpp";
 
 export interface TestCase {
     id?: string;
@@ -92,6 +93,12 @@ export interface Constraint {
     value: string;
 }
 
+export interface SampleCode {
+    id?: string;
+    language: ProgrammingLanguage;
+    code: string;
+}
+
 export interface Question {
     id?: string;
     title: string;
@@ -99,11 +106,11 @@ export interface Question {
     difficulty: Difficulty;
     timeComplexity: string;
     spaceComplexity: string;
-    sampleCode: string;
     section: string;
     topic: string;
     testCases: TestCase[];
     constraints: string[];
+    sampleCodes: SampleCode[];
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -146,6 +153,14 @@ export interface Section {
     description: string;
     topicsCount: number;
     isPredefined?: boolean;
+    topics: Topic[];
+}
+
+export interface Topic {
+    id: string;
+    title: string;
+    description: string;
+    sectionId: string;
 }
 
 export interface Resource {

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { auth } from "@/auth";
 // import { getServerSession } from "next-auth";
 // import { authOptions } from "@/lib/auth";
 
@@ -9,6 +10,11 @@ const testCaseSchema = z.object({
   input: z.string().min(1, "Input is required"),
   output: z.string().min(1, "Output is required"),
   explanation: z.string().min(1, "Explanation is required"),
+});
+
+const sampleCodeSchema = z.object({
+  language: z.enum(["javascript", "typescript", "python", "java", "cpp"]),
+  code: z.string().min(10, "Sample code must be at least 10 characters"),
 });
 
 const questionSchema = z.object({
@@ -21,24 +27,37 @@ const questionSchema = z.object({
   spaceComplexity: z.string().min(1, "Space complexity is required"),
   testCases: z.array(testCaseSchema).min(1, "At least one test case is required"),
   constraints: z.array(z.string().min(1, "Constraint cannot be empty")).min(1, "At least one constraint is required"),
-  sampleCode: z.string().min(10, "Sample code must be at least 10 characters"),
+  sampleCodes: z.array(sampleCodeSchema).min(1, "At least one sample code is required"),
 });
 
 // GET handler to retrieve all questions
 export async function GET() {
   try {
-    const questions = await prisma.question.findMany({
-      include: {
+    // Try a simpler query first
+    const session = await auth();
+    if (!session?.user || session.user.role !== "ADMIN") {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+    // If count works, then try a simple findMany without includes
+    const simpleQuestions = await prisma.question.findMany({
+      select: {
+        id: true,
+        title: true,
+        difficulty: true,
+        section: true,
+        topicName: true,
+        createdAt: true,
+        updatedAt: true,
         testCases: true,
-        constraints: true,
       },
       orderBy: {
         createdAt: 'desc',
       },
     });
     
+    
     // Map the database questions to the frontend format
-    const mappedQuestions = questions.map(question => {
+    const mappedQuestions = simpleQuestions.map(question => {
       // Map database enum to frontend enum
       const difficultyMap: Record<string, "Easy" | "Medium" | "Hard"> = {
         "EASY": "Easy",
@@ -49,27 +68,30 @@ export async function GET() {
       return {
         id: question.id,
         title: question.title,
-        description: question.description,
         difficulty: difficultyMap[question.difficulty],
-        timeComplexity: question.timeComplexity,
-        spaceComplexity: question.spaceComplexity,
-        sampleCode: question.sampleCode,
         section: question.section,
         topic: question.topicName,
         testCases: question.testCases,
-        constraints: question.constraints.map(c => c.value),
+        constraints: [],
+        sampleCodes: [],
         createdAt: question.createdAt,
         updatedAt: question.updatedAt,
+        // Add required fields for the interface
+        description: '',
+        timeComplexity: '',
+        spaceComplexity: '',
       };
     });
     
     return NextResponse.json({ 
-      questions: mappedQuestions 
+      message: "Questions fetched successfully",
+      data: mappedQuestions,
+      success: true
     });
   } catch (error) {
     console.error("Error fetching questions:", error);
     return NextResponse.json(
-      { message: "Internal Server Error" },
+      { message: "Internal Server Error", data: error, success: false },
       { status: 500 }
     );
   }
@@ -77,32 +99,30 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    // Skip auth check for now during development
-    // const session = await getServerSession(authOptions);
     
-    // if (!session) {
-    //   return NextResponse.json(
-    //     { message: "Unauthorized" },
-    //     { status: 401 }
-    //   );
-    // }
-    
-    // if (session.user.role !== "ADMIN") {
-    //   return NextResponse.json(
-    //     { message: "Forbidden: Admin access required" },
-    //     { status: 403 }
-    //   );
-    // }
     
     // Parse and validate the request body
     const body = await request.json();
     const validatedData = questionSchema.parse(body);
+    const session = await auth();
+    if (!session?.user || session.user.role !== "ADMIN") {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
     
     // Convert difficulty to proper enum format
     const difficultyMap = {
       Easy: "EASY",
       Medium: "MEDIUM",
       Hard: "HARD",
+    };
+    
+    // Convert language to proper enum format
+    const languageMap = {
+      javascript: "JAVASCRIPT",
+      typescript: "TYPESCRIPT",
+      python: "PYTHON",
+      java: "JAVA",
+      cpp: "CPP",
     };
     
     // Create the question in the database
@@ -113,7 +133,6 @@ export async function POST(request: NextRequest) {
         difficulty: difficultyMap[validatedData.difficulty] as "EASY" | "MEDIUM" | "HARD",
         timeComplexity: validatedData.timeComplexity,
         spaceComplexity: validatedData.spaceComplexity,
-        sampleCode: validatedData.sampleCode,
         section: validatedData.section,
         topicName: validatedData.topic,
         // Create test cases
@@ -130,13 +149,21 @@ export async function POST(request: NextRequest) {
             value: constraint,
           })),
         },
+        // Create sample codes
+        sampleCodes: {
+          create: validatedData.sampleCodes.map(sampleCode => ({
+            language: languageMap[sampleCode.language] as "JAVASCRIPT" | "TYPESCRIPT" | "PYTHON" | "JAVA" | "CPP",
+            code: sampleCode.code,
+          })),
+        },
       },
     });
     
     return NextResponse.json(
       { 
         message: "Question created successfully",
-        questionId: question.id
+        data: question,
+        success: true
       },
       { status: 201 }
     );
@@ -145,13 +172,13 @@ export async function POST(request: NextRequest) {
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { message: "Validation error", errors: error.errors },
+        { message: "Validation error", data: error.errors, success: false },
         { status: 400 }
       );
     }
     
     return NextResponse.json(
-      { message: "Internal Server Error" },
+      { message: "Internal Server Error", data: error, success: false  },
       { status: 500 }
     );
   }

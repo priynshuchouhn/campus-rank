@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { Question } from "@/lib/interfaces";
 import { Badge } from "@/components/ui/badge";
+import axios from "axios";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function QuestionsPage() {
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -19,14 +21,8 @@ export default function QuestionsPage() {
     async function fetchQuestions() {
       try {
         setLoading(true);
-        const response = await fetch("/api/questions");
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch questions");
-        }
-
-        const data = await response.json();
-        setQuestions(data.questions);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/questions`);
+        setQuestions(response.data.data);
       } catch (error) {
         console.error("Error fetching questions:", error);
       } finally {
@@ -37,11 +33,11 @@ export default function QuestionsPage() {
     fetchQuestions();
   }, []);
 
-  const filteredQuestions = questions.filter(question =>
+  const filteredQuestions = useMemo(() => questions.filter(question =>
     question.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     question.topic.toLowerCase().includes(searchTerm.toLowerCase()) ||
     question.section.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  ), [questions, searchTerm]);
 
   const getBadgeColor = (difficulty: string) => {
     switch (difficulty) {
@@ -56,8 +52,26 @@ export default function QuestionsPage() {
     }
   };
 
+  // Delete a question
+  const deleteQuestion = async (id: string | undefined) => {
+    if (!id || !confirm("Are you sure you want to delete this question? This action cannot be undone.")) {
+      return;
+    }
+
+    try {
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/questions/${id}`);
+      setQuestions(questions.filter(q => q.id !== id));
+      toast.success("Question deleted successfully");
+    } catch (error) {
+      console.error("Error deleting question:", error);
+      toast.error("Failed to delete question");
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
+      <Toaster position="top-right" />
+
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Questions</h1>
         <Link href="/admin/questions/new">
@@ -126,11 +140,17 @@ export default function QuestionsPage() {
                     <TableCell>{question.testCases.length}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
-                        <Button variant="outline" size="sm">
-                          <Edit className="h-4 w-4 mr-1" />
-                          Edit
-                        </Button>
-                        <Button variant="destructive" size="sm">
+                        <Link href={`/admin/questions/${question.id}`}>
+                          <Button variant="outline" size="sm">
+                            <Edit className="h-4 w-4 mr-1" />
+                            Edit
+                          </Button>
+                        </Link>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => deleteQuestion(question.id)}
+                        >
                           <Trash className="h-4 w-4 mr-1" />
                           Delete
                         </Button>

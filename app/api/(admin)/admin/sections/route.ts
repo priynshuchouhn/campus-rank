@@ -33,6 +33,12 @@ export async function GET(request: NextRequest) {
       name: section.title,
       description: section.description || "",
       topicsCount: section.topics.length,
+      topics: section.topics.map(topic => ({
+        id: topic.id,
+        title: topic.title,
+        description: topic.description,
+        sectionId: topic.predefinedSectionId,
+      })),
     }));
 
     return NextResponse.json({ message: "Sections fetched successfully", data: formattedSections, success: true });

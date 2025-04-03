@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,112 +8,96 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String
-  email         String    @unique
-  image         String?
-  emailVerified DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  username      String    @unique
-  role          Role      @default(USER)
-  password      String?
-
-  leetcodeUsername   String?
-  hackerrankUsername String?
-  gfgUsername        String?
-
-  totalSolved  Int @default(0)
-  easySolved   Int @default(0)
-  mediumSolved Int @default(0)
-  hardSolved   Int @default(0)
-
+  id                  String               @id @default(cuid())
+  name                String
+  email               String               @unique
+  image               String?
+  emailVerified       DateTime?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  leetcodeUsername    String?
+  hackerrankUsername  String?
+  gfgUsername         String?
+  totalSolved         Int                  @default(0)
+  easySolved          Int                  @default(0)
+  mediumSolved        Int                  @default(0)
+  hardSolved          Int                  @default(0)
   lastLeetcodeFetch   DateTime?
   lastHackerrankFetch DateTime?
   lastGfgFetch        DateTime?
-
-  leetcodeProfile   LeetCodeProfile?
-  hackerrankProfile HackerRankProfile?
-  gfgProfile        GFGProfile?
-
-  leaderboardStats   LeaderboardStats?
-  profileView        ProfileView[]
-  roadmap            Roadmap?
-  solvedQuestions    SolvedQuestion[]
-  QuestionSubmission QuestionSubmission[]
+  username            String               @unique
+  role                Role                 @default(USER)
+  password            String?
+  gfgProfile          GFGProfile?
+  hackerrankProfile   HackerRankProfile?
+  leaderboardStats    LeaderboardStats?
+  leetcodeProfile     LeetCodeProfile?
+  profileView         ProfileView[]
+  QuestionSubmission  QuestionSubmission[]
+  roadmap             Roadmap?
+  solvedQuestions     SolvedQuestion[]
 }
 
 model LeetCodeProfile {
-  id     String @id @default(cuid())
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  username    String  @unique
-  githubUrl   String?
-  twitterUrl  String?
-  linkedinUrl String?
-
-  realName   String?
-  userAvatar String?
-  ranking    Int?
-
-  totalSolved       Int @default(0)
-  totalSubmissions  Int @default(0)
-  easySolved        Int @default(0)
-  easySubmissions   Int @default(0)
-  mediumSolved      Int @default(0)
-  mediumSubmissions Int @default(0)
-  hardSolved        Int @default(0)
-  hardSubmissions   Int @default(0)
-
-  updatedAt DateTime @updatedAt
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  username          String   @unique
+  githubUrl         String?
+  twitterUrl        String?
+  linkedinUrl       String?
+  realName          String?
+  userAvatar        String?
+  ranking           Int?
+  totalSolved       Int      @default(0)
+  totalSubmissions  Int      @default(0)
+  easySolved        Int      @default(0)
+  easySubmissions   Int      @default(0)
+  mediumSolved      Int      @default(0)
+  mediumSubmissions Int      @default(0)
+  hardSolved        Int      @default(0)
+  hardSubmissions   Int      @default(0)
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model HackerRankProfile {
-  id     String @id @default(cuid())
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  username String  @unique
-  name     String?
-  about    String?
-
-  skills String[]
-  badges HackerRankBadge[]
-
-  updatedAt DateTime @updatedAt
+  id        String            @id @default(cuid())
+  userId    String            @unique
+  username  String            @unique
+  name      String?
+  about     String?
+  skills    String[]
+  updatedAt DateTime          @updatedAt
+  badges    HackerRankBadge[]
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model HackerRankBadge {
   id                  String            @id @default(cuid())
   hackerrankProfileId String
+  name                String
+  stars               String
   profile             HackerRankProfile @relation(fields: [hackerrankProfileId], references: [id], onDelete: Cascade)
-
-  name  String
-  stars String
 
   @@unique([hackerrankProfileId, name])
 }
 
 model GFGProfile {
-  id     String @id @default(cuid())
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  username       String  @unique
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  username       String   @unique
   name           String?
   institution    String?
   rank           String?
   solvedProblems String?
   codingScore    String?
-
-  updatedAt DateTime @updatedAt
+  updatedAt      DateTime @updatedAt
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model LeaderboardStats {
   id              String   @id @default(cuid())
   userId          String   @unique
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   overallScore    Float    @default(0)
   leetcodeScore   Float    @default(0)
   hackerrankScore Float    @default(0)
@@ -129,16 +107,17 @@ model LeaderboardStats {
   hackerrankRank  Int?
   gfgRank         Int?
   lastUpdated     DateTime @updatedAt
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model ProfileView {
   id              String   @id @default(cuid())
   username        String
-  user            User     @relation(fields: [username], references: [username], onDelete: Cascade)
   createdAt       DateTime @default(now())
   operatingSystem String?
   browser         String?
   device          String?
+  user            User     @relation(fields: [username], references: [username], onDelete: Cascade)
 }
 
 model ApplicationStats {
@@ -151,70 +130,159 @@ model ApplicationStats {
   createdAt                      DateTime @default(now())
 }
 
-enum Role {
-  USER
-  ADMIN
-}
-
 model Roadmap {
   id        String    @id @default(cuid())
   userId    String    @unique
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  sections  Section[] @relation("RoadmapSections")
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sections  Section[] @relation("RoadmapSections")
   topics    Topic[]
 }
 
-// Admin creates predefined sections with predefined topics
 model PredefinedSection {
   id          String            @id @default(cuid())
   title       String
   description String?
-  topics      PredefinedTopic[] @relation("PredefinedSectionTopics")
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
+  topics      PredefinedTopic[] @relation("PredefinedSectionTopics")
 }
 
-// User sections are created from predefined sections
 model Section {
   id                  String   @id @default(cuid())
   roadmapId           String
-  roadmap             Roadmap  @relation("RoadmapSections", fields: [roadmapId], references: [id], onDelete: Cascade)
   title               String
-  description         String?
-  order               Int // To maintain the order of sections
-  topics              Topic[]  @relation("SectionTopics")
+  order               Int
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
-  predefinedSectionId String? // Optional reference to the predefined section
+  description         String?
+  predefinedSectionId String?
+  roadmap             Roadmap  @relation("RoadmapSections", fields: [roadmapId], references: [id], onDelete: Cascade)
+  topics              Topic[]  @relation("SectionTopics")
 
-  @@unique([roadmapId, order]) // Ensures that each section in a roadmap has a unique order
+  @@unique([roadmapId, order])
 }
 
-// Admin creates predefined topics with resources
 model PredefinedTopic {
   id                  String            @id @default(cuid())
   title               String            @unique
   description         String?
-  resources           Resource[]
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
-  topics              Topic[] // User topics created from this predefined topic
   predefinedSectionId String
   predefinedSection   PredefinedSection @relation("PredefinedSectionTopics", fields: [predefinedSectionId], references: [id], onDelete: Cascade)
-  questions           Question[] // Questions related to this topic
+  questions           Question[]
+  resources           Resource[]
+  topics              Topic[]
 }
 
 model Resource {
   id        String          @id @default(cuid())
   topicId   String
-  topic     PredefinedTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)
   type      ResourceType
   url       String
-  title     String?
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
+  title     String?
+  topic     PredefinedTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+}
+
+model Topic {
+  id                String          @id @default(cuid())
+  sectionId         String
+  roadmapId         String
+  predefinedTopicId String
+  order             Int
+  completed         Boolean         @default(false)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  questions         Question[]
+  predefinedTopic   PredefinedTopic @relation(fields: [predefinedTopicId], references: [id])
+  roadmap           Roadmap         @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+  section           Section         @relation("SectionTopics", fields: [sectionId], references: [id], onDelete: Cascade)
+
+  @@unique([sectionId, order])
+}
+
+model SolvedQuestion {
+  id         String   @id @default(cuid())
+  userId     String
+  code       String
+  createdAt  DateTime @default(now())
+  QuestionId String
+  Question   Question @relation(fields: [QuestionId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Question {
+  id                String               @id @default(cuid())
+  title             String
+  description       String
+  difficulty        Difficulty
+  timeComplexity    String
+  spaceComplexity   String
+  section           String
+  topicName         String
+  topicId           String?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  predefinedTopicId String?
+  constraints       Constraint[]
+  predefinedTopic   PredefinedTopic?     @relation(fields: [predefinedTopicId], references: [id])
+  topic             Topic?               @relation(fields: [topicId], references: [id])
+  submissions       QuestionSubmission[]
+  sampleCodes       SampleCode[]
+  solvedBy          SolvedQuestion[]
+  testCases         TestCase[]
+}
+
+model SampleCode {
+  id         String              @id @default(cuid())
+  questionId String
+  language   ProgrammingLanguage
+  code       String
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+  question   Question            @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
+model TestCase {
+  id          String   @id @default(cuid())
+  questionId  String
+  input       String
+  output      String
+  explanation String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  question    Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
+model Constraint {
+  id         String   @id @default(cuid())
+  questionId String
+  value      String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
+model QuestionSubmission {
+  id            String           @id @default(cuid())
+  questionId    String
+  userId        String
+  code          String
+  status        SubmissionStatus
+  createdAt     DateTime         @default(now())
+  executionTime Int?
+  memoryUsed    Int?
+  question      Question         @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  user          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  USER
+  ADMIN
 }
 
 enum ResourceType {
@@ -228,88 +296,12 @@ enum Difficulty {
   HARD
 }
 
-// User topics created from predefined topics and added to user sections
-model Topic {
-  id                String          @id @default(cuid())
-  sectionId         String
-  section           Section         @relation("SectionTopics", fields: [sectionId], references: [id], onDelete: Cascade)
-  roadmapId         String
-  roadmap           Roadmap         @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
-  predefinedTopicId String
-  predefinedTopic   PredefinedTopic @relation(fields: [predefinedTopicId], references: [id])
-  order             Int // This field determines the sequence of topics in the section
-  completed         Boolean         @default(false)
-  questions         Question[] // Link to questions inherited from predefined topic
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
-
-  @@unique([sectionId, order]) // Ensures that each topic in a section has a unique order
-}
-
-model SolvedQuestion {
-  id         String   @id @default(cuid())
-  userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  QuestionId String
-  Question   Question @relation(fields: [QuestionId], references: [id], onDelete: Cascade)
-  code       String // Field to store the user's code submission
-  createdAt  DateTime @default(now())
-}
-
-// Questions can be created by admin and linked to predefined topics
-model Question {
-  id                String               @id @default(cuid())
-  title             String
-  description       String
-  difficulty        Difficulty
-  timeComplexity    String
-  spaceComplexity   String
-  sampleCode        String
-  section           String // Section name (for display purposes)
-  topicName         String // Topic name (for display purposes)
-  predefinedTopicId String? // Link to predefined topic
-  predefinedTopic   PredefinedTopic?     @relation(fields: [predefinedTopicId], references: [id])
-  topicId           String? // Optional link to user topic
-  topic             Topic?               @relation(fields: [topicId], references: [id])
-  createdAt         DateTime             @default(now())
-  updatedAt         DateTime             @updatedAt
-  testCases         TestCase[]
-  constraints       Constraint[]
-  submissions       QuestionSubmission[]
-  solvedBy          SolvedQuestion[]
-}
-
-model TestCase {
-  id          String   @id @default(cuid())
-  questionId  String
-  question    Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  input       String
-  output      String
-  explanation String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-model Constraint {
-  id         String   @id @default(cuid())
-  questionId String
-  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  value      String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-}
-
-model QuestionSubmission {
-  id            String           @id @default(cuid())
-  questionId    String
-  question      Question         @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  userId        String
-  user          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  code          String
-  status        SubmissionStatus
-  createdAt     DateTime         @default(now())
-  executionTime Int? // in milliseconds
-  memoryUsed    Int? // in kilobytes
+enum ProgrammingLanguage {
+  JAVASCRIPT
+  TYPESCRIPT
+  PYTHON
+  JAVA
+  CPP
 }
 
 enum SubmissionStatus {

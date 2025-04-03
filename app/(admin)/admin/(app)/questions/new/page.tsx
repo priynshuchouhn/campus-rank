@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -14,34 +14,25 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TestCase, Question } from "@/lib/interfaces";
 import { Trash2, Plus } from "lucide-react";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-
-// Mock data for sections and topics
-const sections = [
-  { id: 1, name: "Arrays", topics: ["Array Manipulation", "Two Pointers", "Sliding Window"] },
-  { id: 2, name: "Sorting", topics: ["Bubble Sort", "Merge Sort", "Quick Sort"] },
-  { id: 3, name: "Trees", topics: ["Binary Trees", "Binary Search Trees", "AVL Trees"] },
-];
-const topics = [
-  { id: 1, name: "Array Manipulation", description: "Array Manipulation is a technique used to manipulate arrays in programming.", section: "Arrays" },
-  { id: 2, name: "Two Pointers", description: "Two Pointers is a technique used to solve problems that require finding pairs of elements in an array.", section: "Arrays" },
-  { id: 3, name: "Sliding Window", description: "Sliding Window is a technique used to solve problems that require finding the maximum or minimum sum of a subarray.", section: "Arrays" },
-  { id: 4, name: "Bubble Sort", description: "Bubble Sort is a simple sorting algorithm that repeatedly steps through the list, compares adjacent elements and swaps them if they are in the wrong order.", section: "Sorting" },
-  { id: 5, name: "Merge Sort", description: "Merge Sort is a divide-and-conquer algorithm that divides the input array into two halves, sorts each half, and then merges the two sorted halves.", section: "Sorting" },
-  { id: 6, name: "Quick Sort", description: "Quick Sort is a divide-and-conquer algorithm that picks an element as pivot and partitions the given array around the picked pivot.", section: "Sorting" },
-];
+import { Section, Topic } from "@/lib/interfaces";
+import axios from "axios";
 
 // Define the form schema with Zod
 const testCaseSchema = z.object({
   input: z.string().min(1, "Input is required"),
   output: z.string().min(1, "Output is required"),
   explanation: z.string().min(1, "Explanation is required"),
+});
+
+const sampleCodeSchema = z.object({
+  language: z.enum(["javascript", "python", "java", "cpp", "typescript"]),
+  code: z.string().min(10, "Sample code must be at least 10 characters"),
 });
 
 const questionSchema = z.object({
@@ -54,17 +45,57 @@ const questionSchema = z.object({
   spaceComplexity: z.string().min(1, "Space complexity is required"),
   testCases: z.array(testCaseSchema).min(1, "At least one test case is required"),
   constraints: z.array(z.string().min(1, "Constraint cannot be empty")).min(1, "At least one constraint is required"),
-  sampleCode: z.string().min(10, "Sample code must be at least 10 characters"),
+  sampleCodes: z.array(sampleCodeSchema).min(1, "At least one sample code is required"),
 });
 
 type QuestionFormValues = z.infer<typeof questionSchema>;
+type SampleCodeFormValues = z.infer<typeof sampleCodeSchema>;
 
 export default function NewQuestionPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("details");
   const [selectedSection, setSelectedSection] = useState("");
-  const [availableTopics, setAvailableTopics] = useState<string[]>([]);
+  const [availableTopics, setAvailableTopics] = useState<Topic[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [sections, setSections] = useState<Section[]>([]);
+  const [selectedLanguage, setSelectedLanguage] = useState("javascript");
+
+  // Code templates for different languages
+  const codeTemplates = {
+    javascript: `/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+function solution(nums) {
+    // Your code here
+    
+    return result;
+}`,
+    typescript: `function solution(nums: number[]): number {
+    // Your code here
+    
+    return result;
+}`,
+    python: `def solution(nums):
+    # Your code here
+    
+    return result`,
+    java: `class Solution {
+    public int solution(int[] nums) {
+        // Your code here
+        
+        return result;
+    }
+}`,
+    cpp: `class Solution {
+public:
+    int solution(vector<int>& nums) {
+        // Your code here
+        
+        return result;
+    }
+};`
+  };
 
   // Initialize react-hook-form
   const {
@@ -78,7 +109,8 @@ export default function NewQuestionPage() {
     resolver: zodResolver(questionSchema),
     defaultValues: {
       testCases: [{ input: "", output: "", explanation: "" }],
-      constraints: [""],
+      constraints: [" "],
+      sampleCodes: [{ language: "javascript", code: codeTemplates.javascript }],
       difficulty: "Medium",
     }
   });
@@ -94,6 +126,11 @@ export default function NewQuestionPage() {
     name: "constraints" as "testCases",
   });
 
+  const sampleCodesFieldArray = useFieldArray({
+    control,
+    name: "sampleCodes",
+  });
+
   const testCaseFields = testCasesFieldArray.fields;
   const appendTestCase = testCasesFieldArray.append;
   const removeTestCase = testCasesFieldArray.remove;
@@ -101,6 +138,10 @@ export default function NewQuestionPage() {
   const constraintFields = constraintsFieldArray.fields;
   const appendConstraint = constraintsFieldArray.append;
   const removeConstraint = constraintsFieldArray.remove;
+
+  const sampleCodeFields = sampleCodesFieldArray.fields;
+  const appendSampleCode = sampleCodesFieldArray.append;
+  const removeSampleCode = sampleCodesFieldArray.remove;
 
   // Watch section value to update topics
   const watchedSection = watch("section");
@@ -113,6 +154,14 @@ export default function NewQuestionPage() {
     }
   }, [watchedSection]);
 
+  useEffect(() => {
+    const fetchSections = async () => {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/sections`);
+      setSections(response.data.data);
+    };
+    fetchSections();
+  }, []);
+
   const onSubmit = async (data: QuestionFormValues) => {
     try {
       setIsSubmitting(true);
@@ -121,23 +170,10 @@ export default function NewQuestionPage() {
       const loadingToast = toast.loading("Creating question...");
 
       // Send the data to the API
-      const response = await fetch("/api/questions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/questions`, data);
 
       // Dismiss the loading toast
       toast.dismiss(loadingToast);
-
-      if (!response.ok) {
-        // If the response is not ok, show an error toast
-        const errorData = await response.json();
-        toast.error(errorData.message || "Failed to create question");
-        return;
-      }
 
       // If the response is ok, show a success toast
       toast.success("Question created successfully!");
@@ -152,21 +188,74 @@ export default function NewQuestionPage() {
     }
   };
 
+  // Check if there are errors in each tab section
+  const hasDetailsErrors = useMemo(() => {
+    return !!(
+      errors.title ||
+      errors.section ||
+      errors.topic ||
+      errors.description ||
+      errors.difficulty ||
+      errors.timeComplexity ||
+      errors.spaceComplexity
+    );
+  }, [errors]);
+
+  const hasTestCasesErrors = useMemo(() => {
+    return !!errors.testCases;
+  }, [errors.testCases]);
+
+  const hasConstraintsErrors = useMemo(() => {
+    return !!errors.constraints;
+  }, [errors.constraints]);
+
+  const hasSampleCodeErrors = useMemo(() => {
+    return !!errors.sampleCodes;
+  }, [errors.sampleCodes]);
+
+  // Check if there are any errors in the form
+  const hasAnyErrors = useMemo(() => {
+    return !!(hasDetailsErrors || hasTestCasesErrors || hasConstraintsErrors || hasSampleCodeErrors);
+  }, [hasDetailsErrors, hasTestCasesErrors, hasConstraintsErrors, hasSampleCodeErrors]);
+
+  // Handle form validation errors
+  const handleError = () => {
+    // Determine which tab has errors and switch to it
+    if (hasDetailsErrors) {
+      setActiveTab("details");
+      toast.error("Please fix the errors in the Question Details tab");
+    } else if (hasTestCasesErrors) {
+      setActiveTab("testcases");
+      toast.error("Please fix the errors in the Test Cases tab");
+    } else if (hasConstraintsErrors) {
+      setActiveTab("constraints");
+      toast.error("Please fix the errors in the Constraints tab");
+    } else if (hasSampleCodeErrors) {
+      setActiveTab("code");
+      toast.error("Please fix the errors in the Sample Code tab");
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Add New Question</h1>
       </div>
-
-      <Toaster position="top-right" />
-
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit, handleError)}>
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
           <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="details">Question Details</TabsTrigger>
-            <TabsTrigger value="testcases">Test Cases</TabsTrigger>
-            <TabsTrigger value="constraints">Constraints</TabsTrigger>
-            <TabsTrigger value="code">Sample Code</TabsTrigger>
+            <TabsTrigger value="details" className={hasDetailsErrors ? "border-red-500 border" : ""}>
+              Question Details {hasDetailsErrors && <span className="ml-2 text-red-500">●</span>}
+            </TabsTrigger>
+            <TabsTrigger value="testcases" className={hasTestCasesErrors ? "border-red-500 border" : ""}>
+              Test Cases {hasTestCasesErrors && <span className="ml-2 text-red-500">●</span>}
+            </TabsTrigger>
+            <TabsTrigger value="constraints" className={hasConstraintsErrors ? "border-red-500 border" : ""}>
+              Constraints {hasConstraintsErrors && <span className="ml-2 text-red-500">●</span>}
+            </TabsTrigger>
+            <TabsTrigger value="code" className={hasSampleCodeErrors ? "border-red-500 border" : ""}>
+              Sample Code {hasSampleCodeErrors && <span className="ml-2 text-red-500">●</span>}
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="details">
@@ -231,8 +320,8 @@ export default function NewQuestionPage() {
                           </SelectTrigger>
                           <SelectContent>
                             {availableTopics.map((topic) => (
-                              <SelectItem key={topic} value={topic}>
-                                {topic}
+                              <SelectItem key={topic.id} value={topic.title}>
+                                {topic.title || "No topic available"}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -315,6 +404,9 @@ export default function NewQuestionPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Test Cases</CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Add test cases to validate the solution. Include at least one simple example and one edge case.
+                </p>
               </CardHeader>
               <CardContent className="space-y-4">
                 {testCaseFields.map((field, index) => (
@@ -386,6 +478,9 @@ export default function NewQuestionPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Constraints</CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Add constraints that define the input limits for the problem (e.g., array size, value ranges).
+                </p>
               </CardHeader>
               <CardContent className="space-y-4">
                 {constraintFields.map((field, index) => (
@@ -429,20 +524,88 @@ export default function NewQuestionPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Sample Code</CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Provide starter code templates for different programming languages. The template should include function signatures and comments.
+                </p>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <Label htmlFor="sampleCode">Starter Code Template</Label>
-                  <Textarea
-                    id="sampleCode"
-                    {...register("sampleCode")}
-                    placeholder="Enter starter code template"
-                    className="font-mono min-h-[400px]"
-                  />
-                  {errors.sampleCode && (
-                    <p className="text-sm text-red-500">{errors.sampleCode.message}</p>
-                  )}
-                </div>
+              <CardContent className="space-y-6">
+                {sampleCodeFields.map((field, index) => (
+                  <div key={field.id} className="space-y-4 p-4 border rounded-lg">
+                    <div className="flex justify-between items-center">
+                      <h3 className="font-semibold">Sample Code {index + 1}</h3>
+                      {sampleCodeFields.length > 1 && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeSampleCode(index)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor={`sampleCodes.${index}.language`}>Programming Language</Label>
+                        <Controller
+                          name={`sampleCodes.${index}.language`}
+                          control={control}
+                          render={({ field }) => (
+                            <Select
+                              onValueChange={(value) => {
+                                field.onChange(value);
+                                // Update the code template when language changes
+                                setValue(`sampleCodes.${index}.code`, codeTemplates[value as keyof typeof codeTemplates]);
+                              }}
+                              value={field.value}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select language" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="javascript">JavaScript</SelectItem>
+                                <SelectItem value="typescript">TypeScript</SelectItem>
+                                <SelectItem value="python">Python</SelectItem>
+                                <SelectItem value="java">Java</SelectItem>
+                                <SelectItem value="cpp">C++</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          )}
+                        />
+                        {errors.sampleCodes?.[index]?.language && (
+                          <p className="text-sm text-red-500">Language is required</p>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor={`sampleCodes.${index}.code`}>Code Template</Label>
+                        <Textarea
+                          id={`sampleCodes.${index}.code`}
+                          {...register(`sampleCodes.${index}.code`)}
+                          placeholder="Enter starter code template"
+                          className="font-mono min-h-[300px]"
+                        />
+                        {errors.sampleCodes?.[index]?.code && (
+                          <p className="text-sm text-red-500">{errors.sampleCodes[index]?.code?.message}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => appendSampleCode({ language: "javascript", code: codeTemplates.javascript })}
+                  className="w-full"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Code Template for Another Language
+                </Button>
+                {errors.sampleCodes && !Array.isArray(errors.sampleCodes) && (
+                  <p className="text-sm text-red-500">{errors.sampleCodes.message}</p>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -460,8 +623,12 @@ export default function NewQuestionPage() {
           >
             Cancel
           </Button>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Creating..." : "Create Question"}
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className={hasAnyErrors ? "bg-red-100 hover:bg-red-200" : ""}
+          >
+            {isSubmitting ? "Creating..." : hasAnyErrors ? "Fix Errors to Submit" : "Create Question"}
           </Button>
         </div>
       </form>
