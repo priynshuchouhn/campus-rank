@@ -51,7 +51,8 @@ const questionSchema = z.object({
 
 type QuestionFormValues = z.infer<typeof questionSchema>;
 
-export default function EditQuestionPage({ params }: { params: { id: string } }) {
+export default function EditQuestionPage({ params }: { params: Promise<{ id: string }> }) {
+    
     const router = useRouter();
     const [activeTab, setActiveTab] = useState("details");
     const [selectedSection, setSelectedSection] = useState("");
@@ -60,6 +61,15 @@ export default function EditQuestionPage({ params }: { params: { id: string } })
     const [isLoading, setIsLoading] = useState(true);
     const [sections, setSections] = useState<Section[]>([]);
     const [questionData, setQuestionData] = useState<Question | null>(null);
+    const [id, setId] = useState("");
+
+    useEffect(() => {
+        const fetchId = async () => {
+            const { id } = await params;
+            setId(id);
+        };
+        fetchId();
+    }, [params]);
 
     // Code templates for different languages
     const codeTemplates = {
@@ -206,7 +216,7 @@ public:
         const fetchQuestion = async () => {
             try {
                 setIsLoading(true);
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/questions/${params.id}`);
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/questions/${id}`);
                 const question = response.data.data;
                 setQuestionData(question);
 
@@ -243,10 +253,10 @@ public:
             }
         };
 
-        if (params.id && sections.length > 0) {
+        if (id && sections.length > 0) {
             fetchQuestion();
         }
-    }, [params.id, reset, router, sections]);
+    }, [id, reset, router, sections]);
 
     // Handle form validation errors
     const handleError = () => {
@@ -274,7 +284,7 @@ public:
             const loadingToast = toast.loading("Updating question...");
 
             // Send the data to the API
-            await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/questions/${params.id}`, data);
+            await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/questions/${id}`, data);
 
             // Dismiss the loading toast
             toast.dismiss(loadingToast);

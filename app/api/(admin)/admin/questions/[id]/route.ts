@@ -31,12 +31,13 @@ const questionUpdateSchema = z.object({
 // GET handler to retrieve a specific question
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const question = await prisma.question.findUnique({
       where: {
-        id: params.id,
+        id: id,
       },
       include: {
         testCases: true,
@@ -96,10 +97,11 @@ export async function GET(
 // PUT handler to update a question
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Authorize the request
+    const { id } = await params;        
     const session = await auth();
     if (!session?.user || session.user.role !== "ADMIN") {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -128,7 +130,7 @@ export async function PUT(
     // Check if question exists
     const existingQuestion = await prisma.question.findUnique({
       where: {
-        id: params.id,
+        id: id,
       },
     });
 
@@ -143,17 +145,17 @@ export async function PUT(
     await prisma.$transaction([
       prisma.testCase.deleteMany({
         where: {
-          questionId: params.id,
+          questionId: id,
         },
       }),
       prisma.constraint.deleteMany({
         where: {
-          questionId: params.id,
+          questionId: id,
         },
       }),
       prisma.sampleCode.deleteMany({
         where: {
-          questionId: params.id,
+          questionId: id,
         },
       }),
     ]);
@@ -161,7 +163,7 @@ export async function PUT(
     // Update the question
     const updatedQuestion = await prisma.question.update({
       where: {
-        id: params.id,
+        id: id,
       },
       data: {
         title: validatedData.title,
@@ -220,10 +222,11 @@ export async function PUT(
 // DELETE handler to delete a question
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Authorize the request
+    const { id } = await params;
     const session = await auth();
     if (!session?.user || session.user.role !== "ADMIN") {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -232,7 +235,7 @@ export async function DELETE(
     // Check if question exists
     const existingQuestion = await prisma.question.findUnique({
       where: {
-        id: params.id,
+        id: id,
       },
     });
 
@@ -246,7 +249,7 @@ export async function DELETE(
     // Delete the question (related records will be deleted automatically due to cascading delete)
     await prisma.question.delete({
       where: {
-        id: params.id,
+        id: id,
       },
     });
 

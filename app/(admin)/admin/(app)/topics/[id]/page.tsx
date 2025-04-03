@@ -63,13 +63,21 @@ interface Resource {
     type: "VIDEO" | "ARTICLE";
 }
 
-export default function EditTopicPage({ params }: { params: { id: string } }) {
+export default function EditTopicPage({ params }: { params: Promise<{ id: string }> }) {
     const router = useRouter();
     const [sections, setSections] = useState<Section[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [topic, setTopic] = useState<Topic | null>(null);
+    const [id, setId] = useState("");
 
+    useEffect(() => {
+        const fetchId = async () => {
+            const { id } = await params;
+            setId(id);
+        };
+        fetchId();
+    }, [params]);   
     // Create form for editing a topic
     const {
         register,
@@ -118,7 +126,7 @@ export default function EditTopicPage({ params }: { params: { id: string } }) {
         const fetchTopic = async () => {
             try {
                 setIsLoading(true);
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/topics/${params.id}`);
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/topics/${id}`);
                 const fetchedTopic = response.data.data;
                 setTopic(fetchedTopic);
 
@@ -142,17 +150,17 @@ export default function EditTopicPage({ params }: { params: { id: string } }) {
             }
         };
 
-        if (params.id) {
+        if (id) {
             fetchTopic();
         }
-    }, [params.id, resetTopicForm, router]);
+    }, [id, resetTopicForm, router]);
 
     // Handle updating a topic
     const handleUpdateTopic = async (data: TopicFormValues) => {
         try {
             setIsSubmitting(true);
 
-            await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/topics/${params.id}`, data);
+            await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/topics/${id}`, data);
 
             toast.success("Topic updated successfully");
             router.push("/admin/topics");
