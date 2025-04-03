@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { auth } from "@/auth";
 
 // Schema for validation
 const sectionSchema = z.object({
@@ -12,6 +13,10 @@ const sectionSchema = z.object({
 // GET predefined sections
 export async function GET(request: NextRequest) {
   try {
+    const session = await auth();
+    if (!session?.user || session.user.role !== "ADMIN") {
+      return NextResponse.json({ message: "Unauthorized", success: false }, { status: 401 });
+    }
     // Get predefined sections with topic counts
     const predefinedSections = await prisma.predefinedSection.findMany({
       include: {
@@ -30,11 +35,11 @@ export async function GET(request: NextRequest) {
       topicsCount: section.topics.length,
     }));
 
-    return NextResponse.json({ sections: formattedSections });
+    return NextResponse.json({ message: "Sections fetched successfully", data: formattedSections, success: true });
   } catch (error) {
     console.error("Error fetching sections:", error);
     return NextResponse.json(
-      { message: "Internal Server Error" },
+      { message: "Internal Server Error", data: error, success: false },
       { status: 500 }
     );
   }
@@ -46,6 +51,10 @@ export async function POST(request: NextRequest) {
     // Parse and validate the request body
     const body = await request.json();
     const validatedData = sectionSchema.parse(body);
+    const session = await auth();
+    if (!session?.user || session.user.role !== "ADMIN") {
+      return NextResponse.json({ message: "Unauthorized", success: false }, { status: 401 });
+    }
     
     // Create a predefined section
     const section = await prisma.predefinedSection.create({
@@ -58,12 +67,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { 
         message: "Predefined section created successfully",
-        section: {
+        data: {
           id: section.id,
           name: section.title,
           description: section.description || "",
           topicsCount: 0,
-        }
+        },
+        success: true,
       },
       { status: 201 }
     );
@@ -72,13 +82,13 @@ export async function POST(request: NextRequest) {
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { message: "Validation error", errors: error.errors },
+        { message: "Validation error", data: error.errors, success: false },
         { status: 400 }
       );
     }
     
     return NextResponse.json(
-      { message: "Internal Server Error" },
+      { message: "Internal Server Error", data: error, success: false },
       { status: 500 }
     );
   }

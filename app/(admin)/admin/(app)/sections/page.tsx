@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -26,17 +26,9 @@ import { Search, Plus, Edit, Trash2, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { Section } from "@/lib/interfaces";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
+import axios from "axios";
 
 // Define schema for section validation
 const sectionSchema = z.object({
@@ -77,12 +69,8 @@ export default function SectionsPage() {
     const fetchSections = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch("/api/sections?type=predefined");
-        if (!response.ok) {
-          throw new Error("Failed to fetch sections");
-        }
-        const data = await response.json();
-        setSections(data.sections);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/sections`);
+        setSections(response.data.data);
       } catch (error) {
         console.error("Error fetching sections:", error);
         toast.error("Failed to load sections");
@@ -94,33 +82,19 @@ export default function SectionsPage() {
     fetchSections();
   }, []);
 
-  const filteredSections = sections.filter((section) =>
-    section.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredSections = useMemo(() => sections.filter((section) =>
+    section?.name.toLowerCase().includes(searchQuery.toLowerCase())
+  ), [sections, searchQuery]);
 
   const handleAddSection = async (data: SectionFormValues) => {
     try {
       setIsSubmitting(true);
-      const response = await fetch("/api/sections", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...data,
-          isPredefined: true // Always create predefined sections in admin
-        }),
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/sections`, {
+        ...data,
+        isPredefined: true
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to create section");
-      }
-
-      const newSection = await response.json();
-      setSections([...sections, newSection.section]);
-
-      toast.success("Predefined section created successfully");
+      setSections([...sections, response.data.data]);
+      toast.success("Section created successfully");
       setShowNewSectionDialog(false);
       newSectionForm.reset();
     } catch (error) {
@@ -136,28 +110,13 @@ export default function SectionsPage() {
 
     try {
       setIsSubmitting(true);
-
-      const response = await fetch(`/api/sections/${editingSectionId}?isPredefined=true`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...data,
-          isPredefined: true
-        }),
+      const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/sections/${editingSectionId}`, {
+        ...data,
+        isPredefined: true
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to update section");
-      }
-
-      const updatedSection = await response.json();
-
       setSections(
         sections.map((section) =>
-          section.id === editingSectionId ? updatedSection.section : section
+          section.id === editingSectionId ? response.data.data : section
         )
       );
 
@@ -176,14 +135,7 @@ export default function SectionsPage() {
     if (!confirm("Are you sure you want to delete this section?")) return;
 
     try {
-      const response = await fetch(`/api/sections/${sectionId}?isPredefined=true`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to delete section");
-      }
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/sections/${sectionId}`);
 
       setSections(sections.filter((section) => section.id !== sectionId));
       toast.success("Section deleted successfully");
@@ -270,7 +222,7 @@ export default function SectionsPage() {
       <Card>
         <CardHeader>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-            <CardTitle>Predefined Sections</CardTitle>
+            <CardTitle>Sections List</CardTitle>
             <div className="flex items-center gap-2">
               <Search className="h-4 w-4 text-muted-foreground" />
               <Input

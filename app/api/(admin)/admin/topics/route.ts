@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { auth } from "@/auth";
 
 // Schema for resource validation
 const resourceSchema = z.object({
@@ -22,6 +23,10 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const sectionId = searchParams.get('sectionId');
+    const session = await auth();
+    if (!session?.user || session.user.role !== "ADMIN") {
+      return NextResponse.json({ message: "Unauthorized" , data: [] , success: false}, { status: 401 });
+    } 
     
     // Base query
     const whereClause = sectionId ? { predefinedSectionId: sectionId } : {};
@@ -53,11 +58,11 @@ export async function GET(request: NextRequest) {
       }))
     }));
 
-    return NextResponse.json({ topics: formattedTopics });
+    return NextResponse.json({ message: "Topics fetched successfully", data: formattedTopics , success: true });
   } catch (error) {
     console.error("Error fetching topics:", error);
     return NextResponse.json(
-      { message: "Internal Server Error" },
+      { message: "Internal Server Error" , data: [] , success: false },
       { status: 500 }
     );
   }
@@ -68,6 +73,10 @@ export async function POST(request: NextRequest) {
   try {
     // Parse and validate the request body
     const body = await request.json();
+    const session = await auth();
+    if (!session?.user || session.user.role !== "ADMIN") {
+      return NextResponse.json({ message: "Unauthorized" , data: [] , success: false}, { status: 401 });
+    } 
     const validatedData = topicSchema.parse(body);
     
     // Create the topic with nested resources in a transaction
@@ -129,7 +138,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { 
         message: "Topic created successfully",
-        topic: formattedTopic
+        data: formattedTopic,
+        success: true
       },
       { status: 201 }
     );
@@ -138,13 +148,13 @@ export async function POST(request: NextRequest) {
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { message: "Validation error", errors: error.errors },
+        { message: "Validation error", errors: error.errors , data: [] , success: false },
         { status: 400 }
       );
     }
     
     return NextResponse.json(
-      { message: "Internal Server Error" },
+      { message: "Internal Server Error" , data: [] , success: false  },
       { status: 500 }
     );
   }

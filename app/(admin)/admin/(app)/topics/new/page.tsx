@@ -20,6 +20,7 @@ import * as z from "zod";
 import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import axios from "axios";
 
 // Define schemas for validation
 const resourceSchema = z.object({
@@ -50,6 +51,7 @@ export default function NewTopicPage() {
     const router = useRouter();
     const [sections, setSections] = useState<Section[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     // Create form for adding a new topic
     const {
@@ -69,6 +71,7 @@ export default function NewTopicPage() {
         },
     });
 
+
     // Use field array for resources
     const {
         fields: resourceFields,
@@ -83,12 +86,8 @@ export default function NewTopicPage() {
     useEffect(() => {
         const fetchSections = async () => {
             try {
-                const response = await fetch("/api/sections");
-                if (!response.ok) {
-                    throw new Error("Failed to fetch sections");
-                }
-                const data = await response.json();
-                setSections(data.sections);
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/sections`);
+                setSections(response.data.data);
             } catch (error) {
                 console.error("Error fetching sections:", error);
                 toast.error("Failed to load sections");
@@ -103,18 +102,7 @@ export default function NewTopicPage() {
         try {
             setIsSubmitting(true);
 
-            const response = await fetch("/api/topics", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Failed to create topic");
-            }
+            await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/topics`, data);
 
             toast.success("Topic created successfully");
             router.push("/admin/topics");

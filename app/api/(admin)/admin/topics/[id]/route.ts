@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { auth } from "@/auth";
 
 // Schema for resource validation
 const resourceSchema = z.object({
@@ -24,6 +25,10 @@ export async function GET(
 ) {
   try {
     const topicId = (await params).id;
+    const session = await auth();
+    if (!session?.user || session.user.role !== "ADMIN") {
+      return NextResponse.json({ message: "Unauthorized" , data: [] , success: false}, { status: 401 });
+    } 
     
     // Get topic with resources and section info
     const topic = await prisma.predefinedTopic.findUnique({
@@ -58,24 +63,27 @@ export async function GET(
       }))
     };
     
-    return NextResponse.json({ topic: formattedTopic });
+    return NextResponse.json({ message: "Topic fetched successfully", data: formattedTopic , success: true });
   } catch (error) {
     console.error("Error fetching topic:", error);
     return NextResponse.json(
-      { message: "Internal Server Error" },
+      { message: "Internal Server Error" , data: [] , success: false },
       { status: 500 }
     );
   }
 }
 
 // Update a topic by ID
-export async function POST(
+export async function PUT(
   request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const topicId = (await params).id;
-    
+    const session = await auth();
+    if (!session?.user || session.user.role !== "ADMIN") {
+      return NextResponse.json({ message: "Unauthorized" , data: [] , success: false}, { status: 401 });
+    }  
     // Check if topic exists
     const existingTopic = await prisma.predefinedTopic.findUnique({
       where: {
@@ -165,20 +173,21 @@ export async function POST(
     
     return NextResponse.json({
       message: "Topic updated successfully",
-      topic: formattedTopic,
+      data: formattedTopic,
+      success: true
     });
   } catch (error) {
     console.error("Error updating topic:", error);
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { message: "Validation error", errors: error.errors },
+        { message: "Validation error", errors: error.errors , data: [] , success: false },
         { status: 400 }
       );
     }
     
     return NextResponse.json(
-      { message: "Internal Server Error" },
+      { message: "Internal Server Error" , data: [] , success: false },
       { status: 500 }
     );
   }
@@ -191,7 +200,10 @@ export async function DELETE(
 ) {
   try {
     const topicId = (await params).id;
-    
+    const session = await auth();
+    if (!session?.user || session.user.role !== "ADMIN") {
+      return NextResponse.json({ message: "Unauthorized" , data: [] , success: false}, { status: 401 });
+    } 
     // Check if topic exists
     const existingTopic = await prisma.predefinedTopic.findUnique({
       where: {
@@ -225,11 +237,13 @@ export async function DELETE(
     
     return NextResponse.json({
       message: "Topic deleted successfully",
+      data: [],
+      success: true
     });
   } catch (error) {
     console.error("Error deleting topic:", error);
     return NextResponse.json(
-      { message: "Internal Server Error" },
+      { message: "Internal Server Error" , data: [] , success: false  },
       { status: 500 }
     );
   }
