@@ -172,6 +172,7 @@ export async function updateUser(values: any) {
         where: { email: email },
         data: {
             ...values,
+            totalSolved: values.leetcodeProfile?.submitStats?.acSubmissionNum?.reduce((acc: number, curr: LeetCodeSubmission) => acc + curr.count, 0) + parseInt(values.gfgProfile?.solvedProblems || "0", 10) || 0,
             leetcodeUsername,
             hackerrankUsername,
             gfgUsername
