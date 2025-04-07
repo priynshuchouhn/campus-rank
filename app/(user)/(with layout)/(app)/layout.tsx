@@ -24,15 +24,17 @@ import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
 
 interface SidebarNavItemProps {
     href: string;
     icon: React.ReactNode;
     title: string;
     isActive?: boolean;
+    badge?: string;
 }
 
-function SidebarNavItem({ href, icon, title, isActive }: SidebarNavItemProps) {
+function SidebarNavItem({ href, icon, title, isActive, badge }: SidebarNavItemProps) {
     return (
         <Link href={href} passHref>
             <Button
@@ -44,7 +46,18 @@ function SidebarNavItem({ href, icon, title, isActive }: SidebarNavItemProps) {
             >
                 {icon}
                 <span>{title}</span>
-                {isActive && <ChevronRight className="ml-auto h-4 w-4" />}
+
+                {badge && (
+                    <Badge
+                        variant="outline"
+                        className="ml-auto text-xs py-0 px-1.5 h-5 bg-yellow-100/50 text-yellow-800 border-yellow-300"
+                    >
+                        {badge}
+                    </Badge>
+                )}
+
+                {isActive && !badge && <ChevronRight className="ml-auto h-4 w-4" />}
+                {isActive && badge && <ChevronRight className="ml-2 h-4 w-4" />}
             </Button>
         </Link>
     );
@@ -81,28 +94,32 @@ export default function AppLayout({
                         <div className="space-y-1">
                             <p className="text-sm font-medium text-muted-foreground px-4 mb-2">Learning</p>
                             <SidebarNavItem
-                                href="/roadmap"
+                                href="#"
                                 icon={<Locate className="h-4 w-4" />}
                                 title="Roadmap"
                                 isActive={isLinkActive('/roadmap') && pathname === '/roadmap'}
+                                badge="Coming Soon"
                             />
                             <SidebarNavItem
-                                href="/roadmap/topics"
+                                href="#"
                                 icon={<Notebook className="h-4 w-4" />}
                                 title="Topics"
                                 isActive={pathname.includes('/roadmap/topics')}
+                                badge="Coming Soon"
                             />
                             <SidebarNavItem
-                                href="/practice"
+                                href="#"
                                 icon={<Code className="h-4 w-4" />}
                                 title="Practice"
                                 isActive={pathname.includes('/practice')}
+                                badge="Coming Soon"
                             />
                             <SidebarNavItem
-                                href="/goals"
+                                href="#"
                                 icon={<Target className="h-4 w-4" />}
                                 title="Weekly Goals"
                                 isActive={isLinkActive('/goals')}
+                                badge="Coming Soon"
                             />
                         </div>
 
@@ -115,7 +132,7 @@ export default function AppLayout({
                                 isActive={isLinkActive('/profile')}
                             />
                             <SidebarNavItem
-                                href="/settings"
+                                href="#"
                                 icon={<Settings className="h-4 w-4" />}
                                 title="Settings"
                                 isActive={isLinkActive('/settings')}
@@ -146,7 +163,7 @@ export default function AppLayout({
                         <SheetContent side="left" className="w-72">
                             <div className="flex items-center gap-2 mb-6">
                                 <Link href="/" className="flex items-center gap-2">
-                                    <span className="font-bold text-xl">CampusRank</span>
+                                    <span className="font-bold text-xl">Campus Rank</span>
                                 </Link>
                             </div>
                             <Separator />
@@ -168,24 +185,28 @@ export default function AppLayout({
                                         icon={<BookOpen className="h-4 w-4" />}
                                         title="Roadmap"
                                         isActive={isLinkActive('/roadmap') && pathname === '/roadmap'}
+                                        badge="Coming Soon"
                                     />
                                     <SidebarNavItem
                                         href="/roadmap/topics"
                                         icon={<BookOpen className="h-4 w-4" />}
                                         title="Topics"
                                         isActive={pathname.includes('/roadmap/topics')}
+                                        badge="Coming Soon"
                                     />
                                     <SidebarNavItem
                                         href="/practice"
                                         icon={<Code className="h-4 w-4" />}
                                         title="Practice"
                                         isActive={pathname.includes('/practice')}
+                                        badge="Coming Soon"
                                     />
                                     <SidebarNavItem
                                         href="/goals"
                                         icon={<Code className="h-4 w-4" />}
                                         title="Weekly Goals"
                                         isActive={isLinkActive('/goals')}
+                                        badge="Coming Soon"
                                     />
                                 </div>
 
