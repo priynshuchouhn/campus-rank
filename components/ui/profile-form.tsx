@@ -113,7 +113,7 @@ export function ProfileForm({ user }: any) {
                 </FormItem>
               )}
             />
-            {!user.isLocked ? <Button type="submit" disabled={isLoading}>{isLoading ? 'Saving...' : 'Save Changes'}</Button> : <Button type="submit" disabled={isLoading}>{isLoading ? 'Saving...' : 'Save Changes'}</Button>}
+            {!user.isLocked && <Button type="submit" disabled={isLoading}>{isLoading ? 'Saving...' : 'Save Changes'}</Button>}
           </form>
         </Form>
       </CardContent>
