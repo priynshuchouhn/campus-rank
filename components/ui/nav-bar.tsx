@@ -3,12 +3,12 @@ import { ThemeToggle } from './theme-toggle'
 import { Button } from './button'
 import Link from 'next/link'
 import { auth } from '@/auth'
-import { signOutAction } from '@/lib/actions/signout'
 import Image from 'next/image'
 import { Separator } from '@radix-ui/react-dropdown-menu'
 import { Menu } from 'lucide-react'
 import { Sheet, SheetTrigger, SheetContent, SheetTitle } from './sheet'
 import Sidebar from './sidebar'
+import NavbarItems from './nav-bar-items'
 async function Navbar() {
   const session = await auth();
   const user = session?.user;
@@ -33,18 +33,7 @@ async function Navbar() {
       <div className="flex items-center gap-2">
         <ThemeToggle />
         {user ? (
-          <div className='items-center gap-2 md:flex hidden'>
-            <Link href="/dashboard">
-              <Button variant="outline">
-                Dashboard
-              </Button>
-            </Link>
-            <form action={signOutAction}>
-              <Button variant="outline">
-                Logout
-              </Button>
-            </form>
-          </div>
+          <NavbarItems />
         ) : (
           <Link href="/dashboard">
             <Button variant="outline">
