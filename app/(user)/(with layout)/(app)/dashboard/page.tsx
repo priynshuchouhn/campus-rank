@@ -107,6 +107,18 @@ export default async function Dashboard() {
                     <CardContent>
                         <div className="space-y-6">
                             <div>
+                            <div className="mb-4 p-4 bg-muted rounded-lg">
+                                    <div className="flex justify-between items-center">
+                                        <p className="text-sm text-muted-foreground">Total Solved</p>
+                                        <p className="text-xl font-bold">{user.totalSolved || 0}</p>
+                                    </div>
+                                    <div className="mt-2 bg-background rounded-full h-2.5">
+                                        <div
+                                            className="bg-primary h-2.5 rounded-full"
+                                            style={{ width: `${Math.min((user.totalSolved || 0) / 5, 100)}%` }}
+                                        ></div>
+                                    </div>
+                                </div>
                                 <h3 className="text-base font-medium mb-3">LeetCode Problems</h3>
                                 <div className="grid grid-cols-3 gap-4 text-center">
                                     <div className="p-4 bg-muted rounded-lg">
@@ -128,18 +140,7 @@ export default async function Dashboard() {
                                         </p>
                                     </div>
                                 </div>
-                                <div className="mt-4 p-4 bg-muted rounded-lg">
-                                    <div className="flex justify-between items-center">
-                                        <p className="text-sm text-muted-foreground">Total Solved</p>
-                                        <p className="text-xl font-bold">{user.totalSolved || 0}</p>
-                                    </div>
-                                    <div className="mt-2 bg-background rounded-full h-2.5">
-                                        <div
-                                            className="bg-primary h-2.5 rounded-full"
-                                            style={{ width: `${Math.min((user.totalSolved || 0) / 5, 100)}%` }}
-                                        ></div>
-                                    </div>
-                                </div>
+                                
                             </div>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -171,7 +172,7 @@ export default async function Dashboard() {
                                     <h3 className="text-base font-medium mb-3">HackerRank Badges</h3>
                                     <div className="p-4 bg-muted rounded-lg">
                                         {user.hackerrankProfile?.badges && user.hackerrankProfile.badges.length > 0 ? (
-                                            <div className="grid grid-cols-5 gap-2">
+                                            <div className="grid grid-cols-4 gap-2">
                                                 {user.hackerrankProfile.badges.map((badge: any, idx: number) => {
                                                     const stars = parseInt(badge.stars);
                                                     const getBadgeColors = () => {
@@ -203,7 +204,7 @@ export default async function Dashboard() {
                                                     };
                                                     const colors = getBadgeColors();
                                                     return idx < 5 && (
-                                                        <div key={idx} className={`relative group w-full h-[80px] p-2 bg-gradient-to-br ${colors.gradient} rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1`}>
+                                                        <div key={idx} className={`relative group w-full h-[80px] p-2 bg-gradient-to-br ${colors.gradient} rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 mb-2`}>
                                                             <div className={`absolute inset-[2px] bg-gradient-to-br ${colors.innerGradient} rounded-[6px] flex flex-col items-center justify-center p-2`}>
                                                                 <div className={`absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-7 h-7 ${colors.bgColor} rounded-full flex items-center justify-center shadow-lg border-2 ${colors.borderColor}`}>
                                                                     <span className="text-white text-sm font-bold flex items-center">{badge.stars}  <span className={`${colors.starColor} shadow-lg text-xs`}>★</span></span>
