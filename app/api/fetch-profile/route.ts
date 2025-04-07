@@ -82,6 +82,12 @@ export async function POST(request:NextRequest) {
     return NextResponse.json(results, { status: 200 });
   } catch (error) {
     console.error('Error fetching profiles:', error);
+    await prisma.errorLog.create({
+      data: {
+        errorAt: '[API] fetch-profile/route.ts',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      }
+    });
     return NextResponse.json({ error: 'Failed to fetch profile data' }, { status: 500 });
   }
 }
@@ -163,6 +169,13 @@ async function fetchLeetCodeProfile(username:string, userId:string): Promise<Lee
     return response.data.data.matchedUser;
   } catch (error) {
     console.error('LeetCode API error:', error);
+    await prisma.errorLog.create({
+      data: {
+        errorAt: 'fetchLeetCodeProfile - fetch-profile/route.ts',
+        error: error instanceof Error ? error.message : 'Unknown error',
+        forUser: username
+      }
+    });
     return null;
   }
 }
@@ -244,6 +257,13 @@ async function fetchHackerRankProfile(username:string, userId:string): Promise<H
     return profileData;
   } catch (error) {
     console.error('HackerRank scraping error:', error);
+    await prisma.errorLog.create({
+      data: {
+        errorAt: 'fetchHackerRankProfile - fetch-profile/route.ts',
+        error: error instanceof Error ? error.message : 'Unknown error',
+        forUser: username
+      }
+    });
     return null;
   }
 }
@@ -278,6 +298,13 @@ async function fetchGFGProfile(username:string, userId:string): Promise<GFGProfi
     return profileData;
   } catch (error) {
     console.error('GeeksForGeeks scraping error:', error);
+    await prisma.errorLog.create({
+      data: {
+        errorAt: 'fetchGFGProfile - fetch-profile/route.ts',
+        error: error instanceof Error ? error.message : 'Unknown error',
+        forUser: username
+      }
+    });
     return null;
   }
 }

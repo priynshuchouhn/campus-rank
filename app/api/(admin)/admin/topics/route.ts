@@ -61,6 +61,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ message: "Topics fetched successfully", data: formattedTopics , success: true });
   } catch (error) {
     console.error("Error fetching topics:", error);
+    await prisma.errorLog.create({
+      data: {
+        errorAt: '[API] GET admin/topics/route.ts',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      }
+    });
     return NextResponse.json(
       { message: "Internal Server Error" , data: [] , success: false },
       { status: 500 }
@@ -145,7 +151,13 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     console.error("Error creating topic:", error);
-    
+    await prisma.errorLog.create({
+      data: {
+        errorAt: '[API] POST admin/topics/route.ts',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      }
+    });
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { message: "Validation error", errors: error.errors , data: [] , success: false },

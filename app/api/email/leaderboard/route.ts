@@ -39,6 +39,12 @@ export async function GET() {
     }
     return Response.json(datas);
   } catch (error) {
+    await prisma.errorLog.create({
+      data: {
+        errorAt: '[API] email/leaderboard/route.ts',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      }
+    });
     return Response.json({ error }, { status: 500 });
   }
 }

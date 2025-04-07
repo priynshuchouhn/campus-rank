@@ -66,6 +66,12 @@ export async function GET(
     return NextResponse.json({ message: "Topic fetched successfully", data: formattedTopic , success: true });
   } catch (error) {
     console.error("Error fetching topic:", error);
+    await prisma.errorLog.create({
+      data: {
+        errorAt: '[API] GET admin/topics/[id]/route.ts',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      }
+    });
     return NextResponse.json(
       { message: "Internal Server Error" , data: [] , success: false },
       { status: 500 }
@@ -178,6 +184,12 @@ export async function PUT(
     });
   } catch (error) {
     console.error("Error updating topic:", error);
+    await prisma.errorLog.create({
+      data: {
+        errorAt: '[API] PUT admin/topics/[id]/route.ts',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      }
+    });
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -242,6 +254,12 @@ export async function DELETE(
     });
   } catch (error) {
     console.error("Error deleting topic:", error);
+    await prisma.errorLog.create({
+      data: {
+        errorAt: '[API] DELETE admin/topics/[id]/route.ts',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      }
+    });
     return NextResponse.json(
       { message: "Internal Server Error" , data: [] , success: false  },
       { status: 500 }

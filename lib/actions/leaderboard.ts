@@ -23,6 +23,12 @@ export async function getLeaderboard() {
         });
         return leaderboard;
     } catch (error) {
+        await prisma.errorLog.create({
+            data: {
+                errorAt: '[leaderboard.ts] getLeaderboard',
+                error: error instanceof Error ? error.message : 'Unknown error',
+            }
+        });
         console.error('Error fetching leaderboard:', error);
         return [];
     }
@@ -63,6 +69,12 @@ export async function updateApplicationStats() {
             },
         });
     } catch (error) {
+        await prisma.errorLog.create({
+            data: {
+                errorAt: '[leaderboard.ts] updateApplicationStats',
+                error: error instanceof Error ? error.message : 'Unknown error',
+            }
+        });
         console.error('Error updating application stats:', error);
     }
 }

@@ -123,6 +123,12 @@ export async function fetchAndUpdateProfile(user: any) {
         }
         console.log(`Profile updated for user ${user.email}`);
     } catch (error) {
+        await prisma.errorLog.create({
+            data: {
+                errorAt: '[users.ts] fetchAndUpdateProfile',
+                error: error instanceof Error ? error.message : 'Unknown error',
+            }
+        });
         console.error(`Error fetching and updating profile for user ${user.email}:`, error);
     }
 }
@@ -133,9 +139,10 @@ export async function getUser() {
     if (!email) {
         throw new Error("User not found");
     }
-    const user = await prisma.user.findUnique({
-        where: { email: email },
-        include: {
+    try {
+        const user = await prisma.user.findUnique({
+            where: { email: email },
+            include: {
             leetcodeProfile: true,
             hackerrankProfile: {
                 include: {
@@ -148,7 +155,16 @@ export async function getUser() {
         }
     });
     return user;
-}
+    } catch (error) {
+        await prisma.errorLog.create({
+            data: {
+                errorAt: '[users.ts] getUser',
+                error: error instanceof Error ? error.message : 'Unknown error',
+            }
+        });
+        return null;
+    }
+}   
 
 export async function updateUser(values: any) {
     const session = await auth();
@@ -260,13 +276,23 @@ export async function updateProfileView(username: string) {
             }
         }
     }
-    const profileView = await prisma.profileView.create({
-        data: {
-            username,
+    try {
+        const profileView = await prisma.profileView.create({
+            data: {
+                username,
             browser,
             device,
             operatingSystem: os,
-        },
-    });
-    return profileView;
+            },
+        });
+        return profileView;
+    } catch (error) {
+        await prisma.errorLog.create({
+            data: {
+                errorAt: '[users.ts] updateProfileView',
+                error: error instanceof Error ? error.message : 'Unknown error',
+            }
+        });
+        return null;
+    }
 }

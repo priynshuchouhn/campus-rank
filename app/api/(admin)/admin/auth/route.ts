@@ -40,6 +40,12 @@ export async function POST(request: NextRequest) {
     });
     return NextResponse.json({ message: "Admin logged in successfully", data: user, success: true }, { status: 200 });
   } catch (error) {
+    await prisma.errorLog.create({
+      data: {
+        errorAt: '[API] admin/auth/route.ts',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      }
+    });
     return NextResponse.json({ message: "Admin login failed", data: error, success: false }, { status: 500 });
   }
 }

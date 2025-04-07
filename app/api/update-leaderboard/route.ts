@@ -9,18 +9,28 @@ import { updateApplicationStats } from "@/lib/actions/leaderboard";
 
 async function updateGlobalRanks() {
     // Get all leaderboard stats ordered by overall score
-    const leaderboardStats = await prisma.leaderboardStats.findMany({
-        orderBy: {
-            overallScore: 'desc'
-        }
-    });
+    try {
+        const leaderboardStats = await prisma.leaderboardStats.findMany({
+            orderBy: {
+                overallScore: 'desc'
+            }
+        });
 
     // Update global ranks
     for (let i = 0; i < leaderboardStats.length; i++) {
         await prisma.leaderboardStats.update({
             where: { id: leaderboardStats[i].id },
-            data: { globalRank: i + 1 }
+                data: { globalRank: i + 1 }
+            });
+        }
+    } catch (error) {
+        await prisma.errorLog.create({
+            data: {
+                errorAt: 'updateGlobalRanks - update-leaderboard/route.ts',
+                error: error instanceof Error ? error.message : 'Unknown error',
+            }
         });
+        console.error('Error updating global ranks:', error);
     }
 }
 
@@ -59,6 +69,12 @@ export async function GET() {
         });
     } catch (error) {
         console.error('Error updating leaderboard:', error);
+        await prisma.errorLog.create({
+            data: {
+                errorAt: '[API] update-leaderboard/route.ts',
+                error: error instanceof Error ? error.message : 'Unknown error',
+            }
+        });
         return NextResponse.json(
             { success: false, message: 'Failed to update leaderboard' },
             { status: 500 }

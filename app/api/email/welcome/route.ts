@@ -1,6 +1,6 @@
 import EmailTemplate from '@/components/ui/email-template';
 import { Resend } from 'resend';
-
+import { prisma } from '@/lib/prisma';
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
@@ -18,6 +18,13 @@ export async function POST(req: Request) {
     }
     return Response.json(data);
   } catch (error) {
+    await prisma.errorLog.create({
+      data: {
+        errorAt: '[API] email/welcome/route.ts',
+        error: error instanceof Error ? error.message : 'Unknown error',
+        forUser: email
+      }
+    });
     return Response.json({ error }, { status: 500 });
   }
 }

@@ -19,6 +19,12 @@ export async function GET(request: NextRequest) {
         });
         return NextResponse.json({ message: "Users fetched successfully", data: users, success: true });
     } catch (error) {
+        await prisma.errorLog.create({
+            data: {
+                errorAt: '[API] GET admin/users/route.ts',
+                error: error instanceof Error ? error.message : 'Unknown error',
+            }
+        });
         return NextResponse.json({ message: "Error fetching users", error: error, success: false }, { status: 500 });
     }
 }

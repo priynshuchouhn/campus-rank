@@ -86,6 +86,12 @@ export async function GET(
       success: true
     });
   } catch (error) {
+    await prisma.errorLog.create({
+      data: {
+        errorAt: '[API] GET admin/questions/[id]/route.ts',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      }
+    });   
     console.error("Error fetching question:", error);
     return NextResponse.json(
       { message: "Internal Server Error", data: error, success: false },
@@ -203,6 +209,12 @@ export async function PUT(
       success: true
     });
   } catch (error) {
+    await prisma.errorLog.create({
+      data: {
+        errorAt: '[API] PUT admin/questions/[id]/route.ts',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      }
+    });
     console.error("Error updating question:", error);
 
     if (error instanceof z.ZodError) {
@@ -259,6 +271,12 @@ export async function DELETE(
     });
   } catch (error) {
     console.error("Error deleting question:", error);
+    await prisma.errorLog.create({
+      data: {
+        errorAt: '[API] DELETE admin/questions/[id]/route.ts',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      }
+    });
     return NextResponse.json(
       { message: "Internal Server Error", data: error, success: false },
       { status: 500 }
