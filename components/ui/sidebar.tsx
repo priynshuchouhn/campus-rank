@@ -1,84 +1,121 @@
 'use client'
 import { usePathname } from 'next/navigation'
 import { Separator } from '@radix-ui/react-dropdown-menu'
-import { Home, BookOpen, Code, User, Settings, LogOut, Notebook, Target } from 'lucide-react'
+import { Home, BookOpen, Code, User, Settings, LogOut, Notebook, Target, Info, Shield, FileText, Mail } from 'lucide-react'
 import React from 'react'
 import { Button } from './button'
 import { SidebarNavItem } from './sidebar-nav-item'
-
-function Sidebar() {
+import Link from 'next/link'
+function Sidebar({ user }: { user: any }) {
     const pathname = usePathname();
     const isLinkActive = (href: string) => {
         return pathname === href || pathname.startsWith(href + '/');
     };
     return (
         <>
-            <nav className="mt-4 space-y-4">
-                <div className="space-y-1">
-                    <p className="text-sm font-medium text-muted-foreground px-4 mb-2">Dashboard</p>
-                    <SidebarNavItem
-                        href="/dashboard"
-                        icon={<Home className="h-4 w-4" />}
-                        title="Home"
-                        isActive={isLinkActive('/dashboard')}
-                    />
-                </div>
+            {user ?
+                <>
+                    <nav className="mt-4 space-y-4">
+                        <div className="space-y-1">
+                            <p className="text-sm font-medium text-muted-foreground px-4 mb-2">Dashboard</p>
+                            <SidebarNavItem
+                                href="/dashboard"
+                                icon={<Home className="h-4 w-4" />}
+                                title="Home"
+                                isActive={isLinkActive('/dashboard')}
+                            />
+                        </div>
 
-                <div className="space-y-1">
-                    <p className="text-sm font-medium text-muted-foreground px-4 mb-2">Learning</p>
-                    <SidebarNavItem
-                        href="#"
-                        icon={<BookOpen className="h-4 w-4" />}
-                        title="Roadmap"
-                        isActive={isLinkActive('/roadmap') && pathname === '/roadmap'}
-                        badge="Coming Soon"
-                    />
-                    <SidebarNavItem
-                        href="#"
-                        icon={<Notebook className="h-4 w-4" />}
-                        title="Topics"
-                        isActive={pathname.includes('/roadmap/topics')}
-                        badge="Coming Soon"
-                    />
-                    <SidebarNavItem
-                        href="#"
-                        icon={<Code className="h-4 w-4" />}
-                        title="Practice"
-                        isActive={pathname.includes('/practice')}
-                        badge="Coming Soon"
-                    />
-                    <SidebarNavItem
-                        href="#"
-                        icon={<Target className="h-4 w-4" />}
-                        title="Weekly Goals"
-                        isActive={isLinkActive('/goals')}
-                        badge="Coming Soon"
-                    />
-                </div>
+                        <div className="space-y-1">
+                            <p className="text-sm font-medium text-muted-foreground px-4 mb-2">Learning</p>
+                            <SidebarNavItem
+                                href="#"
+                                icon={<BookOpen className="h-4 w-4" />}
+                                title="Roadmap"
+                                isActive={isLinkActive('/roadmap') && pathname === '/roadmap'}
+                                badge="Coming Soon"
+                            />
+                            <SidebarNavItem
+                                href="#"
+                                icon={<Notebook className="h-4 w-4" />}
+                                title="Topics"
+                                isActive={pathname.includes('/roadmap/topics')}
+                                badge="Coming Soon"
+                            />
+                            <SidebarNavItem
+                                href="#"
+                                icon={<Code className="h-4 w-4" />}
+                                title="Practice"
+                                isActive={pathname.includes('/practice')}
+                                badge="Coming Soon"
+                            />
+                            <SidebarNavItem
+                                href="#"
+                                icon={<Target className="h-4 w-4" />}
+                                title="Weekly Goals"
+                                isActive={isLinkActive('/goals')}
+                                badge="Coming Soon"
+                            />
+                        </div>
 
-                <div className="space-y-1">
-                    <p className="text-sm font-medium text-muted-foreground px-4 mb-2">Account</p>
-                    <SidebarNavItem
-                        href="/profile"
-                        icon={<User className="h-4 w-4" />}
-                        title="Profile"
-                        isActive={isLinkActive('/profile')}
-                    />
-                    <SidebarNavItem
-                        href="#"
-                        icon={<Settings className="h-4 w-4" />}
-                        title="Settings"
-                        isActive={isLinkActive('/settings')}
-                    />
-                </div>
-            </nav>
-            <Separator className="mt-4" />
-            <div className="mt-4 ">
-                <Button variant="ghost" className="flex items-center justify-start gap-2 w-full text-red-500">
-                    <LogOut className="h-4 w-4" />
-                    <span>Logout</span>
-                </Button>
-            </div>
+                        <div className="space-y-1">
+                            <p className="text-sm font-medium text-muted-foreground px-4 mb-2">Account</p>
+                            <SidebarNavItem
+                                href="/profile"
+                                icon={<User className="h-4 w-4" />}
+                                title="Profile"
+                                isActive={isLinkActive('/profile')}
+                            />
+                            <SidebarNavItem
+                                href="#"
+                                icon={<Settings className="h-4 w-4" />}
+                                title="Settings"
+                                isActive={isLinkActive('/settings')}
+                            />
+                        </div>
+                    </nav>
+                    <Separator className="mt-4" />
+                    <div className="mt-4 ">
+                        <Button variant="ghost" className="flex items-center justify-start gap-2 w-full text-red-500">
+                            <LogOut className="h-4 w-4" />
+                            <span>Logout</span>
+                        </Button>
+                    </div>
+                </> :
+                <>
+                    <nav className="space-y-4">
+                        <div className="space-y-1">
+                            <p className="text-sm font-medium text-muted-foreground px-4 mb-2">Information</p>
+                            <SidebarNavItem
+                                href="/about-us"
+                                icon={<Info className="h-4 w-4" />}
+                                title="About Us"
+                                isActive={isLinkActive('/about-us')}
+                            />
+                            <SidebarNavItem
+                                href="/privacy-policy"
+                                icon={<Shield className="h-4 w-4" />}
+                                title="Privacy Policy"
+                                isActive={isLinkActive('/privacy-policy')}
+                            />
+                            <SidebarNavItem
+                                href="/terms-of-service"
+                                icon={<FileText className="h-4 w-4" />}
+                                title="Terms of Service"
+                                isActive={isLinkActive('/terms-of-service')}
+                            />
+                        <Separator className="mt-4" />
+                        <p className="text-sm font-medium text-muted-foreground px-4 mb-2">Get Started</p>
+                        <SidebarNavItem
+                                href="/dashboard"
+                                icon={<LogOut className="h-4 w-4" />}
+                                title="Login"
+                                isActive={isLinkActive('/dashboard')}
+                            />
+                        </div>
+                    </nav>
+                </>
+            }
         </>
     )
 }

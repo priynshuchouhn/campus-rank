@@ -2,15 +2,17 @@ import React from 'react';
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Sidebar from "@/components/ui/sidebar";
+import { redirect } from 'next/navigation';
+import { auth } from '@/auth';
 
 
-
-export default function AppLayout({
+export default async function AppLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-
+    const session = await auth();
+    const user = session?.user;
     return (
         <div className="flex min-h-screen">
             {/* Desktop Sidebar */}
@@ -18,7 +20,7 @@ export default function AppLayout({
                 <Separator />
                 <ScrollArea className="flex-1 p-4">
                     <div>
-                        <Sidebar />
+                        <Sidebar user={user} />
                     </div>
                 </ScrollArea>
             </aside>

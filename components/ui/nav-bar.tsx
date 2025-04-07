@@ -23,7 +23,7 @@ async function Navbar() {
         </SheetTrigger>
         <SheetContent side="left" className="w-72 p-2">
           <Separator />
-          <Sidebar />
+          <Sidebar user={user} />
         </SheetContent>
       </Sheet>
       <Link href="/" className='flex items-center gap-2'>
@@ -35,7 +35,7 @@ async function Navbar() {
         {user ? (
           <NavbarItems />
         ) : (
-          <Link href="/dashboard">
+          <Link href="/dashboard" className='md:flex hidden'>
             <Button variant="outline">
               Get Started
             </Button>

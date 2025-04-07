@@ -12,7 +12,7 @@ interface SidebarNavItemProps {
     badge?: string;
 }
 
-export function SidebarNavItem({ href, icon, title, isActive, badge }: SidebarNavItemProps) {
+export function SidebarNavItem({ href, icon, title, isActive, badge, ...props }: SidebarNavItemProps) {
     return (
         <Link href={href} passHref>
             <Button
@@ -21,6 +21,7 @@ export function SidebarNavItem({ href, icon, title, isActive, badge }: SidebarNa
                     "flex items-center justify-start gap-2 w-full h-10 px-4 mb-1",
                     isActive ? "bg-accent text-accent-foreground font-medium" : "hover:bg-accent/50"
                 )}
+                {...props}
             >
                 {icon}
                 <span>{title}</span>
