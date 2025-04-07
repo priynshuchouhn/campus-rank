@@ -191,7 +191,7 @@ export default async function Dashboard() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
                 {/* Learning Progress */}
-                <Card>
+                {/* <Card>
                     <CardHeader>
                         <CardTitle>Learning Progress</CardTitle>
                     </CardHeader>
@@ -246,10 +246,10 @@ export default async function Dashboard() {
                             </div>
                         </div>
                     </CardContent>
-                </Card>
+                </Card> */}
 
                 {/* Recent Activity */}
-                <Card>
+                {/* <Card>
                     <CardHeader>
                         <CardTitle>Recent Activity</CardTitle>
                     </CardHeader>
@@ -306,7 +306,7 @@ export default async function Dashboard() {
                             </div>
                         </div>
                     </CardContent>
-                </Card>
+                </Card> */}
             </div>
         </main>
     );

@@ -28,6 +28,9 @@ model User {
   username            String               @unique
   role                Role                 @default(USER)
   password            String?
+  isActive            Boolean              @default(true)
+  isDeleted           Boolean              @default(false)
+  isLocked            Boolean              @default(false)
   gfgProfile          GFGProfile?
   hackerrankProfile   HackerRankProfile?
   leaderboardStats    LeaderboardStats?
@@ -278,6 +281,14 @@ model QuestionSubmission {
   memoryUsed    Int?
   question      Question         @relation(fields: [questionId], references: [id], onDelete: Cascade)
   user          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ErrorLog {
+  id String @id @default(cuid())
+  error String
+  createdAt DateTime @default(now())
+  errorAt String
+  forUser String?
 }
 
 enum Role {
