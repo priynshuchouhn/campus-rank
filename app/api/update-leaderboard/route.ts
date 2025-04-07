@@ -27,7 +27,11 @@ async function updateGlobalRanks() {
 export async function GET() {
     try {
         // Get all users
-        const users = await prisma.user.findMany();
+        const users = await prisma.user.findMany({
+            where: {
+                role: "USER"
+            }
+        });
 
         // Fetch and update profiles for all users
         const updatePromises = users.map(user => fetchAndUpdateProfile(user));

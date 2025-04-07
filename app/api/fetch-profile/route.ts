@@ -120,6 +120,7 @@ async function fetchLeetCodeProfile(username:string, userId:string): Promise<Lee
         'Content-Type': 'application/json'
       }
     });
+    if(response.data.data.matchedUser){
     await prisma.leetCodeProfile.upsert ({
       where: {
         userId:userId
@@ -157,6 +158,7 @@ async function fetchLeetCodeProfile(username:string, userId:string): Promise<Lee
         mediumSubmissions:response.data.data.matchedUser.submitStats.acSubmissionNum[2].submissions,
       }
     });
+    }
     
     return response.data.data.matchedUser;
   } catch (error) {

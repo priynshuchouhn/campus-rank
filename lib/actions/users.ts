@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
 import { prisma } from "../prisma";
 import { headers } from "next/headers";
+import axios from 'axios';
 
 
 interface LeetCodeSubmission {
@@ -19,25 +20,19 @@ interface HackerRankBadge {
 
 export async function fetchAndUpdateProfile(user: any) {
     try {
-        // Call the fetch-profile API endpoint
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/fetch-profile`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                leetcodeUsername: user.leetcodeUsername,
-                hackerrankUsername: user.hackerrankUsername,
-                gfgUsername: user.gfgUsername,
-                userId: user.id,
-            }),
+        // Call the fetch-profile API endpoint using axios
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/fetch-profile`, {
+            leetcodeUsername: user.leetcodeUsername,
+            hackerrankUsername: user.hackerrankUsername,
+            gfgUsername: user.gfgUsername,
+            userId: user.id,
         });
 
-        if (!response.ok) {
+        if (!response.data) {
             throw new Error('Failed to fetch profiles');
         }
 
-        const profileData = await response.json();
+        const profileData = response.data;
 
         // Calculate scores based on fetched data
         let leetcodeScore = 0;
@@ -121,6 +116,7 @@ export async function fetchAndUpdateProfile(user: any) {
                 },
             });
         }
+        console.log(`Profile updated for user ${user.email}`);
     } catch (error) {
         console.error(`Error fetching and updating profile for user ${user.email}:`, error);
     }
