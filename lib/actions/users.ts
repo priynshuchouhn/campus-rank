@@ -96,7 +96,7 @@ export async function fetchAndUpdateProfile(user: any) {
             const easySolved = stats.find((s: LeetCodeSubmission) => s.difficulty === 'Easy')?.count || 0;
             const mediumSolved = stats.find((s: LeetCodeSubmission) => s.difficulty === 'Medium')?.count || 0;
             const hardSolved = stats.find((s: LeetCodeSubmission) => s.difficulty === 'Hard')?.count || 0;
-            totalSolved += stats.reduce((acc: number, curr: LeetCodeSubmission) => acc + curr.count, 0);
+            totalSolved += stats.find((s: LeetCodeSubmission) => s.difficulty === 'All')?.count || 0;
 
             await prisma.user.update({
                 where: { id: user.id },
@@ -173,7 +173,6 @@ export async function updateUser(values: any) {
         where: { email: email },
         data: {
             ...values,
-            totalSolved: values.leetcodeProfile?.submitStats?.acSubmissionNum?.reduce((acc: number, curr: LeetCodeSubmission) => acc + curr.count, 0) + parseInt(values.gfgProfile?.solvedProblems || "0", 10) || 0,
             leetcodeUsername,
             hackerrankUsername,
             gfgUsername,
