@@ -57,10 +57,10 @@ export function LeaderboardTable({ leaderboards, searchQuery }: LeaderboardTable
               className="transition-colors hover:bg-muted/50 cursor-pointer"
             >
               <TableCell className="font-medium">
-                {index+startIndex < 3 ? (
-                  <Medal className={`h-5 w-5 ${getMedalColor(index+startIndex)}`} />
+                {leaderboard?.globalRank !== null && leaderboard?.globalRank <= 3 ? (
+                  <Medal className={`h-5 w-5 ${getMedalColor(leaderboard?.globalRank)}`} />
                 ) : (
-                  index+startIndex+1
+                  leaderboard?.globalRank !== null ? leaderboard?.globalRank : index+startIndex+1
                 )}
               </TableCell>
               <TableCell><Link href={`/user/${leaderboard.user.username}`}>{leaderboard.user.name}</Link></TableCell>
