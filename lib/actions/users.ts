@@ -5,6 +5,8 @@ import { prisma } from "../prisma";
 import { headers } from "next/headers";
 import axios from 'axios';
 
+// Helper function to create delay
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 interface LeetCodeSubmission {
     difficulty: string;
@@ -20,6 +22,9 @@ interface HackerRankBadge {
 
 export async function fetchAndUpdateProfile(user: any) {
     try {
+        // Add a 2-second delay for each user to prevent rate limiting
+        await sleep(2000);
+        
         // Call the fetch-profile API endpoint using axios
         const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/fetch-profile`, {
             leetcodeUsername: user.leetcodeUsername,
