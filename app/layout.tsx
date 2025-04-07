@@ -3,8 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "react-hot-toast";
-import Footer from "@/components/ui/footer";
-import Navbar from "@/components/ui/nav-bar";
 import Script from "next/script";
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,22 +15,22 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CampusRank - College Coding Leaderboard",
-  description: "Track coding progress of students on LeetCode & HackerRank with CampusRank. Compete, learn, and rank up!",
-  keywords: "coding leaderboard, leetcode ranking, hackerrank leaderboard, college coding, campus rank, coding contests",
+  title: "Campus Rank - College Coding Leaderboard",
+  description: "Track coding progress of students on GFG, LeetCode & HackerRank with CampusRank. Compete, learn, and rank up!",
+  keywords: "coding leaderboard, gfg ranking, leetcode ranking, hackerrank leaderboard, college coding, campus rank, coding contests",
   authors: [{ name: "CampusRank Team", url: "https://campus-rank.priynshuchouhn.engineer" }],
   metadataBase: new URL("https://campus-rank.priynshuchouhn.engineer"),
   openGraph: {
-    title: "CampusRank - College Coding Leaderboard",
-    description: "Join CampusRank to monitor your coding progress on LeetCode & HackerRank.",
+    title: "Campus Rank - College Coding Leaderboard",
+    description: "Join CampusRank to monitor your coding progress on GFG, LeetCode & HackerRank.",
     url: "https://campus-rank.priynshuchouhn.engineer",
     siteName: "CampusRank",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "/logo.jpg",
         width: 1200,
         height: 630,
-        alt: "CampusRank Leaderboard",
+        alt: "Campus Rank Leaderboard",
       },
     ],
     type: "website",
@@ -40,8 +38,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "CampusRank - College Coding Leaderboard",
-    description: "Track coding progress of students from LeetCode & HackerRank with CampusRank.",
-    images: ["/og-image.jpg"],
+    description: "Track coding progress of students from GFG, LeetCode & HackerRank with Campus Rank.",
+    images: ["/logo.jpg"],
   },
 };
 
@@ -71,13 +69,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="min-h-screen bg-background">
-            <div className="container mx-auto px-4 py-8">
-              <Navbar />
-              {children}
-            </div>
-          </div>
-          <Footer />
+          {children}
           <Toaster />
         </ThemeProvider>
         {/* Google Tag Manager (noscript) */}

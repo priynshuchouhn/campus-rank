@@ -1,15 +1,29 @@
-import NextAuth from "next-auth"
+import NextAuth, { DefaultSession } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 import GithubProvider from "next-auth/providers/github"
 import { prisma } from "./lib/prisma";
-
+import CredentialsProvider from "next-auth/providers/credentials";
+import axios from "axios";
+declare module "next-auth" {
+  interface User {
+    role: string;
+  }
+  interface Session {
+    user: {
+      id: string;
+      name: string | null;
+      email: string | null;
+      image: string | null;
+      role: string;
+    } & DefaultSession["user"];
+  }
+  
+}
 
 async function saveUserToDatabase(userInfo: {
   name: string | null;
   email: string | null;
   image: string | null;
-  provider?: string;
-  providerAccountId?: string;
 }) {
     try {
         // Check if user already exists
@@ -58,10 +72,25 @@ async function saveUserToDatabase(userInfo: {
         }
         return existingUser;
       } catch (error) {
-        console.error("Error during sign in:", error)
+        console.error("Error during user sign in:", error)
         return null
       }
+}
+
+async function authorizeAdmin(credentials: { email: string, password: string }) {
+  const { email, password } = credentials;
+  if (!email || !password) {
+    throw new Error("Invalid credentials");
   }
+  const admin = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/auth`, {
+    email,
+    password,
+  })
+  if(admin.data.success) {
+    return admin.data.data;
+  }
+  return null;
+}
   
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -74,25 +103,51 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       clientId: process.env.AUTH_GITHUB_ID,
       clientSecret: process.env.AUTH_GITHUB_SECRET,
     }),
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        try {
+          const { email, password } = credentials;
+          if (!email || !password) {
+            throw new Error("Invalid credentials");
+        }
+        const admin = await authorizeAdmin({ email: email as string, password: password as string });
+        if (admin) {
+          return admin;
+        }
+        return null;
+        } catch (error) {
+          console.error("Error during admin sign in:", error)
+          return null;
+        }
+      },
+    }),
+
   ],
   pages: {
     signIn: "/get-started",
   },
   callbacks: {
-    async signIn({ user, account }) {
+    async signIn({ user}) {
         // This callback is triggered on successful sign-in.
-  
+        if (user && user.role === "ADMIN") {
+          return true;
+        }
+
         await saveUserToDatabase({
           name: user.name ?? null,
           email: user.email ?? null, 
           image: user.image ?? null,
-          provider: account?.provider,
-          providerAccountId: account?.providerAccountId
         });
   
         return true;
       },
       authorized({ auth, request: { nextUrl } }) {
+        console.log("auth",auth);
         const isLoggedIn = !!auth?.user;
         const isOnDashboard = nextUrl.pathname.startsWith('/profile');
         if (isOnDashboard) {
@@ -106,20 +161,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
       async session({ session, token }) {
         session.user.id = token.id as string;
-        session.user.name = token.name;
+        session.user.name = token.name as string;
         session.user.email = token.email as string;
         session.user.image = token.image as string;
+        session.user.role = token.role as string;
         return session;
       },
-      async jwt({ token, user, account, }) {
+      async jwt({ token, user, }) {
         if (user) {
           
           const DbUser = await saveUserToDatabase({
             name: user.name ?? null,
             email: user.email ?? null,
             image: user.image ?? null,
-            provider: account?.provider,
-            providerAccountId: account?.providerAccountId
           });
           if (!DbUser) throw new Error("Failed to save user to database");
   
@@ -128,6 +182,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           token.name = DbUser.name;
           token.email = DbUser.email;
           token.image = DbUser.image;
+          token.role = DbUser.role;
+
         }
         return token;
       }

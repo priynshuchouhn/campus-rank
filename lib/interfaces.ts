@@ -77,3 +77,96 @@ export interface AuthFormData {
     password: string;
     confirmPassword?: string;
 }
+
+export type Difficulty = "Easy" | "Medium" | "Hard";
+export type ProgrammingLanguage = "javascript" | "typescript" | "python" | "java" | "cpp";
+
+export interface TestCase {
+    id?: string;
+    input: string;
+    output: string;
+    explanation: string;
+}
+
+export interface Constraint {
+    id?: string;
+    value: string;
+}
+
+export interface SampleCode {
+    id?: string;
+    language: ProgrammingLanguage;
+    code: string;
+}
+
+export interface Question {
+    id?: string;
+    title: string;
+    description: string;
+    difficulty: Difficulty;
+    timeComplexity: string;
+    spaceComplexity: string;
+    section: string;
+    topic: string;
+    testCases: TestCase[];
+    constraints: string[];
+    sampleCodes: SampleCode[];
+    createdAt?: Date;
+    updatedAt?: Date;
+}
+
+export interface QuestionSubmission {
+    id?: string;
+    questionId: string;
+    userId: string;
+    code: string;
+    status: SubmissionStatus;
+    executionTime?: number;
+    memoryUsed?: number;
+    createdAt?: Date;
+}
+
+export type SubmissionStatus = 
+    | "ACCEPTED" 
+    | "WRONG_ANSWER" 
+    | "TIME_LIMIT_EXCEEDED" 
+    | "MEMORY_LIMIT_EXCEEDED" 
+    | "RUNTIME_ERROR" 
+    | "COMPILATION_ERROR" 
+    | "PENDING";
+
+export interface TopicFormData {
+    title: string;
+    description: string;
+    section: string;
+  }
+  
+export interface ResourceFormData {
+    type: "article" | "video";
+    title: string;
+    url: string;
+}
+
+export interface Section {
+    id: string;
+    name: string;
+    description: string;
+    topicsCount: number;
+    isPredefined?: boolean;
+    topics: Topic[];
+}
+
+export interface Topic {
+    id: string;
+    title: string;
+    description: string;
+    sectionId: string;
+}
+
+export interface Resource {
+    id: number;
+    title: string;
+    url: string;
+    type: "article" | "video";
+}
+  
