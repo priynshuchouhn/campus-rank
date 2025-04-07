@@ -82,7 +82,7 @@ export default async function Dashboard() {
                                 </span>
                             </div>
                             <div className="flex justify-between items-center">
-                                <span className="text-sm font-medium">Global Rank</span>
+                                <span className="text-sm font-medium">Campus Rank</span>
                                 <span className="flex items-center text-sm">
                                     #{user.leaderboardStats?.globalRank || 'N/A'}
                                     <Award className="ml-1 w-4 h-4" />

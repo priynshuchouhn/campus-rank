@@ -40,7 +40,6 @@ export function ProfileForm({ user }: any) {
   });
 
   async function onSubmit(values: z.infer<typeof profileSchema>) {
-    console.log(values);
     try {
       setIsLoading(true);
       const updatedUser = await updateUser({ ...values, id: user.id, name: user.name, email: user.email, totalSolved: user.totalSolved, easySolved: user.easySolved, mediumSolved: user.mediumSolved, hardSolved: user.hardSolved, image: user.image });
@@ -74,7 +73,7 @@ export function ProfileForm({ user }: any) {
                 <FormItem>
                   <FormLabel>LeetCode Username</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter your Leetcode username" {...field} />
+                    <Input placeholder="Enter your Leetcode username" {...field} disabled={user.isLocked} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -89,6 +88,7 @@ export function ProfileForm({ user }: any) {
                   <FormControl>
                     <Input
                       placeholder="Enter your Hackerrank username"
+                      disabled={user.isLocked}
                       {...field}
                     />
                   </FormControl>
@@ -105,6 +105,7 @@ export function ProfileForm({ user }: any) {
                   <FormControl>
                     <Input
                       placeholder="Enter your GFG username"
+                      disabled={user.isLocked}
                       {...field}
                     />
                   </FormControl>
@@ -112,7 +113,7 @@ export function ProfileForm({ user }: any) {
                 </FormItem>
               )}
             />
-            <Button type="submit" disabled={isLoading}>{isLoading ? 'Saving...' : 'Save Changes'}</Button>
+            {!user.isLocked ? <Button type="submit" disabled={isLoading}>{isLoading ? 'Saving...' : 'Save Changes'}</Button> : <Button type="submit" disabled={isLoading}>{isLoading ? 'Saving...' : 'Save Changes'}</Button>}
           </form>
         </Form>
       </CardContent>

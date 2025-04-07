@@ -157,17 +157,17 @@ export async function updateUser(values: any) {
         throw new Error("User not found");
     }
     // Extract usernames from URLs if needed
-    const leetcodeUsername = values.leetcodeUsername?.includes('leetcode.com')
-        ? values.leetcodeUsername.split(/[\/u\/|\/]/).filter(Boolean).pop()
-        : values.leetcodeUsername;
+    const leetcodeUsername = values.leetcodeUsername?.trim()?.includes('leetcode.com')
+        ? values.leetcodeUsername.trim().split(/[\/u\/|\/]/).filter(Boolean).pop()
+        : values.leetcodeUsername?.trim();
 
-    const hackerrankUsername = values.hackerrankUsername?.includes('hackerrank.com')
-        ? values.hackerrankUsername.split(/[\/profile\/|\/]/).filter(Boolean).pop()
-        : values.hackerrankUsername;
+    const hackerrankUsername = values.hackerrankUsername?.trim()?.includes('hackerrank.com')
+        ? values.hackerrankUsername.trim().split(/[\/profile\/|\/]/).filter(Boolean).pop()
+        : values.hackerrankUsername?.trim();
 
-    const gfgUsername = values.gfgUsername?.includes('geeksforgeeks.org')
-        ? values.gfgUsername.split(/[\/user\/|\/]/).filter(Boolean).pop()
-        : values.gfgUsername;
+    const gfgUsername = values.gfgUsername?.trim()?.includes('geeksforgeeks.org')
+        ? values.gfgUsername.trim().split(/[\/user\/|\/]/).filter(Boolean).pop()
+        : values.gfgUsername?.trim();
 
     const user = await prisma.user.update({
         where: { email: email },
@@ -176,7 +176,8 @@ export async function updateUser(values: any) {
             totalSolved: values.leetcodeProfile?.submitStats?.acSubmissionNum?.reduce((acc: number, curr: LeetCodeSubmission) => acc + curr.count, 0) + parseInt(values.gfgProfile?.solvedProblems || "0", 10) || 0,
             leetcodeUsername,
             hackerrankUsername,
-            gfgUsername
+            gfgUsername,
+            isLocked: true,
         },
         include: {
             leetcodeProfile: true,

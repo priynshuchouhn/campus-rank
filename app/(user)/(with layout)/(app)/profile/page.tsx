@@ -58,7 +58,7 @@ export default async function Profile() {
 
               <div>
                 <h3 className="text-sm font-medium text-muted-foreground mb-2">Member Since</h3>
-                <span>March 2024</span>
+                <span>{user.createdAt.toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}</span>
               </div>
             </div>
           </CardContent>
