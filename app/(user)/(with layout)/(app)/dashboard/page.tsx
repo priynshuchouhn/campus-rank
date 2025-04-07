@@ -143,7 +143,7 @@ export default async function Dashboard() {
                             </div>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
+                                <div className="">
                                     <h3 className="text-base font-medium mb-3">GeeksForGeeks</h3>
                                     <div className="p-4 bg-muted rounded-lg">
                                         <div className="flex justify-between items-center">
@@ -158,23 +158,68 @@ export default async function Dashboard() {
                                                 {user.gfgProfile?.codingScore || '0'}
                                             </p>
                                         </div>
+                                        <div className="flex justify-between items-center mt-2">
+                                            <p className="text-sm text-muted-foreground">Institute Rank</p>
+                                            <p className="text-lg font-bold text-purple-600 dark:text-purple-400">
+                                                {user.gfgProfile?.rank || '0'}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div>
+                                <div className="">
                                     <h3 className="text-base font-medium mb-3">HackerRank Badges</h3>
-                                    <div className="p-4 bg-muted rounded-lg h-[85px]">
+                                    <div className="p-4 bg-muted rounded-lg">
                                         {user.hackerrankProfile?.badges && user.hackerrankProfile.badges.length > 0 ? (
                                             <div className="grid grid-cols-5 gap-2">
-                                                {user.hackerrankProfile.badges.slice(0, 5).map((badge: any, idx: number) => (
-                                                    <div
-                                                        key={idx}
-                                                        className="bg-accent/30 rounded-full w-10 h-10 flex items-center justify-center"
-                                                        title={badge.name}
-                                                    >
-                                                        <span>🏆</span>
-                                                    </div>
-                                                ))}
+                                                {user.hackerrankProfile.badges.map((badge: any, idx: number) => {
+                                                    const stars = parseInt(badge.stars);
+                                                    const getBadgeColors = () => {
+                                                        if (stars === 5) {
+                                                            return {
+                                                                gradient: "from-amber-500/70 to-yellow-600/70",
+                                                                innerGradient: "from-amber-400/70 to-yellow-500/70",
+                                                                starColor: "text-yellow-300",
+                                                                borderColor: "border-yellow-500",
+                                                                bgColor: "bg-yellow-400"
+                                                            };
+                                                        } else if (stars === 4) {
+                                                            return {
+                                                                gradient: "from-slate-400 to-gray-500",
+                                                                innerGradient: "from-slate-300 to-gray-400",
+                                                                starColor: "text-slate-200",
+                                                                borderColor: "border-slate-500",
+                                                                bgColor: "bg-slate-400"
+                                                            };
+                                                        } else {
+                                                            return {
+                                                                gradient: "from-amber-700 to-amber-800",
+                                                                innerGradient: "from-amber-600 to-amber-700",
+                                                                starColor: "text-amber-200",
+                                                                borderColor: "border-amber-800",
+                                                                bgColor: "bg-amber-700"
+                                                            };
+                                                        }
+                                                    };
+                                                    const colors = getBadgeColors();
+                                                    return idx < 5 && (
+                                                        <div key={idx} className={`relative group w-full h-[80px] p-2 bg-gradient-to-br ${colors.gradient} rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1`}>
+                                                            <div className={`absolute inset-[2px] bg-gradient-to-br ${colors.innerGradient} rounded-[6px] flex flex-col items-center justify-center p-2`}>
+                                                                <div className={`absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-7 h-7 ${colors.bgColor} rounded-full flex items-center justify-center shadow-lg border-2 ${colors.borderColor}`}>
+                                                                    <span className="text-white text-sm font-bold flex items-center">{badge.stars}  <span className={`${colors.starColor} shadow-lg text-xs`}>★</span></span>
+                                                                </div>
+                                                                <div className="mt-2 text-center flex flex-col items-center gap-1">
+                                                                    <span className="text-white/90">🏆</span>
+                                                                    <span className="text-[8px] font-semibold text-white/90 line-clamp-2 uppercase tracking-wide">
+                                                                        {badge.name}
+                                                                    </span>
+                                                                </div>
+                                                                <div className="absolute bottom-1 flex items-center justify-center">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
                                             </div>
                                         ) : (
                                             <div className="flex items-center justify-center h-full text-muted-foreground">
