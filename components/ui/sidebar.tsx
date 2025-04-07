@@ -1,7 +1,7 @@
 'use client'
 import { usePathname } from 'next/navigation'
 import { Separator } from '@radix-ui/react-dropdown-menu'
-import { Home, BookOpen, Code, User, Settings, LogOut } from 'lucide-react'
+import { Home, BookOpen, Code, User, Settings, LogOut, Notebook, Target } from 'lucide-react'
 import React from 'react'
 import { Button } from './button'
 import { SidebarNavItem } from './sidebar-nav-item'
@@ -35,7 +35,7 @@ function Sidebar() {
                     />
                     <SidebarNavItem
                         href="#"
-                        icon={<BookOpen className="h-4 w-4" />}
+                        icon={<Notebook className="h-4 w-4" />}
                         title="Topics"
                         isActive={pathname.includes('/roadmap/topics')}
                         badge="Coming Soon"
@@ -49,7 +49,7 @@ function Sidebar() {
                     />
                     <SidebarNavItem
                         href="#"
-                        icon={<Code className="h-4 w-4" />}
+                        icon={<Target className="h-4 w-4" />}
                         title="Weekly Goals"
                         isActive={isLinkActive('/goals')}
                         badge="Coming Soon"
