@@ -137,7 +137,7 @@ export async function getUser() {
     const session = await auth();
     const email = session?.user?.email;
     if (!email) {
-        throw new Error("User not found");
+        return null;
     }
     try {
         const user = await prisma.user.findUnique({
