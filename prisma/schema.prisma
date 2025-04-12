@@ -175,6 +175,9 @@ model PredefinedTopic {
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
   predefinedSectionId String
+  level               TopicLevel        @default(BEGINNER)
+  preRequisites       String[]
+  subTopics           String[]
   predefinedSection   PredefinedSection @relation("PredefinedSectionTopics", fields: [predefinedSectionId], references: [id], onDelete: Cascade)
   questions           Question[]
   resources           Resource[]
@@ -353,4 +356,10 @@ enum GoalType {
   IMPLEMENTATION
   CONCEPT
   ALGORITHM
+}
+
+enum TopicLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
 }
