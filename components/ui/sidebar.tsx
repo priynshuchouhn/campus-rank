@@ -50,11 +50,11 @@ function Sidebar({ user }: { user: any }) {
                                 badge="Coming Soon"
                             />
                             <SidebarNavItem
-                                href="#"
+                                href="/goals"
                                 icon={<Target className="h-4 w-4" />}
                                 title="Weekly Goals"
                                 isActive={isLinkActive('/goals')}
-                                badge="Coming Soon"
+                                badge="New"
                             />
                         </div>
 
