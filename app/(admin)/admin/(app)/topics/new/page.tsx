@@ -167,7 +167,7 @@ export default function NewTopicPage() {
                                         onValueChange={field.onChange}
                                         value={field.value}
                                     >
-                                        <SelectTrigger>
+                                        <SelectTrigger className="w-full">
                                             <SelectValue placeholder="Select a section" />
                                         </SelectTrigger>
                                         <SelectContent>
