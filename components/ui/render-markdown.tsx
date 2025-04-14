@@ -190,6 +190,24 @@ export const RenderMarkdown = ({ content, previewMode = false }: { content: stri
 
             // Handle links
             if (trimmedLine.includes('[') && trimmedLine.includes('](')) {
+                // Check if it's an image first
+                if (trimmedLine.startsWith('![')) {
+                    const imageMatch = trimmedLine.match(/!\[(.*?)\]\((.*?)\)/);
+                    if (imageMatch) {
+                        const [_, alt, src] = imageMatch;
+                        return (
+                            <div key={index} className="my-4">
+                                <img
+                                    src={src}
+                                    alt={alt}
+                                    className="max-w-full h-auto rounded-lg shadow-md"
+                                />
+                            </div>
+                        );
+                    }
+                }
+
+                // Handle regular links
                 const linkMatch = trimmedLine.match(/\[(.*?)\]\((.*?)\)/);
                 if (linkMatch) {
                     const [_, text, url] = linkMatch;
@@ -203,9 +221,10 @@ export const RenderMarkdown = ({ content, previewMode = false }: { content: stri
 
             // Handle blockquotes
             if (trimmedLine.startsWith('>')) {
+                const quoteContent = trimmedLine.replace(/^>\s*/, '');
                 return (
-                    <blockquote key={index} className="border-l-4 border-gray-300 pl-4 italic my-4">
-                        {trimmedLine.replace(/^>\s*/, '')}
+                    <blockquote key={index} className="border-l-4 border-gray-300 pl-4 italic my-4 text-gray-600">
+                        {quoteContent}
                     </blockquote>
                 );
             }
@@ -237,17 +256,41 @@ export const RenderMarkdown = ({ content, previewMode = false }: { content: stri
             }
 
             // Handle italic text
-            if (trimmedLine.includes('*')) {
-                const parts = trimmedLine.split('*');
+            const renderItalicText = (text: string): (string | React.ReactElement)[] => {
+                // First handle asterisk-based italics
+                let parts: (string | React.ReactElement)[] = text.split(/(\*[^*]+\*)/g);
+                parts = parts.map(part => {
+                    if (typeof part === 'string' && part.startsWith('*') && part.endsWith('*')) {
+                        return <em key={Math.random()}>{part.slice(1, -1)}</em>;
+                    }
+                    return part;
+                });
+
+                // Then handle underscore-based italics
+                const processedParts: (string | React.ReactElement)[] = [];
+                parts.forEach(part => {
+                    if (typeof part === 'string') {
+                        const subParts = part.split(/(_[^_]+_)/g);
+                        subParts.forEach(subPart => {
+                            if (typeof subPart === 'string' && subPart.startsWith('_') && subPart.endsWith('_')) {
+                                processedParts.push(<em key={Math.random()}>{subPart.slice(1, -1)}</em>);
+                            } else {
+                                processedParts.push(subPart);
+                            }
+                        });
+                    } else {
+                        processedParts.push(part);
+                    }
+                });
+
+                return processedParts;
+            };
+
+            // Handle italic text
+            if (trimmedLine.includes('*') || trimmedLine.includes('_')) {
                 return (
                     <p key={index} className="mb-4">
-                        {parts.map((part, i) => (
-                            i % 2 === 0 ? (
-                                part
-                            ) : (
-                                <em key={i}>{part}</em>
-                            )
-                        ))}
+                        {renderItalicText(trimmedLine)}
                     </p>
                 );
             }

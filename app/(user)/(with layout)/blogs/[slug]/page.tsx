@@ -1,45 +1,55 @@
-'use client';
-
-import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft, Calendar, Clock, User, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { RenderMarkdown } from '@/components/ui/render-markdown';
 import axios from 'axios';
-import { useState, useEffect } from 'react';
-import toast from 'react-hot-toast';
+import { Metadata } from 'next';
 
-export default function BlogPost() {
-    const { slug } = useParams();
-    const [post, setPost] = useState<any>(null);
-    const [isLoading, setIsLoading] = useState(true);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+    const { slug } = await params;
+    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/blogs/${slug}`);
+    const post = response.data.data;
 
-    useEffect(() => {
-        const fetchPost = async () => {
-            try {
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/blogs/${slug}`);
-                setPost(response.data.data);
-            } catch (error) {
-                console.error('Error fetching blog post:', error);
-                toast.error('Failed to load blog post');
-            } finally {
-                setIsLoading(false);
-            }
+    if (!post) {
+        return {
+            title: 'Blog Post Not Found',
+            description: 'The requested blog post could not be found.',
         };
-
-        if (slug) {
-            fetchPost();
-        }
-    }, [slug]);
-
-    if (isLoading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-            </div>
-        );
     }
+
+    return {
+        title: post.title,
+        description: post.description,
+        keywords: post.tags,
+        authors: {
+            name: post.author.name,
+        },
+        openGraph: {
+            title: post.title,
+            description: post.description,
+            url: `${process.env.NEXT_PUBLIC_URL}/blogs/${post.slug}`,
+            siteName: 'Campus Rank',
+            locale: 'en_US',
+            type: 'article',
+            publishedTime: post.publishedAt || post.createdAt,
+            authors: [post.author.name],
+            images: post.featuredImage ? [post.featuredImage] : [],
+            tags: post.tags,
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: post.title,
+            description: post.description,
+            images: post.featuredImage ? [post.featuredImage] : [],
+        },
+    };
+}
+
+export default async function BlogPost({ params }: { params: Promise<{ slug: string }> }) {
+    const { slug } = await params;
+    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/blogs/${slug}`);
+    const post = response.data.data;
 
     if (!post) {
         return (
@@ -61,15 +71,16 @@ export default function BlogPost() {
         <article className="max-w-4xl mx-auto px-4 py-8">
             {/* Header */}
             <header className="mb-8">
-                <div className='flex items-center gap-2 mb-4'>
+                <div className='flex md:flex-row flex-col md:items-center gap-2 mb-4'>
                     <Link href="/blogs">
                         <Button variant="default">
                             <ArrowLeft className="h-4 w-4" />
+                            <span className='block md:hidden'>Back to Blogs</span>
                         </Button>
                     </Link>
-                    <h1 className="text-4xl font-bold text-gray-900">{post.title}</h1>
+                    <h1 className="md:text-3xl text-2xl font-bold text-gray-900">{post.title}</h1>
                 </div>
-                <p className="text-xl text-gray-600 mb-6">{post.description}</p>
+                <p className="md:text-xl text-sm text-gray-600 mb-6">{post.description}</p>
 
                 {/* Author and Meta Info */}
                 <div className="flex items-center gap-6 text-gray-600">
@@ -90,7 +101,11 @@ export default function BlogPost() {
 
                     <div className="flex items-center gap-2">
                         <Calendar className="w-5 h-5" />
-                        <span>{new Date(post.publishedAt || post.createdAt).toLocaleDateString()}</span>
+                        <span>{new Date(post.publishedAt || post.createdAt).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        })}</span>
                     </div>
 
                     <div className="flex items-center gap-2">
