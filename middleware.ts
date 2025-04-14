@@ -17,7 +17,7 @@ export async function middleware(req: NextRequest) {
   const userRole = session.user.role; // Assuming "user" or "admin"
 
   if (userRole === "USER" && pathname.startsWith("/admin")) {
-      return NextResponse.redirect(new URL("/profile", req.url)); // Students cannot access /admin
+      return NextResponse.redirect(new URL("/dashboard", req.url)); // Students cannot access /admin
   }
 
   if (userRole === "ADMIN" && !pathname.startsWith("/admin")) {
@@ -31,13 +31,14 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
-    // "/profile",
-    // "/practice",
-    // "/practice/:path*",
-    // "/roadmap",
-    // "/roadmap/:path*",
-    // "/goals",
-    // "/goals/:path*",
+    "/dashboard",
+    "/profile",
+    "/practice",
+    "/practice/:path*",
+    "/roadmap",
+    "/roadmap/:path*",
+    "/goals",
+    "/goals/:path*",
     "/admin/:path*",
   ]
 }

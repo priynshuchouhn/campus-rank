@@ -40,30 +40,37 @@ export async function updateApplicationStats() {
         const profileViews = await prisma.profileView.findMany();
         const totalProfileViews = profileViews.length;
         const totalSolved = await prisma.user.aggregate({
-        _sum: {
-            totalSolved: true
+            _sum: {
+                totalSolved: true
+            }
+        });
+        if (!applicationStats) {
+            await prisma.applicationStats.create({
+                data: {
+                    lastLeaderboardUpdate: new Date(),
+                    totalProfileViews,
+                    totalQuestionsSolved: totalSolved._sum.totalSolved ?? 0,
+                    profileViewsSinceLastUpdate: 0,
+                    questionsSolvedSinceLastUpdate: 0,
+                },
+            });
+            return;
         }
-    });
-    if (!applicationStats) {
-        await prisma.applicationStats.create({
+
+        // Calculate views since last update
+        const viewsSinceLastUpdate = profileViews.filter(view => view.createdAt > applicationStats.lastLeaderboardUpdate).length;
+        const profileViewsSinceLastUpdate = viewsSinceLastUpdate;
+
+        // Calculate questions solved since last update
+        const currentTotalSolved = totalSolved._sum.totalSolved ?? 0;
+        const questionsSolvedSinceLastUpdate = Math.max(0, currentTotalSolved - applicationStats.totalQuestionsSolved);
+
+        await prisma.applicationStats.update({
+            where: { id: applicationStats.id },
             data: {
                 lastLeaderboardUpdate: new Date(),
                 totalProfileViews,
-                totalQuestionsSolved: totalSolved._sum.totalSolved ?? 0,
-                profileViewsSinceLastUpdate: 0,
-                questionsSolvedSinceLastUpdate: 0,
-            },
-        });
-        return;
-    }
-    const profileViewsSinceLastUpdate = profileViews.filter(view => view.createdAt > applicationStats.lastLeaderboardUpdate).length;
-    const questionsSolvedSinceLastUpdate = totalSolved._sum.totalSolved ?? 0 - applicationStats.totalQuestionsSolved; // Fixed the property access
-    await prisma.applicationStats.update({
-        where: { id: applicationStats.id },
-        data: {
-            lastLeaderboardUpdate: new Date(),
-            totalProfileViews,
-                totalQuestionsSolved: totalSolved._sum.totalSolved ?? 0, // Added totalQuestionsSolved initialization
+                totalQuestionsSolved: currentTotalSolved,
                 profileViewsSinceLastUpdate,
                 questionsSolvedSinceLastUpdate
             },

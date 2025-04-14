@@ -8,5 +8,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: "https://campus-rank.priynshuchouhn.engineer/code-of-conduct", lastModified: new Date() },
     { url: "https://campus-rank.priynshuchouhn.engineer/terms-of-service", lastModified: new Date() },
     { url: "https://campus-rank.priynshuchouhn.engineer/privacy-policy", lastModified: new Date() },
+    { url: "https://campus-rank.priynshuchouhn.engineer/dashboard", lastModified: new Date() },
+    { url: "https://campus-rank.priynshuchouhn.engineer/goals", lastModified: new Date() },
+    { url: "https://campus-rank.priynshuchouhn.engineer/user/:username", lastModified: new Date() },
   ];
 }

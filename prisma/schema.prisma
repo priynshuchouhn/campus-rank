@@ -10,7 +10,7 @@ datasource db {
 model User {
   id                  String               @id @default(cuid())
   name                String
-  email               String               @unique
+  email               String               @unique  
   image               String?
   emailVerified       DateTime?
   createdAt           DateTime             @default(now())
@@ -40,6 +40,7 @@ model User {
   roadmap             Roadmap?
   solvedQuestions     SolvedQuestion[]
   weeklyGoals         WeeklyGoal[]
+  blogPosts           BlogPost[]
 }
 
 model LeetCodeProfile {
@@ -295,6 +296,7 @@ model ErrorLog {
   forUser   String?
 }
 
+
 model WeeklyGoal {
   id           String     @id @default(cuid())
   userId       String
@@ -311,6 +313,25 @@ model WeeklyGoal {
   user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   completedAt  DateTime?
   isDeleted    Boolean    @default(false)
+  
+model BlogPost {
+  id            String    @id @default(cuid())
+  title         String
+  description   String
+  content       String
+  authorId      String
+  featuredImage String?
+  tags          String[]
+  slug          String    @unique
+  isPublished   Boolean   @default(false)
+  publishedAt   DateTime?
+  isFeatured    Boolean   @default(false)
+  isApproved    Boolean   @default(false)
+  isDeleted     Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  author        User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
 }
 
 enum Role {

@@ -5,7 +5,8 @@ import { Home, BookOpen, Code, User, Settings, LogOut, Notebook, Target, Info, S
 import React from 'react'
 import { Button } from './button'
 import { SidebarNavItem } from './sidebar-nav-item'
-import Link from 'next/link'
+import { signOutAction } from '@/lib/actions/signout'
+
 function Sidebar({ user }: { user: any }) {
     const pathname = usePathname();
     const isLinkActive = (href: string) => {
@@ -76,10 +77,12 @@ function Sidebar({ user }: { user: any }) {
                     </nav>
                     <Separator className="mt-4" />
                     <div className="mt-4 ">
-                        <Button variant="ghost" className="flex items-center justify-start gap-2 w-full text-red-500">
-                            <LogOut className="h-4 w-4" />
-                            <span>Logout</span>
-                        </Button>
+                        <form action={signOutAction}>
+                            <Button variant="ghost" className="flex items-center justify-start gap-2 w-full text-red-500">
+                                <LogOut className="h-4 w-4" />
+                                <span>Logout</span>
+                            </Button>
+                        </form>
                     </div>
                 </> :
                 <>
