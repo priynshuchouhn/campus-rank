@@ -5,22 +5,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Trash2, Loader2, ArrowLeft } from "lucide-react";
-import { useForm, useFieldArray, Controller } from "react-hook-form";
+import { useForm, useFieldArray, Controller, Control } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import axios from "axios";
+import MarkdownEditor from "@/components/ui/markdown-editor";
 
 // Define schemas for validation
 const resourceSchema = z.object({
@@ -29,15 +23,36 @@ const resourceSchema = z.object({
     type: z.enum(["VIDEO", "ARTICLE"])
 });
 
+const subtopicSchema = z.object({
+    title: z.string().min(2, "Subtopic title must be at least 2 characters"),
+});
+
 const topicSchema = z.object({
     title: z.string().min(2, "Title must be at least 2 characters"),
     description: z.string().min(10, "Description must be at least 10 characters"),
     sectionId: z.string().min(1, "Section is required"),
-    resources: z.array(resourceSchema).optional().default([])
+    resources: z.array(resourceSchema).optional().default([]),
+    subtopics: z.array(subtopicSchema).optional().default([]),
+    prerequisites: z.array(z.string()).optional().default([])
 });
 
-type TopicFormValues = z.infer<typeof topicSchema>;
+type TopicFormValues = {
+    title: string;
+    description: string;
+    sectionId: string;
+    resources: Array<{
+        title: string;
+        url: string;
+        type: "VIDEO" | "ARTICLE";
+    }>;
+    subtopics: Array<{
+        title: string;
+    }>;
+    prerequisites: string[];
+};
+
 type ResourceFormValues = z.infer<typeof resourceSchema>;
+type SubtopicFormValues = z.infer<typeof subtopicSchema>;
 
 // Interface for our data
 interface Section {
@@ -52,34 +67,47 @@ export default function NewTopicPage() {
     const [sections, setSections] = useState<Section[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [editorData, setEditorData] = useState("");
 
-    // Create form for adding a new topic
-    const {
-        register,
-        control,
-        handleSubmit,
-        formState: { errors },
-        reset: resetTopicForm,
-        setValue
-    } = useForm<TopicFormValues>({
+    const form = useForm<TopicFormValues>({
         resolver: zodResolver(topicSchema),
         defaultValues: {
             title: "",
             description: "",
             sectionId: "",
-            resources: []
+            resources: [],
+            subtopics: [],
+            prerequisites: []
         },
     });
 
+    const { control } = form;
 
-    // Use field array for resources
     const {
         fields: resourceFields,
         append: appendResource,
         remove: removeResource
     } = useFieldArray({
-        control,
-        name: "resources"
+        control: control as Control<TopicFormValues>,
+        name: "resources" as any
+    });
+
+    const {
+        fields: subtopicFields,
+        append: appendSubtopic,
+        remove: removeSubtopic
+    } = useFieldArray({
+        control: control as Control<TopicFormValues>,
+        name: "subtopics" as any
+    });
+
+    const {
+        fields: prerequisiteFields,
+        append: appendPrerequisite,
+        remove: removePrerequisite
+    } = useFieldArray({
+        control: control as Control<TopicFormValues>,
+        name: "prerequisites" as any
     });
 
     // Fetch sections
@@ -132,28 +160,32 @@ export default function NewTopicPage() {
                     <CardTitle>Topic Information</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <form onSubmit={handleSubmit(handleAddTopic)} className="space-y-4">
+                    <form onSubmit={form.handleSubmit(handleAddTopic)} className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="title">Topic Title</Label>
                             <Input
                                 id="title"
-                                {...register("title")}
+                                {...form.register("title")}
                                 placeholder="Enter topic title"
                             />
-                            {errors.title && (
-                                <p className="text-sm text-red-500">{errors.title.message}</p>
+                            {form.formState.errors.title && (
+                                <p className="text-sm text-red-500">{form.formState.errors.title.message}</p>
                             )}
                         </div>
 
                         <div className="space-y-2">
                             <Label htmlFor="description">Description</Label>
-                            <Textarea
-                                id="description"
-                                {...register("description")}
-                                placeholder="Enter topic description"
-                            />
-                            {errors.description && (
-                                <p className="text-sm text-red-500">{errors.description.message}</p>
+                            <div className="border rounded-md overflow-hidden">
+                                <MarkdownEditor
+                                    value={editorData}
+                                    onChange={(data) => {
+                                        setEditorData(data);
+                                        form.setValue("description", data);
+                                    }}
+                                />
+                            </div>
+                            {form.formState.errors.description && (
+                                <p className="text-sm text-red-500">{form.formState.errors.description.message}</p>
                             )}
                         </div>
 
@@ -180,8 +212,8 @@ export default function NewTopicPage() {
                                     </Select>
                                 )}
                             />
-                            {errors.sectionId && (
-                                <p className="text-sm text-red-500">{errors.sectionId.message}</p>
+                            {form.formState.errors.sectionId && (
+                                <p className="text-sm text-red-500">{form.formState.errors.sectionId.message}</p>
                             )}
                         </div>
 
@@ -217,11 +249,11 @@ export default function NewTopicPage() {
                                         <Label htmlFor={`resources.${index}.title`}>Title</Label>
                                         <Input
                                             id={`resources.${index}.title`}
-                                            {...register(`resources.${index}.title`)}
+                                            {...form.register(`resources.${index}.title`)}
                                             placeholder="Resource title"
                                         />
-                                        {errors.resources?.[index]?.title && (
-                                            <p className="text-sm text-red-500">{String(errors.resources[index]?.title?.message || '')}</p>
+                                        {form.formState.errors.resources?.[index]?.title && (
+                                            <p className="text-sm text-red-500">{String(form.formState.errors.resources[index]?.title?.message || '')}</p>
                                         )}
                                     </div>
 
@@ -229,11 +261,11 @@ export default function NewTopicPage() {
                                         <Label htmlFor={`resources.${index}.url`}>URL</Label>
                                         <Input
                                             id={`resources.${index}.url`}
-                                            {...register(`resources.${index}.url`)}
+                                            {...form.register(`resources.${index}.url`)}
                                             placeholder="https://example.com"
                                         />
-                                        {errors.resources?.[index]?.url && (
-                                            <p className="text-sm text-red-500">{errors.resources[index]?.url?.message}</p>
+                                        {form.formState.errors.resources?.[index]?.url && (
+                                            <p className="text-sm text-red-500">{form.formState.errors.resources[index]?.url?.message}</p>
                                         )}
                                     </div>
 
@@ -257,7 +289,7 @@ export default function NewTopicPage() {
                                                 </Select>
                                             )}
                                         />
-                                        {errors.resources?.[index]?.type && (
+                                        {form.formState.errors.resources?.[index]?.type && (
                                             <p className="text-sm text-red-500">Invalid resource type</p>
                                         )}
                                     </div>
@@ -266,6 +298,100 @@ export default function NewTopicPage() {
 
                             {resourceFields.length === 0 && (
                                 <p className="text-sm text-muted-foreground">No resources added yet.</p>
+                            )}
+                        </div>
+
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <Label>Subtopics</Label>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => appendSubtopic({ title: "", description: "" })}
+                                >
+                                    <Plus className="h-4 w-4 mr-1" />
+                                    Add Subtopic
+                                </Button>
+                            </div>
+
+                            {subtopicFields.map((field, index) => (
+                                <div key={field.id} className="space-y-3 p-3 border rounded-md">
+                                    <div className="flex justify-between items-center">
+                                        <h4 className="text-sm font-medium">Subtopic {index + 1}</h4>
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => removeSubtopic(index)}
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label htmlFor={`subtopics.${index}.title`}>Title</Label>
+                                        <Input
+                                            id={`subtopics.${index}.title`}
+                                            {...form.register(`subtopics.${index}.title`)}
+                                            placeholder="Subtopic title"
+                                        />
+                                        {form.formState.errors.subtopics?.[index]?.title && (
+                                            <p className="text-sm text-red-500">{String(form.formState.errors.subtopics[index]?.title?.message || '')}</p>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+
+                            {subtopicFields.length === 0 && (
+                                <p className="text-sm text-muted-foreground">No subtopics added yet.</p>
+                            )}
+                        </div>
+
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <Label>Prerequisites</Label>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => appendPrerequisite("" as any)}
+                                >
+                                    <Plus className="h-4 w-4 mr-1" />
+                                    Add Prerequisite
+                                </Button>
+                            </div>
+
+                            {prerequisiteFields.map((field, index) => (
+                                <div key={field.id} className="space-y-3 p-3 border rounded-md">
+                                    <div className="flex justify-between items-center">
+                                        <h4 className="text-sm font-medium">Prerequisite {index + 1}</h4>
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => removePrerequisite(index)}
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label htmlFor={`prerequisites.${index}`}>Prerequisite Title</Label>
+                                        <Input
+                                            id={`prerequisites.${index}`}
+                                            {...form.register(`prerequisites.${index}`)}
+                                            placeholder="Enter prerequisite title"
+                                        />
+                                        {form.formState.errors.prerequisites?.[index] && (
+                                            <p className="text-sm text-red-500">Prerequisite is required</p>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+
+                            {prerequisiteFields.length === 0 && (
+                                <p className="text-sm text-muted-foreground">No prerequisites added yet.</p>
                             )}
                         </div>
 

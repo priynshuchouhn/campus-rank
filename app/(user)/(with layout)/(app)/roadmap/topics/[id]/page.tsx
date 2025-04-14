@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Video, FileText, Code, ArrowLeft, ExternalLink, BookOpen, Check, Clock, CheckCircle2, ChevronRight } from "lucide-react";
+import { Video, FileText, Code, ArrowLeft, ExternalLink, BookOpen, Check, Clock, CheckCircle2, ChevronRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { Progress } from "@/components/ui/progress";
@@ -15,86 +15,64 @@ import {
     TabsList,
     TabsTrigger,
 } from "@/components/ui/tabs";
+import axios from "axios";
+import toast from "react-hot-toast";
 
-// Mock data for topics
-const mockTopics = [
-    {
-        id: "arrays",
-        title: "Arrays and Strings",
-        description: "Arrays are a fundamental data structure that store elements of the same type in contiguous memory locations. They provide O(1) access to elements by index but have limitations for insertions and deletions. Strings are sequences of characters, often implemented as arrays of characters with special properties.",
-        resources: [
-            {
-                id: "1",
-                title: "Introduction to Arrays",
-                url: "https://example.com/intro-to-arrays",
-                type: "ARTICLE"
-            },
-            {
-                id: "2",
-                title: "Array Data Structure",
-                url: "https://example.com/array-video",
-                type: "VIDEO"
-            },
-            {
-                id: "3",
-                title: "String Manipulation Techniques",
-                url: "https://example.com/string-techniques",
-                type: "ARTICLE"
-            }
-        ],
-        problems: [
-            {
-                id: "two-sum",
-                title: "Two Sum",
-                difficulty: "Easy",
-                description: "Find two numbers in an array that add up to a target value.",
-                platform: "LeetCode",
-                completion: 0
-            },
-            {
-                id: "valid-anagram",
-                title: "Valid Anagram",
-                difficulty: "Easy",
-                description: "Determine if a string is an anagram of another string.",
-                platform: "LeetCode",
-                completion: 50
-            },
-            {
-                id: "reverse-string",
-                title: "Reverse String",
-                difficulty: "Easy",
-                description: "Reverse all the characters in a string.",
-                platform: "LeetCode",
-                completion: 100
-            }
-        ],
-        subtopics: [
-            "Array Traversal",
-            "Array Manipulation",
-            "String Methods",
-            "Two-Pointer Technique",
-            "Sliding Window"
-        ],
-        prerequisites: ["Basic Programming", "Variables and Data Types"],
-        nextTopics: ["Linked Lists", "Hash Tables"],
-        progressStats: {
-            completion: 60,
-            problemsSolved: 6,
-            totalProblems: 10,
-            timeSpent: "4h 30m"
-        }
-    },
-    // Other topics would be defined here
-];
+interface Topic {
+    id: string;
+    title: string;
+    description: string;
+    resources: Array<{
+        id: string;
+        title: string;
+        url: string;
+        type: "VIDEO" | "ARTICLE";
+    }>;
+    problems: Array<{
+        id: string;
+        title: string;
+        difficulty: string;
+        description: string;
+        platform: string;
+        completion: number;
+    }>;
+    subtopics: string[];
+    prerequisites: string[];
+    progressStats: {
+        completion: number;
+        problemsSolved: number;
+        totalProblems: number;
+        timeSpent: string;
+    };
+}
 
 export default function TopicDetail() {
     const params = useParams();
     const router = useRouter();
     const topicId = params.id as string;
     const [activeTab, setActiveTab] = useState("overview");
+    const [topic, setTopic] = useState<Topic | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
-    // Find the topic by ID from our mock data
-    const topic = mockTopics.find(t => t.id === topicId) || mockTopics[0];
+    useEffect(() => {
+        const fetchTopic = async () => {
+            try {
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/roadmap/topics/${topicId}`);
+                if (response.data.success) {
+                    setTopic(response.data.data);
+                } else {
+                    toast.error("Failed to fetch topic details");
+                }
+            } catch (error) {
+                console.error("Error fetching topic:", error);
+                toast.error("Failed to fetch topic details");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchTopic();
+    }, [topicId]);
 
     const getDifficultyColor = (difficulty: string) => {
         switch (difficulty.toLowerCase()) {
@@ -104,6 +82,26 @@ export default function TopicDetail() {
             default: return '';
         }
     };
+
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center min-h-[400px]">
+                <Loader2 className="h-8 w-8 animate-spin" />
+            </div>
+        );
+    }
+
+    if (!topic) {
+        return (
+            <div className="text-center py-12">
+                <h3 className="text-lg font-medium">Topic not found</h3>
+                <p className="text-muted-foreground mt-1">The requested topic could not be found</p>
+                <Button variant="outline" className="mt-4" onClick={() => router.back()}>
+                    Go Back
+                </Button>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">
@@ -151,11 +149,11 @@ export default function TopicDetail() {
                         </div>
 
                         <div className="flex justify-end items-center">
-                            <Link href={`/practice?topic=${topic.id}`}>
+                            {/* <Link href={`/practice?topic=${topic.id}`}>
                                 <Button>
                                     Practice Now <ChevronRight className="h-4 w-4 ml-1" />
                                 </Button>
-                            </Link>
+                            </Link> */}
                         </div>
                     </div>
                 </CardContent>
@@ -198,24 +196,6 @@ export default function TopicDetail() {
                             </div>
                         </CardContent>
                     </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>What&apos;s Next?</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="mb-4">After mastering this topic, you can explore these related topics:</p>
-                            <div className="flex flex-wrap gap-2">
-                                {topic.nextTopics.map((nextTopic, i) => (
-                                    <Button key={i} variant="outline" asChild>
-                                        <Link href={`/roadmap/topics/${nextTopic.toLowerCase().replace(/\s+/g, '-')}`}>
-                                            {nextTopic}
-                                        </Link>
-                                    </Button>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
                 </TabsContent>
 
                 {/* Problems Tab */}
@@ -248,7 +228,7 @@ export default function TopicDetail() {
                                                     <span className="text-xs font-medium">{problem.completion}%</span>
                                                 </div>
                                             )}
-                                            <Link href={`/practice?topic=${topic.id}&problem=${problem.id}`}>
+                                            {/* <Link href={`/practice?topic=${topic.id}&problem=${problem.id}`}>
                                                 <Button variant={problem.completion === 100 ? "outline" : "default"} size="sm">
                                                     {problem.completion === 100 ? (
                                                         <>
@@ -261,7 +241,7 @@ export default function TopicDetail() {
                                                         </>
                                                     )}
                                                 </Button>
-                                            </Link>
+                                            </Link> */}
                                         </div>
                                     </li>
                                 ))}

@@ -186,7 +186,6 @@ export default function TopicsPage() {
                                         <TableCell>
                                             <div>
                                                 <div className="font-medium">{topic.title}</div>
-                                                <div className="text-sm text-muted-foreground line-clamp-1">{topic.description}</div>
                                             </div>
                                         </TableCell>
                                         <TableCell>{topic.sectionName}</TableCell>
