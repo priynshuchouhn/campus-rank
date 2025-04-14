@@ -441,12 +441,12 @@ export default function RoadmapPage() {
                                     Browse Topics
                                 </Link>
                             </Button>
-                            <Button asChild>
+                            {/* <Button asChild>
                                 <Link href="/practice">
                                     <Code className="h-4 w-4 mr-2" />
                                     Practice
                                 </Link>
-                            </Button>
+                            </Button> */}
                         </div>
                     )}
                 </div>

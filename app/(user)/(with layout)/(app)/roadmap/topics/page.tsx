@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/select";
 import axios from "axios";
 import toast from 'react-hot-toast';
-
+import { PredefinedTopic, Resource } from "@prisma/client";
 interface Topic {
     id: string;
     title: string;
@@ -45,7 +45,7 @@ export default function TopicsPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('all');
     const [difficultyFilter, setDifficultyFilter] = useState('all');
-    const [topics, setTopics] = useState<(Topic & { predefinedSection: { title: string } })[]>([]);
+    const [topics, setTopics] = useState<(Topic & { predefinedTopic: PredefinedTopic & { resources: Resource[] }, section: { title: string } })[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     console.log(topics);
@@ -54,16 +54,14 @@ export default function TopicsPage() {
     useEffect(() => {
         const fetchTopics = async () => {
             try {
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/roadmap`);
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/roadmap/topics`);
                 if (response.data.success) {
                     // Flatten the roadmap structure to get all topics
-                    const allTopics = response.data.data.sections.flatMap((section: any) =>
-                        section.topics.map((topic: any) => ({
-                            ...topic.predefinedTopic,
-                            sectionName: section.title,
-                            predefinedSection: topic.predefinedTopic.predefinedSection
-                        }))
-                    );
+                    const allTopics = response.data.data.flatMap((topic: any) => ({
+                        ...topic,
+                        sectionName: topic.section.title,
+                        predefinedSection: topic.section.predefinedSection
+                    }));
                     setTopics(allTopics);
                 } else {
                     toast.error("Failed to fetch topics");
@@ -81,7 +79,7 @@ export default function TopicsPage() {
 
     // Filter topics based on search query and filters
     const filteredTopics = topics.filter(topic => {
-        const matchesSearch = topic.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        const matchesSearch = topic.predefinedTopic.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
             topic.description.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesCategory = categoryFilter === 'all' || topic.sectionName === categoryFilter;
         const matchesDifficulty = difficultyFilter === 'all' || topic.level === difficultyFilter;
@@ -155,9 +153,9 @@ export default function TopicsPage() {
                     <Card key={topic.id} className="overflow-hidden flex flex-col h-full">
                         <CardHeader className="pb-3">
                             <div className="flex justify-between items-start mb-2">
-                                <Badge>{topic.predefinedSection.title}</Badge>
+                                <Badge>{topic.section.title}</Badge>
                                 <Badge variant="outline">
-                                    {topic.subTopics.length} Subtopics
+                                    {topic.predefinedTopic.subTopics.length} Subtopics
                                 </Badge>
                             </div>
                             <CardTitle>{topic.title}</CardTitle>
@@ -170,22 +168,22 @@ export default function TopicsPage() {
                                 <div className="flex justify-between text-sm">
                                     <div className="flex items-center gap-1">
                                         <Code className="h-4 w-4 text-blue-500" />
-                                        <span>{topic.resources.length} Resources</span>
+                                        <span>{topic.predefinedTopic.resources.length} Resources</span>
                                     </div>
                                     <div className="flex items-center gap-1">
                                         <Clock className="h-4 w-4 text-yellow-500" />
-                                        <span>{topic.preRequisites.length} Prerequisites</span>
+                                        <span>{topic.predefinedTopic.preRequisites.length} Prerequisites</span>
                                     </div>
                                 </div>
                             </div>
                         </CardContent>
                         <CardFooter className="flex justify-between border-t pt-4">
-                            <Button variant="outline" asChild>
+                            {/* <Button variant="outline" asChild>
                                 <Link href={`/practice?topic=${topic.id}`}>
                                     <Code className="h-4 w-4 mr-2" />
                                     Practice
                                 </Link>
-                            </Button>
+                            </Button> */}
                             <Button asChild>
                                 <Link href={`/roadmap/topics/${topic.id}`}>
                                     <BookOpen className="h-4 w-4 mr-2" />
