@@ -46,7 +46,6 @@ export default async function Profile() {
                 <p className="text-muted-foreground">{user.email}</p>
                 <div className="flex items-center gap-2">
                   <p className="text-muted-foreground">@{user.username}</p>
-                  <ReportForm defaultType="USERNAME_CHANGE" buttonText="Request Change" />
                 </div>
               </div>
             </div>
