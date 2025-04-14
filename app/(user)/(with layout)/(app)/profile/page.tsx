@@ -101,7 +101,7 @@ export default async function Profile() {
           </CardContent>
         </Card>
 
-        <ProfileForm user={user} />
+        {!user.isLocked && <ProfileForm user={user} />}
 
         <div className="mt-8 text-center text-sm text-muted-foreground">
           <p>
