@@ -169,4 +169,20 @@ export interface Resource {
     url: string;
     type: "article" | "video";
 }
+
+export interface BlogPost {
+    id: string;
+    title: string;
+    description: string;
+    author: {
+        name: string;
+        image: string;
+    };
+    publishedAt: string;
+    createdAt: string;
+    category: string;
+    featuredImage: string;
+    tags: string[];
+    content: string;
+  }
   
