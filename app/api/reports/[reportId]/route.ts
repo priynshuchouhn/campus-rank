@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { reportId: string } }
+  { params }: { params: Promise<{ reportId: string }>}
 ) {
   try {
     const session = await auth();
@@ -13,6 +13,7 @@ export async function PATCH(
     }
 
     const body = await req.json();
+    const { reportId } = await params;
     const { status } = body;
 
     if (!status) {
@@ -21,7 +22,7 @@ export async function PATCH(
 
     const report = await prisma.report.update({
       where: {
-        id: params.reportId,
+        id: reportId,
       },
       data: {
         status,
