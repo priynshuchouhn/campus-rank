@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ArrowLeft, Calendar, Clock, User, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { RenderMarkdown } from '@/components/ui/render-markdown';
+import { Share } from '@/components/ui/share';
 import axios from 'axios';
 import { Metadata } from 'next';
 
@@ -83,25 +84,25 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                 <p className="md:text-xl text-sm text-gray-600 mb-6">{post.description}</p>
 
                 {/* Author and Meta Info */}
-                <div className="flex items-center gap-6 text-gray-600">
-                    <div className="flex items-center gap-2">
+                <div className="grid grid-cols-2 md:grid-cols-3 md:gap-6 gap-2 text-gray-600">
+                    <div className="flex items-center gap-2 col-span-2 md:col-span-1 mb-2 md:mb-0">
                         {post.author.image ? (
                             <Image
                                 src={post.author.image}
                                 alt={post.author.name}
-                                className="w-10 h-10 rounded-full object-cover"
+                                className="md:w-10 md:h-10 w-8 h-8 rounded-full object-cover"
                                 width={64}
                                 height={64}
                             />
                         ) : (
-                            <User className="w-10 h-10 p-2 bg-gray-200 rounded-full" />
+                            <User className="md:w-10 md:h-10 w-8 h-8 p-2 bg-gray-200 rounded-full" />
                         )}
                         <span className="font-medium">{post.author.name}</span>
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <Calendar className="w-5 h-5" />
-                        <span>{new Date(post.publishedAt || post.createdAt).toLocaleDateString('en-US', {
+                        <Calendar className="md:w-5 md:h-5 w-4 h-4" />
+                        <span className='md:text-base text-sm'>{new Date(post.publishedAt || post.createdAt).toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'long',
                             day: 'numeric'
@@ -109,8 +110,8 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <Clock className="w-5 h-5" />
-                        <span>{Math.ceil(post.content.split(' ').length / 200)} min read</span>
+                        <Clock className="md:w-5 md:h-5 w-4 h-4" />
+                        <span className='md:text-base text-sm'>{Math.ceil(post.content.split(' ').length / 200)} min read</span>
                     </div>
                 </div>
             </header>
@@ -149,6 +150,16 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                     </div>
                 </div>
             )}
+
+            {/* Share Section */}
+            <div className="mt-8 pt-6 border-t border-gray-200">
+                <Share
+                    url={`https://campus-rank.priynshuchouhn.engineer/blogs/${post.slug}`}
+                    title={post.title}
+                    description={post.description}
+                    image={post.featuredImage}
+                />
+            </div>
         </article>
     );
 }
