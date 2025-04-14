@@ -66,6 +66,9 @@ export function ProfileForm({ user }: any) {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="text-sm text-yellow-600 dark:text-yellow-400 mb-4">
+              Note: Once you save your usernames, they cannot be changed. Please enter them carefully.
+            </div>
             <FormField
               control={form.control}
               name="leetcodeUsername"
