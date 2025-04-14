@@ -322,6 +322,7 @@ model BlogPost {
   content       String
   authorId      String
   featuredImage String?
+  category      String?
   tags          String[]
   slug          String    @unique
   isPublished   Boolean   @default(false)

@@ -178,9 +178,15 @@ export interface BlogPost {
         name: string;
         image: string;
     };
-    publishedAt: string;
-    createdAt: string;
     category: string;
+    isPublished: boolean;
+    isFeatured: boolean;
+    isApproved: boolean;
+    isDeleted: boolean;
+    slug: string;
+    publishedAt: Date;
+    createdAt: Date;
+    updatedAt: Date;
     featuredImage: string;
     tags: string[];
     content: string;

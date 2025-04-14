@@ -53,7 +53,7 @@ export default function BlogCard({ post }: BlogCardProps) {
 
       <CardFooter className="border-t pt-4">
         <div className="flex items-center justify-center w-full">
-          <Link href={`/blogs/${post.id}`}>
+          <Link href={`/blogs/${post.slug}`}>
             <Button variant="ghost" size="sm" className="group/btn">
               Read Complete Article
               <BookOpen size={14} className="ml-2 group-hover/btn:translate-x-1 transition-transform" />

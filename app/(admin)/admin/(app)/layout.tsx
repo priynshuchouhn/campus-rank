@@ -58,6 +58,11 @@ const sidebarItems = [
     icon: FileCode,
   },
   {
+    title: "Blogs",
+    href: "/admin/blogs",
+    icon: BookOpen,
+  },
+  {
     title: "Reports",
     href: "/admin/reports",
     icon: HelpCircle,
