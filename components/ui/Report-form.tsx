@@ -25,17 +25,19 @@ import { toast } from "react-hot-toast";
 interface ReportFormProps {
     defaultType?: string;
     buttonText?: string;
+    platform?: "leetcode" | "hackerrank" | "gfg";
 }
 
-export function ReportForm({ defaultType = "", buttonText = "Report an Issue" }: ReportFormProps) {
+export function ReportForm({ defaultType = "", buttonText = "Report an Issue", platform }: ReportFormProps) {
     const router = useRouter();
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         type: defaultType,
-        title: defaultType === "USERNAME_CHANGE" ? "Username Change Request" : "",
+        title: defaultType === "USERNAME_CHANGE" ? `${platform ? platform.charAt(0).toUpperCase() + platform.slice(1) : "Platform"} Username Change Request` : "",
         description: "",
         requestedUsername: "",
+        platform: platform || "",
     });
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -96,6 +98,26 @@ export function ReportForm({ defaultType = "", buttonText = "Report an Issue" }:
                             </SelectContent>
                         </Select>
                     </div>
+                    {formData.type === "USERNAME_CHANGE" && (
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium">Platform</label>
+                            <Select
+                                value={formData.platform}
+                                onValueChange={(value) =>
+                                    setFormData({ ...formData, platform: value })
+                                }
+                            >
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select platform" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="leetcode">LeetCode</SelectItem>
+                                    <SelectItem value="hackerrank">HackerRank</SelectItem>
+                                    <SelectItem value="gfg">GeeksforGeeks</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
                     <div className="space-y-2">
                         <label className="text-sm font-medium">Title</label>
                         <Input
@@ -103,7 +125,7 @@ export function ReportForm({ defaultType = "", buttonText = "Report an Issue" }:
                             onChange={(e) =>
                                 setFormData({ ...formData, title: e.target.value })
                             }
-                            placeholder={formData.type === "USERNAME_CHANGE" ? "Username Change Request" : "Brief description of the issue"}
+                            placeholder={formData.type === "USERNAME_CHANGE" ? `${formData.platform ? formData.platform.charAt(0).toUpperCase() + formData.platform.slice(1) : "Platform"} Username Change Request` : "Brief description of the issue"}
                         />
                     </div>
                     {formData.type === "USERNAME_CHANGE" && (
@@ -114,7 +136,7 @@ export function ReportForm({ defaultType = "", buttonText = "Report an Issue" }:
                                 onChange={(e) =>
                                     setFormData({ ...formData, requestedUsername: e.target.value })
                                 }
-                                placeholder="Enter your desired username"
+                                placeholder={`Enter your desired ${formData.platform || "platform"} username`}
                             />
                         </div>
                     )}
@@ -125,7 +147,7 @@ export function ReportForm({ defaultType = "", buttonText = "Report an Issue" }:
                             onChange={(e) =>
                                 setFormData({ ...formData, description: e.target.value })
                             }
-                            placeholder={formData.type === "USERNAME_CHANGE" ? "Please explain why you want to change your username" : "Detailed description of the issue"}
+                            placeholder={formData.type === "USERNAME_CHANGE" ? `Please explain why you want to change your ${formData.platform || "platform"} username` : "Detailed description of the issue"}
                             className="min-h-[100px]"
                         />
                     </div>
