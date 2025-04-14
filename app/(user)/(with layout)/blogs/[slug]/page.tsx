@@ -5,8 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft, Calendar, Clock, User, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { blogPosts } from '../page';
-import clsx from 'clsx';
+import { blogPosts } from '@/lib/data';
 import { RenderMarkdown } from '@/components/ui/render-markdown';
 
 export default function BlogPost() {
