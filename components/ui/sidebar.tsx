@@ -1,7 +1,7 @@
 'use client'
 import { usePathname } from 'next/navigation'
 import { Separator } from '@radix-ui/react-dropdown-menu'
-import { Home, BookOpen, Code, User, Settings, LogOut, Notebook, Target, Info, Shield, FileText, Mail } from 'lucide-react'
+import { Home, BookOpen, Code, User, Settings, LogOut, Notebook, Target, Info, Shield, FileText, HelpCircle } from 'lucide-react'
 import React from 'react'
 import { Button } from './button'
 import { SidebarNavItem } from './sidebar-nav-item'
@@ -72,6 +72,12 @@ function Sidebar({ user }: { user: any }) {
                                 icon={<Settings className="h-4 w-4" />}
                                 title="Settings"
                                 isActive={isLinkActive('/settings')}
+                            />
+                            <SidebarNavItem
+                                href="/reports"
+                                icon={<HelpCircle className="h-4 w-4" />}
+                                title="Reports"
+                                isActive={isLinkActive('/reports')}
                             />
                         </div>
                     </nav>

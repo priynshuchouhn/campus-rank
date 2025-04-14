@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { ReportForm } from "@/components/ui/Report-form";
 
 export default async function Profile() {
   const user = await getUser();
@@ -43,7 +44,10 @@ export default async function Profile() {
               <div>
                 <h2 className="text-xl font-semibold">{user.name}</h2>
                 <p className="text-muted-foreground">{user.email}</p>
-                <p className="text-muted-foreground">@{user.username}</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-muted-foreground">@{user.username}</p>
+                  <ReportForm defaultType="USERNAME_CHANGE" buttonText="Request Change" />
+                </div>
               </div>
             </div>
 

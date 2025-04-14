@@ -15,6 +15,7 @@ import {
   FileCode,
   BookOpen,
   FolderTree,
+  HelpCircle,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -55,6 +56,11 @@ const sidebarItems = [
     title: "Questions",
     href: "/admin/questions",
     icon: FileCode,
+  },
+  {
+    title: "Reports",
+    href: "/admin/reports",
+    icon: HelpCircle,
   },
   {
     title: "Settings",
