@@ -14,7 +14,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-
+import { Textarea } from "@/components/ui/textarea";
 const goalFormSchema = z.object({
     title: z.string().min(1, "Title is required"),
     description: z.string().optional(),
@@ -217,111 +217,13 @@ export default function GoalsPage() {
                 </div>
             </div>
 
-            {error && (
-                <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-md">
-                    {error}
-                </div>
-            )}
-
-            <Card className="mb-6">
-                <CardHeader>
-                    <CardTitle>Add New Goal</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="title">Goal Title</Label>
-                            <Input
-                                id="title"
-                                placeholder="Enter your goal"
-                                {...register('title')}
-                            />
-                            {errors.title && (
-                                <p className="text-sm text-destructive">{errors.title.message}</p>
-                            )}
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="description">Description (Optional)</Label>
-                            <Input
-                                id="description"
-                                placeholder="Enter goal description"
-                                {...register('description')}
-                            />
-                            {errors.description && (
-                                <p className="text-sm text-destructive">{errors.description.message}</p>
-                            )}
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="targetCount">Target Count</Label>
-                                <Input
-                                    id="targetCount"
-                                    type="number"
-                                    min="1"
-                                    {...register('targetCount', { valueAsNumber: true })}
-                                />
-                                {errors.targetCount && (
-                                    <p className="text-sm text-destructive">{errors.targetCount.message}</p>
-                                )}
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="type">Goal Type</Label>
-                                <Select
-                                    {...register('type')}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select goal type" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="IMPLEMENTATION">Implementation</SelectItem>
-                                        <SelectItem value="CONCEPT">Concept</SelectItem>
-                                        <SelectItem value="ALGORITHM">Algorithm</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                {errors.type && (
-                                    <p className="text-sm text-destructive">{errors.type.message}</p>
-                                )}
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="startDate">Start Date</Label>
-                                <Input
-                                    id="startDate"
-                                    type="date"
-                                    {...register('startDate')}
-                                />
-                                {errors.startDate && (
-                                    <p className="text-sm text-destructive">{errors.startDate.message}</p>
-                                )}
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="endDate">End Date</Label>
-                                <Input
-                                    id="endDate"
-                                    type="date"
-                                    {...register('endDate')}
-                                />
-                                {errors.endDate && (
-                                    <p className="text-sm text-destructive">{errors.endDate.message}</p>
-                                )}
-                            </div>
-                        </div>
-                        <Button type="submit" className="self-end" disabled={isSubmitting}>
-                            <Plus className="h-4 w-4 mr-2" />
-                            {isSubmitting ? 'Adding...' : 'Add Goal'}
-                        </Button>
-                    </form>
-                </CardContent>
-            </Card>
-
-            <div className="mb-6">
+            {goals.length > 0 && <div className="mb-6">
                 <div className="flex items-center justify-between mb-2">
                     <h2 className="font-semibold">Weekly Progress</h2>
                     <span className="text-sm text-muted-foreground">{Math.round(progress)}%</span>
                 </div>
                 <Progress value={progress} className="h-2" />
-            </div>
+            </div>}
 
             <div className="space-y-4">
                 {goals.map(goal => (
@@ -369,6 +271,106 @@ export default function GoalsPage() {
                     </Card>
                 ))}
             </div>
+
+            {error && (
+                <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-md">
+                    {error}
+                </div>
+            )}
+
+
+            <Card className="mb-6">
+                <CardHeader>
+                    <CardTitle>Add New Goal</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="title">Goal Title</Label>
+                            <Input
+                                id="title"
+                                placeholder="Enter your goal"
+                                {...register('title')}
+                            />
+                            {errors.title && (
+                                <p className="text-sm text-destructive">{errors.title.message}</p>
+                            )}
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="description">Description (Optional)</Label>
+                            <Textarea
+                                id="description"
+                                placeholder="Enter goal description"
+                                rows={10}
+                                {...register('description')}
+                            />
+                            {errors.description && (
+                                <p className="text-sm text-destructive">{errors.description.message}</p>
+                            )}
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="targetCount">Target Count</Label>
+                                <Input
+                                    id="targetCount"
+                                    type="number"
+                                    min="1"
+                                    {...register('targetCount', { valueAsNumber: true })}
+                                />
+                                {errors.targetCount && (
+                                    <p className="text-sm text-destructive">{errors.targetCount.message}</p>
+                                )}
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="type">Goal Type</Label>
+                                <Select
+                                    {...register('type')}
+                                >
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Select goal type" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="IMPLEMENTATION">Implementation</SelectItem>
+                                        <SelectItem value="CONCEPT">Concept</SelectItem>
+                                        <SelectItem value="ALGORITHM">Algorithm</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                {errors.type && (
+                                    <p className="text-sm text-destructive">{errors.type.message}</p>
+                                )}
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="startDate">Start Date</Label>
+                                <Input
+                                    id="startDate"
+                                    type="date"
+                                    {...register('startDate')}
+                                />
+                                {errors.startDate && (
+                                    <p className="text-sm text-destructive">{errors.startDate.message}</p>
+                                )}
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="endDate">End Date</Label>
+                                <Input
+                                    id="endDate"
+                                    type="date"
+                                    {...register('endDate')}
+                                />
+                                {errors.endDate && (
+                                    <p className="text-sm text-destructive">{errors.endDate.message}</p>
+                                )}
+                            </div>
+                        </div>
+                        <Button type="submit" className="self-end" disabled={isSubmitting}>
+                            <Plus className="h-4 w-4 mr-2" />
+                            {isSubmitting ? 'Adding...' : 'Add Goal'}
+                        </Button>
+                    </form>
+                </CardContent>
+            </Card>
         </div>
     );
 } 

@@ -5,14 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Trash2, Loader2, ArrowLeft } from "lucide-react";
 import { useForm, useFieldArray, Controller, Control } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,9 +14,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import axios from "axios";
-import { Toggle } from "@/components/ui/toggle";
-import { Bold, Italic, List, ListOrdered, Quote } from "lucide-react";
-import Editor from "@/components/editor";
+import MarkdownEditor from "@/components/ui/markdown-editor";
 
 // Define schemas for validation
 const resourceSchema = z.object({
@@ -185,9 +176,8 @@ export default function NewTopicPage() {
                         <div className="space-y-2">
                             <Label htmlFor="description">Description</Label>
                             <div className="border rounded-md overflow-hidden">
-                                <Editor
-                                
-                                    data={editorData}
+                                <MarkdownEditor
+                                    value={editorData}
                                     onChange={(data) => {
                                         setEditorData(data);
                                         form.setValue("description", data);

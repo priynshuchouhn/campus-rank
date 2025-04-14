@@ -10,12 +10,19 @@ const resourceSchema = z.object({
   type: z.enum(["VIDEO", "ARTICLE"])
 });
 
+// Schema for subtopic validation
+const subtopicSchema = z.object({
+  title: z.string().min(2, "Subtopic title must be at least 2 characters")
+});
+
 // Schema for topic validation
 const topicSchema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters"),
   description: z.string().min(10, "Description must be at least 10 characters"),
   sectionId: z.string().min(1, "Section is required"),
-  resources: z.array(resourceSchema).optional().default([])
+  resources: z.array(resourceSchema).optional().default([]),
+  subtopics: z.array(subtopicSchema).optional().default([]),
+  prerequisites: z.array(z.string()).optional().default([])
 });
 
 // GET topics - optionally filtered by sectionId
@@ -50,6 +57,9 @@ export async function GET(request: NextRequest) {
       description: topic.description || "",
       sectionId: topic.predefinedSectionId,
       sectionName: topic.predefinedSection.title,
+      level: topic.level,
+      preRequisites: topic.preRequisites,
+      subTopics: topic.subTopics,
       resources: topic.resources.map(resource => ({
         id: resource.id,
         title: resource.title,
@@ -93,6 +103,8 @@ export async function POST(request: NextRequest) {
           title: validatedData.title,
           description: validatedData.description,
           predefinedSectionId: validatedData.sectionId,
+          subTopics: validatedData.subtopics.map(subtopic => subtopic.title),
+          preRequisites: validatedData.prerequisites
         },
       });
       
@@ -133,6 +145,8 @@ export async function POST(request: NextRequest) {
       description: result.description || "",
       sectionId: result.predefinedSectionId,
       sectionName: result.predefinedSection.title,
+      subtopics: result.subTopics.map(title => ({ title })),
+      prerequisites: result.preRequisites,
       resources: result.resources.map(resource => ({
         id: resource.id,
         title: resource.title,

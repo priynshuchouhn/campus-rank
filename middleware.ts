@@ -5,7 +5,7 @@ export async function middleware(req: NextRequest) {
   const session = await auth(); // Get the authenticated user session
   const { pathname } = req.nextUrl;
 
-  if (pathname === "/admin/login") {
+  if (!session && pathname === "/admin/login") {
     return NextResponse.next();
   }
 
