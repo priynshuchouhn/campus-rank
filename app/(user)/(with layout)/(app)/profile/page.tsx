@@ -65,7 +65,7 @@ export default async function Profile() {
               </div>
             </div>
 
-            <div className="mt-6 space-y-4">
+            {user.isLocked && <div className="mt-6 space-y-4">
               <h3 className="text-sm font-medium text-muted-foreground">Platform Usernames</h3>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -73,30 +73,24 @@ export default async function Profile() {
                     <p className="text-sm font-medium">LeetCode</p>
                     <p className="text-sm text-muted-foreground">{user.leetcodeUsername || "Not set"}</p>
                   </div>
-                  {user.isLocked && (
-                    <ReportForm defaultType="USERNAME_CHANGE" buttonText="Request Change" platform="leetcode" />
-                  )}
+                  <ReportForm defaultType="USERNAME_CHANGE" buttonText="Request Change" platform="leetcode" />
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium">HackerRank</p>
                     <p className="text-sm text-muted-foreground">{user.hackerrankUsername || "Not set"}</p>
                   </div>
-                  {user.isLocked && (
-                    <ReportForm defaultType="USERNAME_CHANGE" buttonText="Request Change" platform="hackerrank" />
-                  )}
+                  <ReportForm defaultType="USERNAME_CHANGE" buttonText="Request Change" platform="hackerrank" />
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium">GeeksforGeeks</p>
                     <p className="text-sm text-muted-foreground">{user.gfgUsername || "Not set"}</p>
                   </div>
-                  {user.isLocked && (
-                    <ReportForm defaultType="USERNAME_CHANGE" buttonText="Request Change" platform="gfg" />
-                  )}
+                  <ReportForm defaultType="USERNAME_CHANGE" buttonText="Request Change" platform="gfg" />
                 </div>
               </div>
-            </div>
+            </div>}
           </CardContent>
         </Card>
 
