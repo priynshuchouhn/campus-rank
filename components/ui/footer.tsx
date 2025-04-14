@@ -22,8 +22,8 @@ function Footer() {
             <h3 className="text-sm font-semibold text-gray-900 dark:text-white tracking-wider uppercase mb-4">Platform</h3>
             <ul className="space-y-3">
               <li><Link href="/" className="text-gray-600 dark:text-white hover:text-gray-900">Leaderboard</Link></li>
-              {/* <li><Link href="/challenges" className="text-gray-600 hover:text-gray-900">Challenges</Link></li>
-              <li><Link href="/rankings" className="text-gray-600 hover:text-gray-900">University Rankings</Link></li> */}
+              {/* <li><Link href="/challenges" className="text-gray-600 hover:text-gray-900">Challenges</Link></li> */}
+              <li><Link href="/blogs" className="text-gray-600 hover:text-gray-900">Blogs</Link></li>
               <li><Link href="/about-us" className="text-gray-600 dark:text-white hover:text-gray-900">About Us</Link></li>
             </ul>
           </div>
