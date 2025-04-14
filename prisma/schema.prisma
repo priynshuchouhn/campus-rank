@@ -313,7 +313,7 @@ model WeeklyGoal {
   user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   completedAt  DateTime?
   isDeleted    Boolean    @default(false)
-  
+}
 model BlogPost {
   id            String    @id @default(cuid())
   title         String
