@@ -82,12 +82,17 @@ async function authorizeAdmin(credentials: { email: string, password: string }) 
   if (!email || !password) {
     throw new Error("Invalid credentials");
   }
-  const admin = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/auth`, {
-    email,
-    password,
-  })
-  if(admin.data.success) {
-    return admin.data.data;
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/auth`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email, password }),
+  });
+  
+  const data = await response.json();
+  if(data.success) {
+    return data.data;
   }
   return null;
 }
