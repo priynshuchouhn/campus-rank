@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Campus Rank - College Coding Leaderboard",
-  description: "Track coding progress of students on GFG, LeetCode & HackerRank with CampusRank. Compete, learn, and rank up!",
+  description: "Track coding progress of students on GFG, LeetCode & HackerRank with Campus Rank. Compete, learn, and rank up!",
   keywords: "coding leaderboard, gfg ranking, leetcode ranking, hackerrank leaderboard, college coding, campus rank, coding contests",
   authors: [{ name: "CampusRank Team", url: "https://campus-rank.priynshuchouhn.engineer" }],
   metadataBase: new URL("https://campus-rank.priynshuchouhn.engineer"),
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     title: "Campus Rank - College Coding Leaderboard",
     description: "Join CampusRank to monitor your coding progress on GFG, LeetCode & HackerRank.",
     url: "https://campus-rank.priynshuchouhn.engineer",
-    siteName: "CampusRank",
+    siteName: "Campus Rank",
     images: [
       {
         url: "/logo.jpg",
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "CampusRank - College Coding Leaderboard",
+    title: "Campus Rank - College Coding Leaderboard",
     description: "Track coding progress of students from GFG, LeetCode & HackerRank with Campus Rank.",
     images: ["/logo.jpg"],
   },
