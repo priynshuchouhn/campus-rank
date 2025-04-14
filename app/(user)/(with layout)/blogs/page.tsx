@@ -1,12 +1,30 @@
-'use client';
 
-import { useState } from 'react';
-import { BookOpen, Calendar, User } from 'lucide-react';
-import BlogCard from '@/components/ui/blog-card';
-import FilterBar from '@/components/ui/blog-filter-bar';
-import { Button } from '@/components/ui/button';
+
+
 import { ThreeDMarquee } from '@/components/ui/3d-marquee';
-import { blogPosts, categories } from '@/lib/data';
+import BlogPostList from '@/components/ui/blog-post-list';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Campus Rank Blogs - Learn, Grow, and Get Ranked',
+    description: 'Explore expert tips, coding strategies, student success stories, and placement preparation guides. Stay updated with the latest insights for your career growth.',
+    keywords: 'coding blogs, placement preparation, student success stories, career growth, coding strategies, campus rank, tech education',
+    openGraph: {
+        title: 'Campus Rank Blogs - Learn, Grow, and Get Ranked',
+        description: 'Explore expert tips, coding strategies, student success stories, and placement preparation guides.',
+        type: 'website',
+        locale: 'en_US',
+        siteName: 'Campus Rank',
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: 'Campus Rank Blogs - Learn, Grow, and Get Ranked',
+        description: 'Explore expert tips, coding strategies, student success stories, and placement preparation guides.',
+    },
+    alternates: {
+        canonical: '/blogs',
+    },
+}; 
 
 const images = [
     "https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=800&auto=format&fit=crop&q=60", // coding workspace
@@ -42,65 +60,29 @@ const images = [
 ];
 
 export default function BlogsPage() {
-    const [selectedCategory, setSelectedCategory] = useState<string>('all');
-    const [visiblePosts, setVisiblePosts] = useState(6);
-
-    const filteredPosts = selectedCategory === 'all'
-        ? blogPosts
-        : blogPosts.filter(post => post.category === selectedCategory);
-
-    const handleLoadMore = () => {
-        setVisiblePosts(prev => Math.min(prev + 6, filteredPosts.length));
-    };
-
     return (
         <div className="min-h-screen bg-background">
             {/* Hero Section */}
-            <div className='relative h-96 py-24 px-4'>
-                <h2 className="relative z-20 mx-auto max-w-4xl text-center text-2xl font-bold text-balance text-white md:text-4xl lg:text-6xl">
+            <section className='relative h-96 py-24 px-4' aria-label="Blogs introduction">
+                <h1 className="relative z-20 mx-auto max-w-4xl text-center text-2xl font-bold text-balance text-white md:text-4xl lg:text-6xl">
                     Learn, Grow, and Get Ranked!
                     <span className="relative z-20 inline-block rounded-xl bg-blue-500/40 px-4 py-1 mt-1 text-white underline decoration-sky-500 decoration-[6px] underline-offset-[16px] backdrop-blur-sm">
                         Campus Rank Blogs
                     </span>{" "}
-                </h2>
+                </h1>
                 <p className="relative z-20 mx-auto max-w-2xl py-8 text-center text-sm text-neutral-200 md:text-base">
                     Explore tips, coding strategies, student success stories, and placement preparation guides.
                 </p>
-                <div className="absolute inset-0 z-10 h-full w-full bg-black/80 dark:bg-black/40" />
+                <div className="absolute inset-0 z-10 h-full w-full bg-black/80 dark:bg-black/40" aria-hidden="true" />
                 <ThreeDMarquee
                     className="pointer-events-none absolute inset-0 h-full w-full"
                     images={images}
+                    aria-hidden="true"
                 />
-            </div>
+            </section>
 
             {/* Main Content */}
-            <main className="max-w-7xl mx-auto px-4 py-12">
-                <FilterBar
-                    categories={categories}
-                    selectedCategory={selectedCategory}
-                    onCategoryChange={setSelectedCategory}
-                />
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
-                    {filteredPosts.slice(0, visiblePosts).map((post) => (
-                        <BlogCard key={post.id} post={post} />
-                    ))}
-                </div>
-
-                {visiblePosts < filteredPosts.length && (
-                    <div className="text-center mt-16">
-                        <Button
-                            onClick={handleLoadMore}
-                            variant="outline"
-                            size="lg"
-                            className="px-8"
-                        >
-                            Load More Posts
-                            <BookOpen size={16} className="ml-2" />
-                        </Button>
-                    </div>
-                )}
-            </main>
+            <BlogPostList />
         </div>
     );
 }

@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://campus-rank.priynshuchouhn.engineer"),
   openGraph: {
     title: "Campus Rank - College Coding Leaderboard",
-    description: "Join CampusRank to monitor your coding progress on GFG, LeetCode & HackerRank.",
+    description: "Join Campus Rank to monitor your coding progress on GFG, LeetCode & HackerRank.",
     url: "https://campus-rank.priynshuchouhn.engineer",
     siteName: "Campus Rank",
     images: [

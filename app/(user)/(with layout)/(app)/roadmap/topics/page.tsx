@@ -4,26 +4,14 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-    BookOpen,
-    Search,
-    Filter,
-    Code,
-    Clock,
-    Loader2
-} from "lucide-react";
+import { BookOpen, Search, Filter, Code, Clock, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import axios from "axios";
 import toast from 'react-hot-toast';
 import { PredefinedTopic, Resource } from "@prisma/client";
+import { RenderMarkdown } from '@/components/ui/render-markdown';
 interface Topic {
     id: string;
     title: string;
@@ -160,7 +148,7 @@ export default function TopicsPage() {
                             </div>
                             <CardTitle>{topic.title}</CardTitle>
                             <CardDescription className="line-clamp-2">
-                                {/* <RenderMarkdown>{topic.description}</RenderMarkdown> */}
+                                <RenderMarkdown content={topic.description} />
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="flex-1">

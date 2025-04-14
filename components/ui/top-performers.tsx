@@ -23,18 +23,20 @@ export function TopPerformers({ leaderboards }: any) {
   return (
     <>
       {!isDismissed && (
-        <Alert variant="info" className="mb-4 bg-sky-600/10 border-sky-600/20 relative">
+        <Alert variant="default" className="mb-4 relative flex items-center gap-3 bg-gray-200 dark:bg-gray-800">
           <button
             onClick={() => setIsDismissed(true)}
-            className="absolute top-2 right-2 text-sky-600 hover:text-sky-700"
+            className="absolute top-2 right-2 text-destructive hover:text-destructive"
           >
-            <X className="h-8 w-8 cursor-pointer" />
+            <X className="h-8 w-8 text-black cursor-pointer dark:text-white" />
           </button>
-          <AlertCircle className="h-5 w-5" />
-          <AlertTitle>Last Updated</AlertTitle>
-          <AlertDescription>
-            Leaderboard was last updated {timeAgo(topThree[1]?.lastUpdated)}
-          </AlertDescription>
+          <AlertCircle className="h-5 w-5"/>
+          <div className="flex flex-col">
+            <AlertTitle>Last Updated</AlertTitle>
+            <AlertDescription className="text-start">
+              Leaderboard was last updated {timeAgo(topThree[1]?.lastUpdated)}
+            </AlertDescription>
+          </div>
         </Alert>
       )}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
