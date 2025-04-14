@@ -248,7 +248,7 @@ export default function RoadmapPage() {
 
             return (
                 <div key={section} className="mb-6">
-                    <div className="flex items-center justify-between mb-3">
+                    <div className="flex md:items-center flex-col sm:flex-row justify-between gap-2 mb-3">
                         <h3 className="text-lg font-semibold">{section}</h3>
                         <div className="flex items-center gap-4">
                             <div className="flex items-center gap-2">
@@ -277,7 +277,7 @@ export default function RoadmapPage() {
                     </div>
                     <div className="space-y-4">
                         {topics.map((topic) => (
-                            <div key={topic.id} className="flex items-center justify-between p-4 bg-card rounded-lg border">
+                            <div key={topic.id} className="flex md:items-center flex-col sm:flex-row justify-between gap-2 p-4 bg-card rounded-lg border">
                                 <div className="flex-1">
                                     <p className="font-medium">{topic.title}</p>
                                 </div>
@@ -290,7 +290,7 @@ export default function RoadmapPage() {
                                         />
                                         <Label htmlFor={`strong-${topic.id}`} className="flex items-center gap-1">
                                             <Star className="h-4 w-4 text-yellow-500" />
-                                            Strong
+                                            <span className="text-sm md:text-base md:block hidden">Strong</span>
                                         </Label>
                                     </div>
                                     <div className="flex items-center gap-2">
@@ -301,7 +301,7 @@ export default function RoadmapPage() {
                                         />
                                         <Label htmlFor={`weak-${topic.id}`} className="flex items-center gap-1">
                                             <AlertTriangle className="h-4 w-4 text-red-500" />
-                                            Need Practice
+                                            <span className="text-sm md:text-base md:block hidden">Need Practice</span>
                                         </Label>
                                     </div>
                                 </div>
@@ -321,7 +321,7 @@ export default function RoadmapPage() {
                 {roadmap.sections.map((section) => (
                     <Card key={section.id}>
                         <CardHeader>
-                            <CardTitle className="text-2xl flex items-center gap-2">
+                            <CardTitle className="md:text-2xl text-lg flex items-center gap-2">
                                 <BookOpen className="h-6 w-6 text-blue-500" />
                                 {section.title}
                             </CardTitle>
@@ -331,7 +331,7 @@ export default function RoadmapPage() {
                                 {section.topics.map((topic) => (
                                     <AccordionItem key={topic.id} value={topic.id}>
                                         <AccordionTrigger>
-                                            <div className="flex items-center gap-4">
+                                            <div className="flex items-center justify-between gap-2">
                                                 <Badge
                                                     variant={
                                                         topic.predefinedTopic.level === "BEGINNER"
@@ -340,20 +340,25 @@ export default function RoadmapPage() {
                                                                 ? "warning"
                                                                 : "destructive"
                                                     }
+                                                    className="text-xs md:text-sm"
                                                 >
                                                     {topic.predefinedTopic.level}
                                                 </Badge>
-                                                <span>{topic.predefinedTopic.title}</span>
+                                                <span className="text-sm md:text-base decoration-none">{topic.predefinedTopic.title}</span>
+                                                <span className="text-sm md:text-base md:block hidden">
                                                 <Badge variant="outline">
                                                     {topic.predefinedTopic.subTopics.length} Subtopics
                                                 </Badge>
+                                                </span>
+                                                <span className="text-sm md:text-base md:block hidden">
                                                 <Link
-                                                    href={`/roadmap/topics/${topic.predefinedTopic.id}`}
+                                                    href={`/roadmap/topics/${topic.id}`}
                                                     className="text-xs text-primary flex items-center hover:underline ml-auto"
                                                     onClick={(e: React.MouseEvent<HTMLAnchorElement>) => e.stopPropagation()}
                                                 >
                                                     View Topic Details <ChevronRight className="h-3 w-3 ml-1" />
                                                 </Link>
+                                                </span>
                                             </div>
                                         </AccordionTrigger>
                                         <AccordionContent>
@@ -430,9 +435,9 @@ export default function RoadmapPage() {
 
     return (
         <main className="min-h-screen bg-background">
-            <div className="container mx-auto px-4">
-                <div className="flex justify-between items-center mb-8">
-                    <h1 className="text-4xl font-bold">DSA Learning Roadmap</h1>
+            <div className="md:px-4">
+                <div className="flex justify-between md:items-center flex-col md:flex-row mb-8 gap-4">
+                    <h1 className="md:text-4xl text-2xl font-bold">DSA Learning Roadmap</h1>
                     {roadmap && (
                         <div className="flex gap-2">
                             <Button asChild variant="outline">
@@ -452,8 +457,8 @@ export default function RoadmapPage() {
                 </div>
 
                 <div className="mb-8">
-                    <div className="flex items-center gap-4 mb-4">
-                        <div className="flex-1">
+                    <div className="flex md:items-center justify-center flex-col md:flex-row gap-4 mb-4">
+                        <div className="flex-1 md:w-1/2 w-full">
                             <Progress
                                 value={
                                     step === "level"
@@ -507,8 +512,8 @@ export default function RoadmapPage() {
                         >
                             <Card>
                                 <CardHeader>
-                                    <CardTitle>Topic Assessment</CardTitle>
-                                    <p className="text-muted-foreground">
+                                    <CardTitle className="md:text-2xl text-base">Topic Assessment</CardTitle>
+                                    <p className="text-muted-foreground text-sm">
                                         Select your strong topics and areas where you need more practice
                                     </p>
                                 </CardHeader>
@@ -543,7 +548,7 @@ export default function RoadmapPage() {
                             animate={{ opacity: 1, y: 0 }}
                             className="space-y-6"
                         >
-                            <div className="flex items-center gap-4 mb-8">
+                            {/* <div className="flex items-center gap-4 mb-8">
                                 <Button
                                     variant="outline"
                                     onClick={() => setStep("assessment")}
@@ -553,7 +558,7 @@ export default function RoadmapPage() {
                                 <Badge variant="secondary" className="text-lg">
                                     {knowledgeLevels.find((l) => l.id === selectedLevel)?.title} Level
                                 </Badge>
-                            </div>
+                            </div> */}
                             {renderRoadmap()}
                         </motion.div>
                     )}

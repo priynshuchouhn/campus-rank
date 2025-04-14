@@ -146,13 +146,13 @@ export default function TopicsPage() {
                                     {topic.predefinedTopic.subTopics.length} Subtopics
                                 </Badge>
                             </div>
-                            <CardTitle>{topic.title}</CardTitle>
-                            <CardDescription className="line-clamp-2">
-                                <RenderMarkdown content={topic.description} />
+                            <CardTitle>{topic.predefinedTopic.title}</CardTitle>
+                            <CardDescription className="line-clamp-3 mt-2">
+                                <RenderMarkdown content={topic.predefinedTopic.description || ""} previewMode={true} />
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="flex-1">
-                            <div className="space-y-3">
+                            <div className="space-y-1">
                                 <div className="flex justify-between text-sm">
                                     <div className="flex items-center gap-1">
                                         <Code className="h-4 w-4 text-blue-500" />

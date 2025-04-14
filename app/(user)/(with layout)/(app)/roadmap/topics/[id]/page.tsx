@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/tabs";
 import axios from "axios";
 import toast from "react-hot-toast";
-
+import { RenderMarkdown } from '@/components/ui/render-markdown';
 interface Topic {
     id: string;
     title: string;
@@ -173,7 +173,7 @@ export default function TopicDetail() {
                             <CardTitle>About This Topic</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-muted-foreground">{topic.description}</p>
+                            <RenderMarkdown content={topic.description || ""}  />
 
                             <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>

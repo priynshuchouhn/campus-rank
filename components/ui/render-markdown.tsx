@@ -1,7 +1,44 @@
 import clsx from "clsx";
 
-export const RenderMarkdown = ({ content }: { content: string }) => {
-    return content.split('\n').map((line, index) => {
+export const RenderMarkdown = ({ content, previewMode = false }: { content: string; previewMode?: boolean }) => {
+    const lines = content.split('\n');
+    let processedLines = lines;
+
+    if (previewMode) {
+        // Find the first actual paragraph (not starting with markdown syntax)
+        const isMarkdownSyntax = (line: string) => {
+            const trimmed = line.trim();
+            return (
+                trimmed.startsWith('#') || // headers
+                trimmed.startsWith('- ') || // unordered lists
+                trimmed.startsWith('* ') || // unordered lists
+                trimmed.startsWith('>') || // blockquotes
+                trimmed.startsWith('```') || // code blocks
+                trimmed.startsWith('[') || // links
+                trimmed.startsWith('![') || // images
+                trimmed.startsWith('|') || // tables
+                trimmed.startsWith('1. ') || // ordered lists
+                trimmed === '' // empty lines
+            );
+        };
+
+        // Find the first non-markdown line
+        const firstParagraphStart = lines.findIndex(line => !isMarkdownSyntax(line.trim()));
+        if (firstParagraphStart !== -1) {
+            // Find the end of this paragraph (next empty line or markdown syntax)
+            const firstParagraphEnd = lines.slice(firstParagraphStart).findIndex((line, i) =>
+                i > 0 && (line.trim() === '' || isMarkdownSyntax(line))
+            );
+
+            processedLines = firstParagraphEnd === -1
+                ? lines.slice(firstParagraphStart)
+                : lines.slice(firstParagraphStart, firstParagraphStart + firstParagraphEnd);
+        } else {
+            processedLines = []; // No regular paragraph found
+        }
+    }
+
+    return processedLines.map((line, index) => {
         const trimmedLine = line.trim();
 
         // Handle headers
