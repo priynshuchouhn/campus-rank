@@ -35,34 +35,37 @@ export default function TopicsPage() {
     const [difficultyFilter, setDifficultyFilter] = useState('all');
     const [topics, setTopics] = useState<(Topic & { predefinedTopic: PredefinedTopic & { resources: Resource[] }, section: { title: string } })[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [hasRoadmap, setHasRoadmap] = useState<boolean | null>(null);
 
     console.log(topics);
 
-    // Fetch topics from API
+    // Fetch topics and check roadmap existence
     useEffect(() => {
-        const fetchTopics = async () => {
+        const fetchData = async () => {
             try {
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/roadmap/topics`);
-                if (response.data.success) {
-                    // Flatten the roadmap structure to get all topics
-                    const allTopics = response.data.data.flatMap((topic: any) => ({
-                        ...topic,
-                        sectionName: topic.section.title,
-                        predefinedSection: topic.section.predefinedSection
-                    }));
-                    setTopics(allTopics);
+                const [topicsResponse, roadmapResponse] = await Promise.all([
+                    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/roadmap/topics`),
+                    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/roadmap`)
+                ]);
+
+                if (topicsResponse.data.success) {
+                    setTopics(topicsResponse.data.data);
                 } else {
                     toast.error("Failed to fetch topics");
                 }
+
+                if (roadmapResponse.data.success) {
+                    setHasRoadmap(!!roadmapResponse.data.data);
+                }
             } catch (error) {
-                console.error("Error fetching topics:", error);
-                toast.error("Failed to fetch topics");
+                console.error("Error fetching data:", error);
+                toast.error("Failed to fetch data");
             } finally {
                 setIsLoading(false);
             }
         };
 
-        fetchTopics();
+        fetchData();
     }, []);
 
     // Filter topics based on search query and filters
@@ -83,6 +86,23 @@ export default function TopicsPage() {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
                 <Loader2 className="h-8 w-8 animate-spin" />
+            </div>
+        );
+    }
+
+    if (hasRoadmap === false) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[400px] space-y-6">
+                <div className="text-center space-y-2">
+                    <h1 className="text-3xl font-bold">No Roadmap Found</h1>
+                    <p className="text-muted-foreground">You need to create a roadmap before you can browse topics.</p>
+                </div>
+                <Button asChild>
+                    <Link href="/roadmap">
+                        <BookOpen className="h-4 w-4 mr-2" />
+                        Create Roadmap
+                    </Link>
+                </Button>
             </div>
         );
     }
