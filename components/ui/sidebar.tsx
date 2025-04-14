@@ -29,18 +29,18 @@ function Sidebar({ user }: { user: any }) {
                         <div className="space-y-1">
                             <p className="text-sm font-medium text-muted-foreground px-4 mb-2">Learning</p>
                             <SidebarNavItem
-                                href="#"
+                                href="/roadmap"
                                 icon={<BookOpen className="h-4 w-4" />}
                                 title="Roadmap"
                                 isActive={isLinkActive('/roadmap') && pathname === '/roadmap'}
-                                badge="Coming Soon"
+                                badge="New"
                             />
                             <SidebarNavItem
-                                href="#"
+                                href="/roadmap/topics"
                                 icon={<Notebook className="h-4 w-4" />}
                                 title="Topics"
                                 isActive={pathname.includes('/roadmap/topics')}
-                                badge="Coming Soon"
+                                badge="New"
                             />
                             <SidebarNavItem
                                 href="#"
