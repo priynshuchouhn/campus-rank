@@ -191,6 +191,11 @@ export default function RoadmapPage() {
             return;
         }
 
+        if (strongTopics.length === 0 && weakTopics.length === 0) {
+            toast.error("Please select at least one topic as strong or needing practice");
+            return;
+        }
+
         setIsGeneratingRoadmap(true);
         try {
             const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/roadmap`, {
@@ -346,18 +351,18 @@ export default function RoadmapPage() {
                                                 </Badge>
                                                 <span className="text-sm md:text-base decoration-none">{topic.predefinedTopic.title}</span>
                                                 <span className="text-sm md:text-base md:block hidden">
-                                                <Badge variant="outline">
-                                                    {topic.predefinedTopic.subTopics.length} Subtopics
-                                                </Badge>
+                                                    <Badge variant="outline">
+                                                        {topic.predefinedTopic.subTopics.length} Subtopics
+                                                    </Badge>
                                                 </span>
                                                 <span className="text-sm md:text-base md:block hidden">
-                                                <Link
-                                                    href={`/roadmap/topics/${topic.id}`}
-                                                    className="text-xs text-primary flex items-center hover:underline ml-auto"
-                                                    onClick={(e: React.MouseEvent<HTMLAnchorElement>) => e.stopPropagation()}
-                                                >
-                                                    View Topic Details <ChevronRight className="h-3 w-3 ml-1" />
-                                                </Link>
+                                                    <Link
+                                                        href={`/roadmap/topics/${topic.id}`}
+                                                        className="text-xs text-primary flex items-center hover:underline ml-auto"
+                                                        onClick={(e: React.MouseEvent<HTMLAnchorElement>) => e.stopPropagation()}
+                                                    >
+                                                        View Topic Details <ChevronRight className="h-3 w-3 ml-1" />
+                                                    </Link>
                                                 </span>
                                             </div>
                                         </AccordionTrigger>
