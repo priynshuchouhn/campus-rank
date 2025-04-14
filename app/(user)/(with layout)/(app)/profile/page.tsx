@@ -74,21 +74,27 @@ export default async function Profile() {
                     <p className="text-sm font-medium">LeetCode</p>
                     <p className="text-sm text-muted-foreground">{user.leetcodeUsername || "Not set"}</p>
                   </div>
-                  <ReportForm defaultType="USERNAME_CHANGE" buttonText="Request Change" platform="leetcode" />
+                  {user.isLocked && (
+                    <ReportForm defaultType="USERNAME_CHANGE" buttonText="Request Change" platform="leetcode" />
+                  )}
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium">HackerRank</p>
                     <p className="text-sm text-muted-foreground">{user.hackerrankUsername || "Not set"}</p>
                   </div>
-                  <ReportForm defaultType="USERNAME_CHANGE" buttonText="Request Change" platform="hackerrank" />
+                  {user.isLocked && (
+                    <ReportForm defaultType="USERNAME_CHANGE" buttonText="Request Change" platform="hackerrank" />
+                  )}
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium">GeeksforGeeks</p>
                     <p className="text-sm text-muted-foreground">{user.gfgUsername || "Not set"}</p>
                   </div>
-                  <ReportForm defaultType="USERNAME_CHANGE" buttonText="Request Change" platform="gfg" />
+                  {user.isLocked && (
+                    <ReportForm defaultType="USERNAME_CHANGE" buttonText="Request Change" platform="gfg" />
+                  )}
                 </div>
               </div>
             </div>
