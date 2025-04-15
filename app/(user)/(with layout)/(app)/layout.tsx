@@ -26,9 +26,10 @@ export default async function AppLayout({
             </aside>
 
             {/* Main Content */}
-            <div className="flex-1 flex flex-col min-h-screen">
+            <div className="flex-1 flex flex-col min-h-screen w-full overflow-hidden">
+
                 {/* Main Content Area */}
-                <main className="flex-1 md:p-6">
+                <main className="flex-1 p-4 md:p-6">
                     {children}
                 </main>
             </div>
