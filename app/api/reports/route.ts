@@ -10,18 +10,27 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { type, title, description } = body;
+    const { type, title, description, platform, requestedUsername } = body;
 
     if (!type || !title || !description) {
       return new NextResponse("Missing required fields", { status: 400 });
     }
+
+    let newDescription = description;
+    if (type === "USERNAME_CHANGE") {
+      if (!platform || !requestedUsername) {
+        return new NextResponse("Missing required fields", { status: 400 });
+      }
+      newDescription = `Platform: ${platform}\nRequested Username: ${requestedUsername}\n${description}`;
+    }
+
 
     const report = await prisma.report.create({
       data: {
         userId: session.user.id,
         type,
         title,
-        description,
+        description: newDescription,
       },
     });
 
