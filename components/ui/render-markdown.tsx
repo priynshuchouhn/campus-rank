@@ -239,12 +239,21 @@ export const RenderMarkdown = ({ content, previewMode = false }: { content: stri
             // Handle bold text
             if (trimmedLine.includes('**')) {
                 const renderBoldText = (text: string) => {
-                    const parts = text.split(/(\*\*[^*]+\*\*)/g);
+                    // First handle HTML links within bold text
+                    const parts = text.split(/(<a[^>]*>.*?<\/a>)/g);
                     return parts.map((part, i) => {
-                        if (part.startsWith('**') && part.endsWith('**')) {
-                            return <strong key={i}>{part.slice(2, -2)}</strong>;
+                        if (part.startsWith('<a') && part.endsWith('</a>')) {
+                            // This is an HTML link, wrap it in strong tags
+                            return <strong key={i} dangerouslySetInnerHTML={{ __html: part }} />;
                         }
-                        return part;
+                        // Handle regular bold text
+                        const boldParts = part.split(/(\*\*[^*]+\*\*)/g);
+                        return boldParts.map((boldPart, j) => {
+                            if (boldPart.startsWith('**') && boldPart.endsWith('**')) {
+                                return <strong key={`${i}-${j}`}>{boldPart.slice(2, -2)}</strong>;
+                            }
+                            return boldPart;
+                        });
                     });
                 };
 

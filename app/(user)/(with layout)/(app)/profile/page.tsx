@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ReportForm } from "@/components/ui/Report-form";
+import { ReportForm } from "@/components/ui/report-form";
 
 export default async function Profile() {
   const user = await getUser();

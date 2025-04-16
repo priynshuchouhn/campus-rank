@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { ReportForm } from "@/components/ui/Report-form";
+import { ReportForm } from "@/components/ui/report-form";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 
