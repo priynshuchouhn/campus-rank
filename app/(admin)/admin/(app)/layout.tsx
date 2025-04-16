@@ -74,6 +74,11 @@ const sidebarItems = [
     icon: Mail,
   },
   {
+    title: "Notifications",
+    href: "/admin/push-notifications",
+    icon: Bell,
+  },
+  {
     title: "Settings",
     href: "/admin/settings",
     icon: Settings,
