@@ -9,6 +9,7 @@ import { Menu } from 'lucide-react'
 import { Sheet, SheetTrigger, SheetContent, SheetTitle } from './sheet'
 import Sidebar from './sidebar'
 import NavbarItems from './nav-bar-items'
+import InstallPrompt from './install-prompt'
 async function Navbar() {
   const session = await auth();
   const user = session?.user;
@@ -42,6 +43,7 @@ async function Navbar() {
           </Link>
         )}
       </div>
+      <InstallPrompt />
     </div>
   )
 }

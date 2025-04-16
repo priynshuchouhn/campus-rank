@@ -40,20 +40,25 @@ export async function POST(req: Request) {
         });
         break;
       default:
-        users = await prisma.user.findMany();
+        users = await prisma.user.findMany(
+          {
+            where: {username: "priynshuchouhn"}
+          }
+        );
     }
 
     // Send emails to all selected users
     const emailPromises = users.map((user) =>
       resend.emails.send({
-        from: "Campus Rank <noreply@campusrank.org>",
+        from: "Campus Rank <priynshu@campusrank.org>",
         to: user.email,
         subject,
         html: content,
       })
     );
 
-    await Promise.all(emailPromises);
+    const data = await Promise.all(emailPromises);
+    console.log(data);
 
     return NextResponse.json({ success: true });
   } catch (error) {

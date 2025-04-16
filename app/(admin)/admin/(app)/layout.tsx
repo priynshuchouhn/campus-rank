@@ -144,7 +144,7 @@ export default function AdminLayout({
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden"
+              className="hidden"
               onClick={() => setSidebarOpen(!sidebarOpen)}
             >
               {sidebarOpen ? (

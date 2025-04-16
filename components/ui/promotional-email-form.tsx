@@ -19,7 +19,7 @@ export function PromotionalEmailForm() {
         setIsLoading(true);
 
         try {
-            const response = await fetch("/api/admin/send-promotional-email", {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/email/promotional`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
