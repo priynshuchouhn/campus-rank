@@ -15,6 +15,8 @@ import { z } from 'zod';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 const goalFormSchema = z.object({
     title: z.string().min(1, "Title is required"),
     description: z.string().optional(),
@@ -227,25 +229,26 @@ export default function GoalsPage() {
 
             <div className="space-y-4">
                 {goals.map(goal => (
-                    <Card key={goal.id}>
+                    <Card key={goal.id} className="mb-3">
                         <CardContent className="pt-6">
-                            <div className="flex items-center justify-between">
+                            <div className="flex md:flex-row flex-col md:items-center justify-between">
                                 <div className="space-y-1">
                                     <h3 className="font-medium">{goal.title}</h3>
                                     {goal.description && (
                                         <p className="text-sm text-muted-foreground">{goal.description}</p>
                                     )}
-                                    <div className="flex items-center gap-4 text-sm">
-                                        <span className="text-muted-foreground">
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm mb-2">
+                                        <span className="text-muted-foreground col-span-2 md:col-span-1">
                                             {goal.currentCount} / {goal.targetCount} completed
                                         </span>
                                         <span className="text-muted-foreground">
                                             {new Date(goal.startDate).toLocaleDateString()} - {new Date(goal.endDate).toLocaleDateString()}
                                         </span>
-                                        <span className="capitalize">{goal.type.toLowerCase()}</span>
+                                        <Badge variant="outline" className="capitalize w-fit">{goal.type.toLowerCase()}</Badge>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-2">
+                                <Separator className="md:hidden mt-4" />
+                                <div className="flex items-center gap-2 mt-2 md:mt-0">
                                     <Button
                                         variant="outline"
                                         size="sm"
