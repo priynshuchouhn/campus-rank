@@ -90,20 +90,27 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Mobile Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black/50 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 z-40 h-screen transition-transform ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        className={`fixed left-0 top-0 z-40 h-screen w-[240px] transition-all duration-300 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
           } border-r bg-card md:translate-x-0`}
-        style={{ width: sidebarOpen ? "240px" : "0" }}
       >
         <div className="flex h-full flex-col">
           {/* Sidebar Header */}
-          <div className="flex h-14 items-center border-b px-3">
+          <div className="flex h-14 items-center justify-between border-b px-3">
             <Link
               href="/admin/dashboard"
               className="flex items-center gap-2 font-semibold"
@@ -111,6 +118,14 @@ export default function AdminLayout({
               <Image src="/logo.jpg" alt="logo" className="rounded-full" width={32} height={32} />
               <span>Campus Rank</span>
             </Link>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden"
+              onClick={() => setSidebarOpen(false)}
+            >
+              <X className="h-5 w-5" />
+            </Button>
           </div>
 
           {/* Sidebar Content */}
@@ -127,6 +142,11 @@ export default function AdminLayout({
                       ? "bg-primary text-primary-foreground"
                       : "hover:bg-muted"
                       }`}
+                    onClick={() => {
+                      if (window.innerWidth < 768) {
+                        setSidebarOpen(false);
+                      }
+                    }}
                   >
                     <Icon className="h-4 w-4" />
                     {item.title}
@@ -140,8 +160,7 @@ export default function AdminLayout({
 
       {/* Main Content */}
       <div
-        className={`flex min-h-screen flex-col ${sidebarOpen ? "md:ml-60" : ""
-          } transition-margin duration-300`}
+        className="flex min-h-screen flex-col transition-all duration-300 md:ml-[240px]"
       >
         {/* Header */}
         <header className="sticky top-0 z-30 border-b bg-background">
@@ -149,22 +168,18 @@ export default function AdminLayout({
             <Button
               variant="ghost"
               size="icon"
-              className="hidden"
+              className="md:hidden"
               onClick={() => setSidebarOpen(!sidebarOpen)}
             >
-              {sidebarOpen ? (
-                <X className="h-5 w-5" />
-              ) : (
-                <Menu className="h-5 w-5" />
-              )}
+              <Menu className="h-5 w-5" />
             </Button>
 
-            <div className="ml-auto flex items-center gap-4">
+            <div className="ml-auto flex items-center gap-2 sm:gap-4">
               <Button variant="ghost" size="icon">
                 <Bell className="h-5 w-5" />
               </Button>
               <ThemeToggle />
-              <Separator orientation="vertical" className="h-8" />
+              <Separator orientation="vertical" className="h-8 hidden sm:block" />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -178,7 +193,7 @@ export default function AdminLayout({
                       width={24}
                       height={24}
                     />
-                    <span>Admin</span>
+                    <span className="hidden sm:inline">Admin</span>
                     <ChevronDown className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -193,8 +208,6 @@ export default function AdminLayout({
                       <LogOut className="mr-2 h-4 w-4" />
                       Logout
                     </button>
-                    {/* <form action={signOutAction}>
-                    </form> */}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -203,11 +216,11 @@ export default function AdminLayout({
         </header>
 
         {/* Main Content */}
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 p-4">{children}</main>
 
         {/* Footer */}
         <footer className="border-t py-4 px-4">
-          <div className="container mx-auto flex items-center justify-between text-sm text-muted-foreground">
+          <div className="container mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between text-sm text-muted-foreground gap-2">
             <p>© 2025 Campus Rank. All rights reserved.</p>
             <div className="flex gap-4">
               <Link href="/privacy-policy" className="hover:underline">

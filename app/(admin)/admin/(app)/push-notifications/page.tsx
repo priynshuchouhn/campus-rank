@@ -54,14 +54,14 @@ export default function PushNotificationsPage() {
     };
 
     return (
-        <div className="container mx-auto py-6">
+        <div className="mx-auto py-6">
             <Card>
                 <CardHeader>
                     <CardTitle>Send Push Notification</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div className="space-y-2">
-                        <Label htmlFor="title">Title *</Label>
+                        <Label htmlFor="title">Title</Label>
                         <Input
                             id="title"
                             value={title}
@@ -71,7 +71,7 @@ export default function PushNotificationsPage() {
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="body">Message *</Label>
+                        <Label htmlFor="body">Message</Label>
                         <Textarea
                             id="body"
                             value={body}
@@ -81,34 +81,37 @@ export default function PushNotificationsPage() {
                         />
                     </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="url">URL (Optional)</Label>
-                        <Input
-                            id="url"
-                            value={url}
-                            onChange={(e) => setUrl(e.target.value)}
-                            placeholder="Enter URL to open when notification is clicked"
-                        />
+                    <div className="grid md:grid-cols-3 grid-cols-1 gap-4">
+                        <div className="space-y-2 col-span-2">
+                            <Label htmlFor="url">URL (Optional)</Label>
+                            <Input
+                                id="url"
+                                value={url}
+                                onChange={(e) => setUrl(e.target.value)}
+                                placeholder="Enter URL to open when notification is clicked"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="target">Target Audience</Label>
+                            <Select value={targetAudience} onValueChange={setTargetAudience}>
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select target audience" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">All Users</SelectItem>
+                                    <SelectItem value="active">Active Users (Last 30 days)</SelectItem>
+                                    <SelectItem value="inactive">Inactive Users</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
                     </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="target">Target Audience</Label>
-                        <Select value={targetAudience} onValueChange={setTargetAudience}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Select target audience" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">All Users</SelectItem>
-                                <SelectItem value="active">Active Users (Last 30 days)</SelectItem>
-                                <SelectItem value="inactive">Inactive Users</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
 
                     <Button
                         onClick={handleSendNotification}
                         disabled={isLoading}
-                        className="w-full"
+                        className="w-auto"
                     >
                         {isLoading ? 'Sending...' : 'Send Notification'}
                     </Button>
