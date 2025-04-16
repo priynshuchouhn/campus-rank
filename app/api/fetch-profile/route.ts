@@ -93,6 +93,9 @@ export async function POST(request:NextRequest) {
 }
 
 async function fetchLeetCodeProfile(username:string, userId:string): Promise<LeetCodeProfile | null> {
+  if(!username){
+    return null;
+  }
   try {
     // LeetCode GraphQL API
     const response = await axios.post('https://leetcode.com/graphql', {
@@ -181,6 +184,9 @@ async function fetchLeetCodeProfile(username:string, userId:string): Promise<Lee
 }
 
 async function fetchHackerRankProfile(username:string, userId:string): Promise<HackerRankProfile | null> {
+  if(!username){
+    return null;
+  }
   try {
     // HackerRank doesn't have a public API, so we'll need to scrape the profile page
     const response = await axios.get(`https://www.hackerrank.com/${username}`, {
@@ -269,6 +275,9 @@ async function fetchHackerRankProfile(username:string, userId:string): Promise<H
 }
 
 async function fetchGFGProfile(username:string, userId:string): Promise<GFGProfile | null> {
+  if(!username){
+    return null;
+  }
   try {
     // GeeksForGeeks doesn't have a public API, so we'll need to scrape the profile page
     const response = await axios.get(`https://www.geeksforgeeks.org/user/${username}`);
