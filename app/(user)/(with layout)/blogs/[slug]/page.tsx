@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         openGraph: {
             title: post.title,
             description: post.description,
-            url: `${process.env.NEXT_PUBLIC_URL}/blogs/${post.slug}`,
+            url: `https://campusrank.org/blogs/${post.slug}`,
             siteName: 'Campus Rank',
             locale: 'en_US',
             type: 'article',
