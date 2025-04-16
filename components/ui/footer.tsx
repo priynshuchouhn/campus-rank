@@ -23,7 +23,7 @@ function Footer() {
             <ul className="space-y-3">
               <li><Link href="/" className="text-gray-600 dark:text-white hover:text-gray-900">Leaderboard</Link></li>
               {/* <li><Link href="/challenges" className="text-gray-600 hover:text-gray-900">Challenges</Link></li> */}
-              <li><Link href="/blogs" className="text-gray-600 hover:text-gray-900">Blogs</Link></li>
+              <li><Link href="/blogs" className="text-gray-600 dark:text-white hover:text-gray-900">Blogs</Link></li>
               <li><Link href="/about-us" className="text-gray-600 dark:text-white hover:text-gray-900">About Us</Link></li>
             </ul>
           </div>

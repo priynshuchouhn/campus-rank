@@ -17,14 +17,35 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Campus Rank - College Coding Leaderboard",
   description: "Track coding progress of students on GFG, LeetCode & HackerRank with Campus Rank. Compete, learn, and rank up!",
-  keywords: "coding leaderboard, gfg ranking, leetcode ranking, hackerrank leaderboard, college coding, campus rank, coding contests",
+  keywords: "coding leaderboard, gfg ranking, leetcode ranking, hackerrank leaderboard, college coding, campus rank, coding contests, programming competition, coding practice, coding skills",
   authors: [{ name: "Campus Rank Team", url: "https://campusrank.org" }],
+  creator: "Campus Rank Team",
+  publisher: "Campus Rank",
   metadataBase: new URL("https://campusrank.org"),
+  alternates: {
+    canonical: "https://campusrank.org",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: "your-google-site-verification-code",
+  },
   openGraph: {
     title: "Campus Rank - College Coding Leaderboard",
-    description: "Join Campus Rank to monitor your coding progress on GFG, LeetCode & HackerRank.",
+    description: "Join Campus Rank to monitor your coding progress on GFG, LeetCode & HackerRank. Compete with peers and track your growth!",
     url: "https://campusrank.org",
     siteName: "Campus Rank",
+    locale: "en_US",
+    type: "website",
     images: [
       {
         url: "/logo.jpg",
@@ -33,14 +54,17 @@ export const metadata: Metadata = {
         alt: "Campus Rank Leaderboard",
       },
     ],
-    type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "Campus Rank - College Coding Leaderboard",
     description: "Track coding progress of students from GFG, LeetCode & HackerRank with Campus Rank.",
     images: ["/logo.jpg"],
+    creator: "@priynshuchouhn",
+    site: "@priynshuchouhn",
   },
+  category: "education",
+  classification: "Coding Education Platform",
 };
 
 

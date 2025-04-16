@@ -1,6 +1,24 @@
 import React from 'react';
 import { Rocket, Target, Code2, Users } from 'lucide-react';
 import Image from 'next/image';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'About Us | Campus Rank - College Coding Leaderboard',
+  description: 'Learn about Campus Rank - a platform designed to track and showcase students\' coding achievements on LeetCode and HackerRank. Join our community of passionate coders!',
+  keywords: 'coding platform, leetcode, hackerrank, coding achievements, student rankings, competitive programming',
+  openGraph: {
+    title: 'About Campus Rank - College Coding Leaderboard',
+    description: 'Join Campus Rank to track and showcase your coding achievements on LeetCode and HackerRank.',
+    type: 'website',
+    url: 'https://campusrank.org/about-us',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'About Campus Rank - College Coding Leaderboard',
+    description: 'Join Campus Rank to track and showcase your coding achievements on LeetCode and HackerRank.',
+  },
+};
 
 function AboutUs() {
   return (
@@ -9,7 +27,7 @@ function AboutUs() {
         <Image src="/logo.jpg" alt="Campus Rank" className='w-16 h-16 rounded-full' width={100} height={100} />
         <h1 className="mt-4 text-3xl font-extrabold text-gray-900 sm:text-4xl dark:text-white">About Us</h1>
         <p className="mt-4 text-xl text-gray-600 dark:text-white">
-          Welcome to <span className="font-semibold">Campus Rank</span> – a platform designed to track and showcase 
+          Welcome to <span className="font-semibold">Campus Rank</span> – a platform designed to track and showcase
           students&apos; coding achievements on <span className="font-semibold">LeetCode and HackerRank</span>.
         </p>
       </div>
@@ -22,18 +40,24 @@ function AboutUs() {
           </div>
           <div className="bg-white rounded-lg shadow-sm p-6 space-y-4 dark:bg-gray-800">
             <p className="text-gray-600 dark:text-white">At <span className="font-semibold">Campus Rank</span>, we aim to:</p>
-            <ul className="space-y-4">
-              <li className="flex items-center text-gray-600 dark:text-white">
-                <span className="text-green-500 mr-3">✅</span>
-                <span className="font-semibold dark:text-white">Motivate students</span> by providing a transparent leaderboard.
+            <ul className="space-y-4 sm:space-y-3 md:space-y-4">
+              <li className="flex items-start sm:items-center text-gray-600 dark:text-white">
+                <span className="text-green-500 mr-3 flex-shrink-0">✅</span>
+                <div>
+                  <span className="font-semibold dark:text-white">Motivate students</span> by providing a transparent leaderboard.
+                </div>
               </li>
-              <li className="flex items-center text-gray-600 dark:text-white">
-                <span className="text-green-500 mr-3">✅</span>
-                <span className="font-semibold dark:text-white">Encourage coding practice</span> through friendly competition.
+              <li className="flex items-start sm:items-center text-gray-600 dark:text-white">
+                <span className="text-green-500 mr-3 flex-shrink-0">✅</span>
+                <div>
+                  <span className="font-semibold dark:text-white">Encourage coding practice</span> through friendly competition.
+                </div>
               </li>
-              <li className="flex items-center text-gray-600 dark:text-white">
-                <span className="text-green-500 mr-3">✅</span>
-                <span className="font-semibold dark:text-white">Help recruiters and peers</span> identify top coding talent.
+              <li className="flex items-start sm:items-center text-gray-600 dark:text-white">
+                <span className="text-green-500 mr-3 flex-shrink-0">✅</span>
+                <div>
+                  <span className="font-semibold dark:text-white">Help recruiters and peers</span> identify top coding talent.
+                </div>
               </li>
             </ul>
           </div>
@@ -46,10 +70,10 @@ function AboutUs() {
           </div>
           <div className="bg-white rounded-lg shadow-sm p-6 dark:bg-gray-800">
             <p className="text-gray-600 dark:text-white leading-relaxed">
-              This project was created by <span className="font-semibold dark:text-white">Priyanshu Chouhan</span>, 
-              a passionate developer and tech enthusiast, to bridge the gap between 
-              <span className="font-semibold dark:text-white"> coding practice and recognition</span>. Many students work hard 
-              to solve coding problems daily, but their efforts often go unnoticed. 
+              This project was created by <span className="font-semibold dark:text-white">Priyanshu Chouhan</span>,
+              a passionate developer and tech enthusiast, to bridge the gap between
+              <span className="font-semibold dark:text-white"> coding practice and recognition</span>. Many students work hard
+              to solve coding problems daily, but their efforts often go unnoticed.
               <span className="font-semibold"> Campus Rank ensures that every solved problem counts!</span>
             </p>
           </div>
@@ -99,7 +123,7 @@ function AboutUs() {
           </div>
           <div className="bg-white rounded-lg shadow-sm p-6 text-center dark:bg-gray-800">
             <p className="text-gray-600 dark:text-white mb-6">
-              Whether you&apos;re a beginner or an expert, <span className="font-semibold">Campus Rank</span> is here to 
+              Whether you&apos;re a beginner or an expert, <span className="font-semibold">Campus Rank</span> is here to
               <span className="font-semibold"> track, motivate, and push you to new heights</span> in competitive programming.
             </p>
             <p className="text-gray-600 dark:text-white font-semibold mb-2">🚀 Keep coding. Keep ranking.</p>
