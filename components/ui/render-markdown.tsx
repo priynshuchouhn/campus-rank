@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import React from "react";
 
 type MarkdownItem =
     | string
@@ -153,6 +154,7 @@ export const RenderMarkdown = ({ content, previewMode = false }: { content: stri
             // Handle lists
             if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
                 const listContent = trimmedLine.replace(/^[-*]\s*/, '');
+                const indentLevel = (trimmedLine.match(/^\s*/)?.[0]?.length || 0) / 2; // Calculate indentation level
                 const renderBoldText = (text: string) => {
                     const parts = text.split(/(\*\*[^*]+\*\*)/g);
                     return parts.map((part, i) => {
@@ -164,7 +166,38 @@ export const RenderMarkdown = ({ content, previewMode = false }: { content: stri
                 };
 
                 return (
-                    <li key={index} className="ml-4 list-disc mb-2">
+                    <li key={index} className={clsx("list-disc mb-2", {
+                        "ml-4": indentLevel === 0,
+                        "ml-8": indentLevel === 1,
+                        "ml-12": indentLevel === 2,
+                        "ml-16": indentLevel === 3,
+                    })}>
+                        {renderBoldText(listContent)}
+                    </li>
+                );
+            }
+
+            // Handle ordered lists
+            if (/^\d+\.\s/.test(trimmedLine)) {
+                const listContent = trimmedLine.replace(/^\d+\.\s*/, '');
+                const indentLevel = (trimmedLine.match(/^\s*/)?.[0]?.length || 0) / 3; // Calculate indentation level
+                const renderBoldText = (text: string) => {
+                    const parts = text.split(/(\*\*[^*]+\*\*)/g);
+                    return parts.map((part, i) => {
+                        if (part.startsWith('**') && part.endsWith('**')) {
+                            return <strong key={i}>{part.slice(2, -2)}</strong>;
+                        }
+                        return part;
+                    });
+                };
+
+                return (
+                    <li key={index} className={clsx("list-decimal mb-2", {
+                        "ml-4": indentLevel === 0,
+                        "ml-8": indentLevel === 1,
+                        "ml-12": indentLevel === 2,
+                        "ml-16": indentLevel === 3,
+                    })}>
                         {renderBoldText(listContent)}
                     </li>
                 );
@@ -207,24 +240,60 @@ export const RenderMarkdown = ({ content, previewMode = false }: { content: stri
                     }
                 }
 
-                // Handle regular links
-                const linkMatch = trimmedLine.match(/\[(.*?)\]\((.*?)\)/);
-                if (linkMatch) {
-                    const [_, text, url] = linkMatch;
-                    return (
-                        <p key={index} className="mb-4">
-                            {trimmedLine.replace(/\[(.*?)\]\((.*?)\)/, `<a href="${url}" class="text-blue-500 hover:underline">${text}</a>`)}
-                        </p>
-                    );
-                }
+                // Handle regular links with bold text and surrounding text
+                const renderLinkContent = (content: string) => {
+                    if (content.includes('**')) {
+                        const parts = content.split(/(\*\*[^*]+\*\*)/g);
+                        return parts.map((part, i) => {
+                            if (part.startsWith('**') && part.endsWith('**')) {
+                                return <strong key={i}>{part.slice(2, -2)}</strong>;
+                            }
+                            return part;
+                        });
+                    }
+                    return content;
+                };
+
+                // Process the entire line, preserving text before and after links
+                const processLine = (line: string) => {
+                    const parts = line.split(/(\[.*?\]\(.*?\))/g);
+                    return parts.map((part, i) => {
+                        const linkMatch = part.match(/\[(.*?)\]\((.*?)\)/);
+                        if (linkMatch) {
+                            const [_, text, url] = linkMatch;
+                            return (
+                                <a key={i} href={url} className="text-blue-500 hover:underline">
+                                    {renderLinkContent(text)}
+                                </a>
+                            );
+                        }
+                        return part;
+                    });
+                };
+
+                return (
+                    <p key={index} className="mb-4">
+                        {processLine(trimmedLine)}
+                    </p>
+                );
             }
 
             // Handle blockquotes
             if (trimmedLine.startsWith('>')) {
                 const quoteContent = trimmedLine.replace(/^>\s*/, '');
+                const renderBlockquoteContent = (content: string) => {
+                    const parts = content.split(/(\*\*[^*]+\*\*)/g);
+                    return parts.map((part, i) => {
+                        if (part.startsWith('**') && part.endsWith('**')) {
+                            return <strong key={i}>{part.slice(2, -2)}</strong>;
+                        }
+                        return <span key={i}>{part}</span>;
+                    });
+                };
+
                 return (
                     <blockquote key={index} className="border-l-4 border-gray-300 pl-4 italic my-4 text-gray-600">
-                        {quoteContent}
+                        <p>{renderBlockquoteContent(quoteContent)}</p>
                     </blockquote>
                 );
             }

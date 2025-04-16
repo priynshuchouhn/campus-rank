@@ -15,6 +15,8 @@ export const metadata: Metadata = {
         type: 'website',
         locale: 'en_US',
         siteName: 'Campus Rank',
+        images: 'https://res.cloudinary.com/dw1navurk/image/upload/v1744825207/campus-rank/kgfdixa3gbgdlxvb16jf.jpg',
+        url:'https://campusrank.org'
     },
     twitter: {
         card: 'summary_large_image',
