@@ -51,6 +51,8 @@ const questionSchema = z.object({
 type QuestionFormValues = z.infer<typeof questionSchema>;
 type SampleCodeFormValues = z.infer<typeof sampleCodeSchema>;
 
+export const dynamic = 'force-dynamic';
+
 export default function NewQuestionPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("details");
@@ -156,8 +158,15 @@ public:
 
   useEffect(() => {
     const fetchSections = async () => {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/sections`);
-      setSections(response.data.data);
+      try {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/sections`);
+        if (response.data && response.data.data) {
+          setSections(response.data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching sections:", error);
+        toast.error("Failed to load sections");
+      }
     };
     fetchSections();
   }, []);

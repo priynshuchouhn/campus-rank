@@ -30,6 +30,7 @@ import toast from "react-hot-toast";
 import { Section } from "@/lib/interfaces";
 import axios from "axios";
 
+export const dynamic = 'force-dynamic';
 // Define schema for section validation
 const sectionSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -37,6 +38,8 @@ const sectionSchema = z.object({
 });
 
 type SectionFormValues = z.infer<typeof sectionSchema>;
+
+
 
 export default function SectionsPage() {
   const [sections, setSections] = useState<Section[]>([]);
