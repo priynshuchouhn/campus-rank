@@ -95,7 +95,7 @@ export default function AdminLayout({
           {/* Sidebar Header */}
           <div className="flex h-14 items-center border-b px-3">
             <Link
-              href="/admin"
+              href="/admin/dashboard"
               className="flex items-center gap-2 font-semibold"
             >
               <Image src="/logo.jpg" alt="logo" className="rounded-full" width={32} height={32} />
@@ -180,13 +180,13 @@ export default function AdminLayout({
                   <DropdownMenuItem>Profile</DropdownMenuItem>
                   <DropdownMenuItem>Settings</DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="text-red-600">
-                    <form action={signOutAction}>
+                  <DropdownMenuItem className="text-red-600" onClick={signOutAction}>
                       <button type="submit" className="flex items-center gap-2">
                         <LogOut className="mr-2 h-4 w-4" />
                         Logout
                       </button>
-                    </form>
+                    {/* <form action={signOutAction}>
+                    </form> */}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

@@ -2,9 +2,14 @@
 import { signOut } from "@/auth";
 
 export async function signOutAction() {
-    await signOut(
-        {
-            redirectTo: "/",
-        }
-    );
+    console.log("Signing out");
+    try {
+        await signOut(
+            {
+                redirectTo: "/",
+            }
+        );
+    } catch (error) {
+        console.error(error);
+    }
 }
