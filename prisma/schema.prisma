@@ -31,6 +31,7 @@ model User {
   isActive            Boolean              @default(true)
   isDeleted           Boolean              @default(false)
   isLocked            Boolean              @default(false)
+  lastLogin           DateTime?
   gfgProfile          GFGProfile?
   hackerrankProfile   HackerRankProfile?
   leaderboardStats    LeaderboardStats?

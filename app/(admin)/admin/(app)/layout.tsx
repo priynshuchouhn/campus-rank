@@ -16,6 +16,7 @@ import {
   BookOpen,
   FolderTree,
   HelpCircle,
+  Mail,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -68,6 +69,11 @@ const sidebarItems = [
     icon: HelpCircle,
   },
   {
+    title: "Emails",
+    href: "/admin/emails",
+    icon: Mail,
+  },
+  {
     title: "Settings",
     href: "/admin/settings",
     icon: Settings,
@@ -86,9 +92,8 @@ export default function AdminLayout({
     <div className="min-h-screen bg-background">
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 z-40 h-screen transition-transform ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } border-r bg-card md:translate-x-0`}
+        className={`fixed left-0 top-0 z-40 h-screen transition-transform ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          } border-r bg-card md:translate-x-0`}
         style={{ width: sidebarOpen ? "240px" : "0" }}
       >
         <div className="flex h-full flex-col">
@@ -113,11 +118,10 @@ export default function AdminLayout({
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
-                      isActive
-                        ? "bg-primary text-primary-foreground"
-                        : "hover:bg-muted"
-                    }`}
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${isActive
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-muted"
+                      }`}
                   >
                     <Icon className="h-4 w-4" />
                     {item.title}
@@ -131,9 +135,8 @@ export default function AdminLayout({
 
       {/* Main Content */}
       <div
-        className={`flex min-h-screen flex-col ${
-          sidebarOpen ? "md:ml-60" : ""
-        } transition-margin duration-300`}
+        className={`flex min-h-screen flex-col ${sidebarOpen ? "md:ml-60" : ""
+          } transition-margin duration-300`}
       >
         {/* Header */}
         <header className="sticky top-0 z-30 border-b bg-background">
@@ -181,10 +184,10 @@ export default function AdminLayout({
                   <DropdownMenuItem>Settings</DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem className="text-red-600" onClick={signOutAction}>
-                      <button type="submit" className="flex items-center gap-2">
-                        <LogOut className="mr-2 h-4 w-4" />
-                        Logout
-                      </button>
+                    <button type="submit" className="flex items-center gap-2">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Logout
+                    </button>
                     {/* <form action={signOutAction}>
                     </form> */}
                   </DropdownMenuItem>
