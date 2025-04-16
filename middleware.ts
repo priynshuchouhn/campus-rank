@@ -38,7 +38,6 @@ export const config = {
     "/roadmap",
     "/roadmap/:path*",
     "/goals",
-    "/goals/:path*",
     "/admin/:path*",
   ]
 }
