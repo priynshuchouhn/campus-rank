@@ -7,7 +7,7 @@ export async function POST(req: Request) {
     const {name,email} = await req.json();
   try {
     const { data, error } = await resend.emails.send({
-      from: 'Campus Rank <no-reply@campus-rank.priynshuchouhn.engineer>',
+      from: 'Campus Rank <no-reply@campusrank.org>',
       to: [email],
       subject: '🎉 Welcome to Campus Rank - Your Coding Journey Begins!',
       react: await EmailTemplate({ type: 'welcome', data: { name: name } }), // Added required prop

@@ -18,12 +18,12 @@ export const metadata: Metadata = {
   title: "Campus Rank - College Coding Leaderboard",
   description: "Track coding progress of students on GFG, LeetCode & HackerRank with Campus Rank. Compete, learn, and rank up!",
   keywords: "coding leaderboard, gfg ranking, leetcode ranking, hackerrank leaderboard, college coding, campus rank, coding contests",
-  authors: [{ name: "CampusRank Team", url: "https://campus-rank.priynshuchouhn.engineer" }],
-  metadataBase: new URL("https://campus-rank.priynshuchouhn.engineer"),
+  authors: [{ name: "Campus Rank Team", url: "https://campusrank.org" }],
+  metadataBase: new URL("https://campusrank.org"),
   openGraph: {
     title: "Campus Rank - College Coding Leaderboard",
     description: "Join Campus Rank to monitor your coding progress on GFG, LeetCode & HackerRank.",
-    url: "https://campus-rank.priynshuchouhn.engineer",
+    url: "https://campusrank.org",
     siteName: "Campus Rank",
     images: [
       {

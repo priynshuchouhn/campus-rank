@@ -154,7 +154,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
             {/* Share Section */}
             <div className="mt-8 pt-6 border-t border-gray-200">
                 <Share
-                    url={`https://campus-rank.priynshuchouhn.engineer/blogs/${post.slug}`}
+                    url={`https://campusrank.org/blogs/${post.slug}`}
                     title={post.title}
                     description={post.description}
                     image={post.featuredImage}

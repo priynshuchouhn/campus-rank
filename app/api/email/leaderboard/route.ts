@@ -23,7 +23,7 @@ export async function GET() {
     const errors = []
     for (const user of users) {
         const { data, error } = await resend.emails.send({
-            from: 'Campus Rank <no-reply@campus-rank.priynshuchouhn.engineer>',
+            from: 'Campus Rank <no-reply@campusrank.org>',
             to: [user.email],
             subject: '🎉 Campus Rank Leaderboard Update!',
             react: await EmailTemplate({ type: 'leaderboard', data: { name: user.name, topUsers: topThreeUsers } }),

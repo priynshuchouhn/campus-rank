@@ -133,7 +133,7 @@ const EmailTemplate: React.FC<EmailTemplateProps> = ({ type, data }) => {
                                     <table cellPadding="0" cellSpacing="0" width="100%">
                                         <tr>
                                             <td>
-                                                <a href="https://campus-rank.priynshuchouhn.engineer/" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+                                                <a href="https://campusrank.org/" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
                                                     <table cellPadding="0" cellSpacing="0" width="100%" style={{ background: 'linear-gradient(to right, #4f46e5, #9333ea)', borderRadius: '8px' }}>
                                                         <tr>
                                                             <td style={{ padding: '12px 24px', textAlign: 'center' }}>
@@ -286,7 +286,7 @@ const EmailTemplate: React.FC<EmailTemplateProps> = ({ type, data }) => {
                                     <table cellPadding="0" cellSpacing="0" width="100%">
                                         <tr>
                                             <td width="50%" style={{ paddingRight: '8px' }}>
-                                                <a href="https://campus-rank.priynshuchouhn.engineer/" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+                                                <a href="https://campusrank.org/" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
                                                     <table cellPadding="0" cellSpacing="0" width="100%" style={{ background: 'linear-gradient(to right, #f59e0b, #f97316)', borderRadius: '8px' }}>
                                                         <tr>
                                                             <td style={{ padding: '8px 24px', textAlign: 'center' }}>

@@ -110,7 +110,7 @@ export function ShareButton({
                     await navigator.share({
                         title: `${name}'s Coding Profile`,
                         text: `Check out ${name}'s coding achievements on Campus Rank!`,
-                        url: `https://campus-rank.priynshuchouhn.engineer/user/${username}`,
+                        url: `https://campusrank.org/user/${username}`,
                         files: [file]
                     });
                     toast.success("Profile shared successfully!");
@@ -118,13 +118,13 @@ export function ShareButton({
                     console.log('Error sharing:', error);
                     if (error instanceof Error && error.name !== 'AbortError') {
                         // Fallback to copying link to clipboard
-                        await navigator.clipboard.writeText(`https://campus-rank.priynshuchouhn.engineer/user/${username}`);
+                        await navigator.clipboard.writeText(`https://campusrank.org/user/${username}`);
                         toast.success("Profile link copied to clipboard!");
                     }
                 }
             } else {
                 // Fallback for browsers that don't support Web Share API
-                await navigator.clipboard.writeText(`https://campus-rank.priynshuchouhn.engineer/user/${username}`);
+                await navigator.clipboard.writeText(`https://campusrank.org/user/${username}`);
                 toast.success("Profile link copied to clipboard!");
             }
         } catch (error) {
