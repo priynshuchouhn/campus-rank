@@ -6,7 +6,7 @@ import { Button } from "./button"
 export default function InstallPrompt() {
     const [isIOS, setIsIOS] = useState(false)
     const [isStandalone, setIsStandalone] = useState(false)
-    const [isVisible, setIsVisible] = useState(true)
+    const [isVisible, setIsVisible] = useState(false)
     const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
 
     useEffect(() => {
@@ -23,7 +23,33 @@ export default function InstallPrompt() {
             e.preventDefault()
             setDeferredPrompt(e)
         })
-    }, [])
+
+        // Check when the prompt was last shown
+        const checkPromptVisibility = () => {
+            const lastShown = localStorage.getItem('installPromptLastShown')
+
+            if (!lastShown) {
+                // Never shown before, show it now
+                setIsVisible(true)
+                localStorage.setItem('installPromptLastShown', Date.now().toString())
+                return
+            }
+
+            const lastShownDate = parseInt(lastShown)
+            const oneWeek = 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
+            const hasWeekPassed = Date.now() - lastShownDate > oneWeek
+
+            if (hasWeekPassed) {
+                setIsVisible(true)
+                localStorage.setItem('installPromptLastShown', Date.now().toString())
+            }
+        }
+
+        // Only run this check if the app is not already installed
+        if (!isStandalone) {
+            checkPromptVisibility()
+        }
+    }, [isStandalone])
 
     const handleInstallClick = async () => {
         if (deferredPrompt) {
@@ -36,6 +62,12 @@ export default function InstallPrompt() {
         setIsVisible(false);
     }
 
+    const handleDismiss = () => {
+        setIsVisible(false)
+        // Update last shown time when dismissed manually
+        localStorage.setItem('installPromptLastShown', Date.now().toString())
+    }
+
     if (isStandalone || !isVisible) {
         return null
     }
@@ -46,7 +78,7 @@ export default function InstallPrompt() {
                 <div className="flex justify-between items-center">
                     <h3 className="text-lg font-semibold text-indigo-900 dark:text-indigo-100">Install Campus Rank</h3>
                     <button
-                        onClick={() => setIsVisible(false)}
+                        onClick={handleDismiss}
                         className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                     >
                         <X className="w-5 h-5" />

@@ -1,16 +1,31 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { requestNotificationPermission, subscribeToPushNotifications } from '@/lib/push-notifications';
 import { useSession } from 'next-auth/react';
 import { toast } from 'react-hot-toast';
 
 export const dynamic = 'force-dynamic';
- 
+
+// Function to detect iOS device
+function isIOS() {
+    return (
+        ['iPad', 'iPhone', 'iPod'].includes(navigator?.platform) ||
+        (navigator?.userAgent.includes("Mac") && "ontouchend" in document)
+    );
+}
 
 export function NotificationPermission() {
-    const {data}  = useSession();
+    const { data } = useSession();
     const session = data;
+    const [isIOSDevice, setIsIOSDevice] = useState(false);
+
+    useEffect(() => {
+        // Check if it's an iOS device and update state
+        if (typeof window !== 'undefined') {
+            setIsIOSDevice(isIOS());
+        }
+    }, []);
 
     useEffect(() => {
         const requestPermission = async () => {
