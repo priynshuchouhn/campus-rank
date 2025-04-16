@@ -1,8 +1,13 @@
+'use client'
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Home } from "lucide-react";
 import Link from "next/link";
 
-<div className="flex-1 flex items-center justify-center">
+import React from 'react'
+
+function notFound() {
+  return (
+    <div className="flex-1 flex items-center justify-center">
         <div className="max-w-md mx-auto px-4 text-center">
           <div className="relative">
             <div className="text-[12rem] font-bold text-primary/10 leading-none select-none">
@@ -45,3 +50,7 @@ import Link from "next/link";
           </div>
         </div>
       </div>
+  )
+}
+
+export default notFound

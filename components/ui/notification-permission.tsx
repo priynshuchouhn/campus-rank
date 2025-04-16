@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
  
 
 export function NotificationPermission() {
-    const { data } = useSession();
+    const {data}  = useSession();
     const session = data;
 
     useEffect(() => {
