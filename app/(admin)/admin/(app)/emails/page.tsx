@@ -1,6 +1,6 @@
 "use client";
 
-import { PromotionalEmailForm } from "@/components/admin/promotional-email-form";
+import { PromotionalEmailForm } from "@/components/ui/promotional-email-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Mail } from "lucide-react";
 

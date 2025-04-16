@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus } from 'lucide-react';
-import BlogPostForm from '@/components/admin/blog-post-form';
-import BlogPostList from '@/components/admin/blog-post-list';
+import BlogPostForm from '@/components/ui/blog-post-form';
+import BlogPostList from '@/components/ui/blog-post-list-admin';
 import { BlogPost } from '@/lib/interfaces';
 
 export default function AdminBlogsPage() {

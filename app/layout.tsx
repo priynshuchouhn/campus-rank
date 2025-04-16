@@ -4,6 +4,8 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "react-hot-toast";
 import Script from "next/script";
+import { NotificationPermission } from '@/components/ui/notification-permission';
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -93,6 +95,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <NotificationPermission />
           {children}
           <Toaster />
         </ThemeProvider>

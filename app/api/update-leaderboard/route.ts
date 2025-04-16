@@ -4,8 +4,7 @@ import { fetchAndUpdateProfile } from "@/lib/actions/users";
 import { prisma } from "@/lib/prisma";
 import axios from "axios";
 import { updateApplicationStats } from "@/lib/actions/leaderboard";
-
-
+import { sendLeaderboardUpdateNotification } from "@/lib/notifications";
 
 async function updateGlobalRanks() {
     // Get all leaderboard stats ordered by overall score
@@ -56,8 +55,14 @@ export async function GET() {
             include: { user: true }
         });
 
+        // Send email notifications
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/email/leaderboard`);
-        updateApplicationStats();
+        
+        // Update application stats
+        await updateApplicationStats();
+
+        // Send push notifications
+        await sendLeaderboardUpdateNotification();
 
         // Revalidate the leaderboard page
         revalidatePath('/', 'page');

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { slugify } from '@/lib/utils';
+import { sendNewBlogPostNotification } from '@/lib/notifications';
 
 export async function GET() {
     try {
@@ -34,7 +35,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
     try {
-            const session = await auth();
+        const session = await auth();
         
         if (!session?.user) {
             return new NextResponse('Unauthorized', { status: 401 });
@@ -60,6 +61,10 @@ export async function POST(req: Request) {
                 isApproved: session.user.role === 'ADMIN',
             },
         });
+
+        if (blogPost.isPublished && blogPost.isApproved) {
+            await sendNewBlogPostNotification(blogPost.title, blogPost.slug);
+        }
 
         return NextResponse.json(blogPost);
     } catch (error) {

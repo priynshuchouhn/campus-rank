@@ -42,7 +42,8 @@ model User {
   solvedQuestions     SolvedQuestion[]
   weeklyGoals         WeeklyGoal[]
   blogPosts           BlogPost[]
-  Report              Report[]
+  report              Report[]
+  pushSubscription    PushSubscription[]
 }
 
 model LeetCodeProfile {
@@ -346,6 +347,17 @@ model Report {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum Role {
