@@ -4,11 +4,19 @@ import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
+import dynamic from "next/dynamic";
+
+const NotificationPermission = dynamic<object>(
+  () => import('@/components/ui/notification-permission').then(mod => mod.NotificationPermission),
+  { ssr: false }
+);
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
 
   return (
+    <>
+    <NotificationPermission />
     <Button
       variant="ghost"
       size="icon"
@@ -19,5 +27,6 @@ export function ThemeToggle() {
       <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
       <span className="sr-only">Toggle theme</span>
     </Button>
+    </>
   );
 }

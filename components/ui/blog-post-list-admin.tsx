@@ -38,7 +38,7 @@ export default function AdminBlogPostList() {
         }
 
         try {
-            const response = await fetch(`/api/admin/blogs?id=${id}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/blogs?id=${id}`, {
                 method: 'DELETE',
             });
 
@@ -66,11 +66,6 @@ export default function AdminBlogPostList() {
                     <CardContent>
                         <BlogPostForm
                             initialData={editingPost}
-                            onCancel={() => setEditingPost(null)}
-                            onSuccess={() => {
-                                setEditingPost(null);
-                                fetchPosts();
-                            }}
                         />
                     </CardContent>
                 </Card>

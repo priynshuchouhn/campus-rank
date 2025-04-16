@@ -33,12 +33,9 @@ const formSchema = z.object({
 
 interface BlogPostFormProps {
     initialData?: BlogPost;
-    onCancel: () => void;
-    onSuccess: () => void;
 }
 
-export default function BlogPostForm({ initialData, onCancel, onSuccess }: BlogPostFormProps) {
-    console.log(initialData);
+export default function BlogPostForm({ initialData }: BlogPostFormProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -67,7 +64,6 @@ export default function BlogPostForm({ initialData, onCancel, onSuccess }: BlogP
             });
 
             toast.success(initialData ? 'Blog post updated successfully!' : 'Blog post created successfully!');
-            onSuccess();
         } catch (error) {
             console.error('Error saving blog post:', error);
             if (error instanceof AxiosError) {
@@ -196,7 +192,6 @@ export default function BlogPostForm({ initialData, onCancel, onSuccess }: BlogP
                     <Button
                         type="button"
                         variant="outline"
-                        onClick={onCancel}
                         disabled={isSubmitting}
                     >
                         Cancel

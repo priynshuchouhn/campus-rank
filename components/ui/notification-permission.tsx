@@ -5,8 +5,14 @@ import { requestNotificationPermission, subscribeToPushNotifications } from '@/l
 import { useSession } from 'next-auth/react';
 import { toast } from 'react-hot-toast';
 
+export const dynamic = 'force-dynamic';
+ 
+
 export function NotificationPermission() {
-    const { data: session } = useSession();
+    const { data } = useSession();
+    const session = data || {
+        user: null
+    };
 
     useEffect(() => {
         const requestPermission = async () => {
