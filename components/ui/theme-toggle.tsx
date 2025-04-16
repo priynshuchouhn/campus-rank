@@ -5,6 +5,7 @@ import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
 import dynamic from "next/dynamic";
+import ServiceWorkerRegistration from "./service-worker-registration";
 
 const NotificationPermission = dynamic<object>(
   () => import('@/components/ui/notification-permission').then(mod => mod.NotificationPermission),
@@ -16,6 +17,7 @@ export function ThemeToggle() {
 
   return (
     <>
+    <ServiceWorkerRegistration />
     <NotificationPermission />
     <Button
       variant="ghost"
