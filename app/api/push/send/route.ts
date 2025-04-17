@@ -70,7 +70,7 @@ export async function POST(req: Request) {
       });
 
       try {
-        await webpush.sendNotification(
+        const result = await webpush.sendNotification(
           {
             endpoint: subscription.endpoint,
             keys: {
@@ -80,6 +80,7 @@ export async function POST(req: Request) {
           },
           payload
         );
+        return result;
       } catch (error: any) {
         console.error('Error sending push notification:', error);
         // If the subscription is no longer valid, delete it
@@ -88,14 +89,16 @@ export async function POST(req: Request) {
             where: { id: subscription.id },
           });
         }
+        return error;
       }
     });
 
-    await Promise.all(notifications);
+    const result = await Promise.all(notifications);
 
     return NextResponse.json({ 
       success: true,
-      message: `Notification sent to ${subscriptions.length} users`
+      message: `Notification sent to ${subscriptions.length} users`,
+      result
     });
   } catch (error) {
     console.error('Error sending push notifications:', error);

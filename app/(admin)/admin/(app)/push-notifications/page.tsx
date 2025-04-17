@@ -41,6 +41,7 @@ export default function PushNotificationsPage() {
                 throw new Error('Failed to send notification');
             }
 
+
             toast.success('Notification sent successfully');
             setTitle('');
             setBody('');

@@ -12,6 +12,7 @@ export async function subscribeToPushNotifications(userId: string) {
   try {
     // Register service worker
     const registration = await navigator.serviceWorker.register('/sw.js');
+
     
     // Get push subscription
     const subscription = await registration.pushManager.subscribe({
@@ -37,7 +38,8 @@ export async function subscribeToPushNotifications(userId: string) {
 
     return true;
   } catch (error) {
-    console.error('Error subscribing to push notifications:', error);
+    console.log(error)
+    // console.error('Error subscribing to push notifications:', error);
     return false;
   }
 }

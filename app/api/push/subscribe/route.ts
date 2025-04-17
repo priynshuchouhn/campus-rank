@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 export async function POST(req: Request) {
+  console.log('Subscription route called');
   try {
     const { subscription, userId } = await req.json();
 
@@ -21,6 +22,8 @@ export async function POST(req: Request) {
         userId: userId,
       },
     });
+
+    console.log('Subscription created:', subscription);
 
     return NextResponse.json({ success: true });
   } catch (error) {

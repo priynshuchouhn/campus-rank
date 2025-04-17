@@ -3,7 +3,6 @@ import GoogleProvider from "next-auth/providers/google"
 import GithubProvider from "next-auth/providers/github"
 import { prisma } from "./lib/prisma";
 import CredentialsProvider from "next-auth/providers/credentials";
-import axios from "axios";
 declare module "next-auth" {
   interface User {
     role: string;
