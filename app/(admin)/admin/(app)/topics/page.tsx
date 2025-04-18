@@ -203,7 +203,7 @@ export default function TopicsPage() {
                                         </TableCell>
                                         <TableCell>
                                             <div className="flex justify-end gap-2">
-                                                <Link href={`/admin/topics/${topic.id}`}>
+                                                <Link href={`/admin/topics/${topic.id}/edit`}>
                                                     <Button variant="ghost" size="icon">
                                                         <Edit className="h-4 w-4" />
                                                     </Button>
