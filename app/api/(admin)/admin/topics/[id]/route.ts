@@ -33,9 +33,9 @@ export async function GET(
   try {
     const topicId = (await params).id;
     const session = await auth();
-    if (!session?.user || session.user.role !== "ADMIN") {
-      return NextResponse.json({ message: "Unauthorized" , data: [] , success: false}, { status: 401 });
-    } 
+    // if (!session?.user || session.user.role !== "ADMIN") {
+    //   return NextResponse.json({ message: "Unauthorized" , data: [], success: false}, { status: 401 });
+    // } 
     
     // Get topic with resources and section info
     const topic = await prisma.predefinedTopic.findUnique({

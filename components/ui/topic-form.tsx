@@ -55,7 +55,7 @@ export default function TopicForm({
     const [sections, setSections] = useState<Section[]>([]);
     const [editorData, setEditorData] = useState(initialData?.description || "");
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const submitButtonText = initialData ? "Save Topic" : 'Update Topic';
+    const submitButtonText = initialData ? 'Update Topic' : "Save Topic" ;
     const router = useRouter();
 
     const form = useForm<TopicFormValues>({
@@ -117,7 +117,7 @@ export default function TopicForm({
         if(!initialData){
             handleAddTopic(data);
         }else{
-
+            handleUpdateTopic(data);
         }
     };
 

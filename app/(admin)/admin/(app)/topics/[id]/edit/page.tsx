@@ -1,20 +1,15 @@
 import { Button } from "@/components/ui/button";
-import { ArrowLeft,} from "lucide-react";
+import { ArrowLeft, } from "lucide-react";
 import Link from "next/link";
 import axios from "axios";
 import TopicForm from "@/components/ui/topic-form";
 
-interface EditTopicPageProps {
-    params: Promise<{
-        id: string;
-    }>;
-}
 
-export default async function EditTopicPage({ params }: EditTopicPageProps) {
-    const {id} = await params;
-    
+export default async function EditTopicPage({ params }: {params : Promise<{id:string}>}) {
+    const { id } = await params;
+
     const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/topics/${id}`);
-    const topicData = response.data
+    const topicData = response.data.data
 
 
     if (!topicData) {
@@ -44,7 +39,7 @@ export default async function EditTopicPage({ params }: EditTopicPageProps) {
                 <h1 className="text-3xl font-bold">Edit Topic</h1>
             </div>
 
-            <TopicForm initialData={topicData} id={id}/>
+            <TopicForm initialData={topicData} id={id} />
         </div>
     );
 } 
