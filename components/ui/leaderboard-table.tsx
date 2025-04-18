@@ -22,6 +22,7 @@ interface LeaderboardTableProps {
 export function LeaderboardTable({ leaderboards, searchQuery }: LeaderboardTableProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages] = useState(Math.ceil(leaderboards.length / 15));
+  console.log(leaderboards);
 
   const filteredUsers = leaderboards
     .filter((leaderboard) =>
@@ -44,10 +45,12 @@ export function LeaderboardTable({ leaderboards, searchQuery }: LeaderboardTable
           <TableRow>
             <TableHead className="w-20">Rank</TableHead>
             <TableHead>Name</TableHead>
-            <TableHead className="text-right">Total Solved</TableHead>
-            <TableHead className="text-right">Easy</TableHead>
-            <TableHead className="text-right">Medium</TableHead>
-            <TableHead className="text-right">Hard</TableHead>
+            <TableHead className="text-center">Total Solved</TableHead>
+            <TableHead className="text-center">LC Easy</TableHead>
+            <TableHead className="text-center">LC Medium</TableHead>
+            <TableHead className="text-center">LC Hard</TableHead>
+            <TableHead className="text-center">GFG Solved </TableHead>
+            <TableHead className="text-center">HR Badges</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -64,16 +67,18 @@ export function LeaderboardTable({ leaderboards, searchQuery }: LeaderboardTable
                 )}
               </TableCell>
               <TableCell><Link href={`/user/${leaderboard.user.username}`}>{leaderboard.user.name}</Link></TableCell>
-              <TableCell className="text-right">{leaderboard.user.totalSolved}</TableCell>
-              <TableCell className="text-right text-green-600 dark:text-green-400">
+              <TableCell className="text-center">{leaderboard.user.totalSolved}</TableCell>
+              <TableCell className="text-center text-green-600 dark:text-green-400">
                 {leaderboard.user.easySolved}
               </TableCell>
-              <TableCell className="text-right text-yellow-600 dark:text-yellow-400">
+              <TableCell className="text-center text-yellow-600 dark:text-yellow-400">
                 {leaderboard.user.mediumSolved}
               </TableCell>
-              <TableCell className="text-right text-red-600 dark:text-red-400">
+              <TableCell className="text-center text-red-600 dark:text-red-400">
                 {leaderboard.user.hardSolved}
               </TableCell>
+              <TableCell className="text-center">{leaderboard.user.gfgProfile?.solvedProblems || 0}</TableCell>
+              <TableCell className="text-center">{leaderboard.user.hackerrankProfile?.badges.length || 0}</TableCell>
             </TableRow>
           ))}
         </TableBody>

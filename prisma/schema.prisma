@@ -32,6 +32,8 @@ model User {
   isDeleted           Boolean              @default(false)
   isLocked            Boolean              @default(false)
   lastLogin           DateTime?
+  institutionId       String?
+  batchId             String?
   gfgProfile          GFGProfile?
   hackerrankProfile   HackerRankProfile?
   leaderboardStats    LeaderboardStats?
@@ -44,6 +46,8 @@ model User {
   blogPosts           BlogPost[]
   report              Report[]
   pushSubscription    PushSubscription[]
+  institution         Institution?         @relation(fields: [institutionId], references: [id])
+  batch               Batch?               @relation(fields: [batchId], references: [id])
 }
 
 model LeetCodeProfile {
@@ -358,6 +362,47 @@ model PushSubscription {
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Institution {
+  id          String   @id @default(cuid())
+  name        String
+  code        String   @unique
+  address     String?
+  city        String?
+  state       String?
+  country     String?
+  website     String?
+  logo        String?
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  isActive    Boolean  @default(true)
+  isVerified  Boolean  @default(false)
+  users       User[]
+  batches     Batch[]
+}
+
+model Batch {
+  id            String      @id @default(cuid())
+  name          String
+  code          String
+  batchYears    String // e.g., "2023-2025" or "2024-2026"
+  startYear     Int // e.g., 2023
+  endYear       Int // e.g., 2025
+  startDate     DateTime
+  endDate       DateTime?
+  department    String?
+  program       String?
+  description   String?
+  institutionId String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  isActive      Boolean     @default(true)
+  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  users         User[]
+
+  @@unique([institutionId, code])
 }
 
 enum Role {

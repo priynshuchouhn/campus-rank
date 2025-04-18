@@ -60,7 +60,8 @@ async function saveUserToDatabase(userInfo: {
               email: userInfo.email!,
               image: userInfo.image,
               emailVerified: new Date(),
-              username: username
+              username: username,
+              lastLogin: new Date(),
             },
           })
           await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/email/welcome`, {
@@ -69,6 +70,10 @@ async function saveUserToDatabase(userInfo: {
           })
           return user;
         }
+        await prisma.user.update({
+          where: { id: existingUser.id },
+          data: { lastLogin: new Date() },
+        })
         return existingUser;
       } catch (error) {
         console.error("Error during user sign in:", error)
