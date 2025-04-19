@@ -25,6 +25,12 @@ export async function sendLeaderboardUpdateNotification() {
       });
     }
   } catch (error) {
+    await prisma.errorLog.create({
+      data:{
+          errorAt: '[notification.ts] sendLeaderboardUpdateNotification',
+          error: error instanceof Error ? error.message : 'Unknown error',
+      }
+    })
     console.error('Error sending leaderboard update notification:', error);
   }
 }
@@ -54,6 +60,12 @@ export async function sendNewBlogPostNotification(postTitle: string, postSlug: s
       });
     }
   } catch (error) {
+    await prisma.errorLog.create({
+      data:{
+          errorAt: '[notification.ts] sendNewBlogPostNotification',
+          error: error instanceof Error ? error.message : 'Unknown error',
+      }
+    })
     console.error('Error sending blog post notification:', error);
   }
 }

@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import webpush from 'web-push';
-import { auth } from '@/auth';
 
 // Initialize web-push with VAPID keys
 webpush.setVapidDetails(
@@ -11,13 +10,7 @@ webpush.setVapidDetails(
 );
 
 export async function POST(req: Request) {
-  try {
-    const session = await auth();
-    
-    if (!session?.user?.role || session.user.role !== 'ADMIN') {
-      return new NextResponse('Unauthorized', { status: 401 });
-    }
-
+  try {  
     const { title, body, url, targetAudience } = await req.json();
 
     if (!title || !body) {
