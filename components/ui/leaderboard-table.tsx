@@ -22,7 +22,6 @@ interface LeaderboardTableProps {
 export function LeaderboardTable({ leaderboards, searchQuery }: LeaderboardTableProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages] = useState(Math.ceil(leaderboards.length / 15));
-  console.log(leaderboards);
 
   const filteredUsers = leaderboards
     .filter((leaderboard) =>

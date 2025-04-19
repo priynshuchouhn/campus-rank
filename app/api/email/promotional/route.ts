@@ -58,7 +58,6 @@ export async function POST(req: Request) {
     );
 
     const data = await Promise.all(emailPromises);
-    console.log(data);
 
     return NextResponse.json({ success: true });
   } catch (error) {

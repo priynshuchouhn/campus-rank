@@ -37,7 +37,6 @@ export default function TopicsPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [hasRoadmap, setHasRoadmap] = useState<boolean | null>(null);
 
-    console.log(topics);
 
     // Fetch topics and check roadmap existence
     useEffect(() => {

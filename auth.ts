@@ -156,7 +156,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         return true;
       },
       authorized({ auth, request: { nextUrl } }) {
-        console.log("auth",auth);
         const isLoggedIn = !!auth?.user;
         const isOnDashboard = nextUrl.pathname.startsWith('/profile');
         if (isOnDashboard) {
