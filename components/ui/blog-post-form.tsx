@@ -21,6 +21,8 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { BlogPost } from '@/lib/interfaces';
 import { categories } from '@/lib/data';
 import MarkdownEditor from '@/components/ui/markdown-editor';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
     title: z.string().min(1, 'Title is required'),
@@ -37,6 +39,7 @@ interface BlogPostFormProps {
 
 export default function BlogPostForm({ initialData }: BlogPostFormProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const router = useRouter()
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -64,6 +67,7 @@ export default function BlogPostForm({ initialData }: BlogPostFormProps) {
             });
 
             toast.success(initialData ? 'Blog post updated successfully!' : 'Blog post created successfully!');
+            router.push('/admin/blogs');
         } catch (error) {
             console.error('Error saving blog post:', error);
             if (error instanceof AxiosError) {
@@ -189,6 +193,7 @@ export default function BlogPostForm({ initialData }: BlogPostFormProps) {
                 </CardContent>
 
                 <CardFooter className="flex justify-end gap-4">
+                    <Link href={'/admin/blogs'}>
                     <Button
                         type="button"
                         variant="outline"
@@ -196,6 +201,7 @@ export default function BlogPostForm({ initialData }: BlogPostFormProps) {
                     >
                         Cancel
                     </Button>
+                    </Link>
                     <Button type="submit" disabled={isSubmitting}>
                         {isSubmitting ? 'Saving...' : initialData ? 'Update' : 'Create'}
                     </Button>
