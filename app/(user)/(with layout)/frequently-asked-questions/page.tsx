@@ -6,6 +6,7 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Metadata } from "next";
+import Head from "next/head";
 
 export const metadata: Metadata = {
     title: "Frequently Asked Questions | Campus Rank",
@@ -92,13 +93,14 @@ export default function FAQ() {
     };
 
     return (
-        <div className="min-h-screen bg-background flex flex-col">
-            {/* Structured Data */}
-            <script
+        <>
+        <Head>
+        <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }}
             />
-
+        </Head>
+        <div className="min-h-screen bg-background flex flex-col">
             {/* Hero Section */}
             <section aria-labelledby="faq-heading" className="relative bg-primary/5 py-16 overflow-hidden">
                 <div className="absolute inset-0 bg-grid-white/10" />
@@ -156,5 +158,6 @@ export default function FAQ() {
                 </p>
             </section>
         </div>
+        </>
     );
 }
