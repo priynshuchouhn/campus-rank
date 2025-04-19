@@ -38,9 +38,6 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  verification: {
-    google: "your-google-site-verification-code",
-  },
   openGraph: {
     title: "Campus Rank - College Coding Leaderboard",
     description: "Join Campus Rank to monitor your coding progress on GFG, LeetCode & HackerRank. Compete with peers and track your growth!",
@@ -85,6 +82,82 @@ export default function RootLayout({
         </Script>
         {/* <!-- End Google Tag Manager --> */}
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9445216269913649" crossOrigin="anonymous"></script>
+
+        {/* Organization Schema */}
+        <Script id="organization-schema" type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "Campus Rank",
+            "alternateName": "CampusRank",
+            "url": "https://campusrank.org",
+            "logo": "https://campusrank.org/logo.jpg",
+            "image": "https://campusrank.org/logo.jpg",
+            "description": "Track coding progress of students on GFG, LeetCode & HackerRank with Campus Rank. Compete, learn, and rank up!",
+            "foundingDate": "2025",
+            "knowsAbout": ["Coding", "Programming", "Education", "LeetCode", "GeeksForGeeks", "HackerRank", "Leaderboards", "College Students"],
+            "areaServed": "Worldwide",
+            "audience": {
+              "@type": "Audience",
+              "audienceType": "College Students",
+              "geographicArea": {
+                "@type": "Country",
+                "name": "Global"
+              }
+            },
+            "founder": {
+              "@type": "Person",
+              "name": "Priyanshu Chouhan",
+              "jobTitle": "Founder & CEO",
+              "url": "https://priynshuchouhn.github.io",
+              "image": "https://res.cloudinary.com/dw1navurk/image/upload/v1742652392/portfolio/omjj1k7fykon1bms8jaz.jpg",
+              "knowsAbout": ["Web Development", "Coding", "Programming", "Education Technology", "Software Engineering"],
+              "identifier": {
+                "@type": "PropertyValue",
+                "propertyID": "KnowledgeGraph",
+                "value": "Priyanshu Chouhan"
+              },
+              "memberOf": {
+                "@type": "Organization",
+                "name": "Campus Rank"
+              },
+              "sameAs": ["https://twitter.com/priynshuchouhn",
+                "https://linkedin.com/in/priynshuchouhn",
+                "https://facebook.com/priynshuchouhn",
+                "https://instgram.com/thepriynshuchouhn",
+                "https://priynshuchouhn.github.io",
+              ],
+            },
+            "sameAs": [
+              "https://twitter.com/priynshuchouhn"
+            ]
+          })}
+        </Script>
+
+        {/* Website Schema */}
+        <Script id="website-schema" type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "Campus Rank - College Coding Leaderboard",
+            "url": "https://campusrank.org",
+            "description": "Track coding progress of students on GFG, LeetCode & HackerRank with Campus Rank. Compete, learn, and rank up!",
+            "potentialAction": [{
+              "@type": "SearchAction",
+              "target": "https://campusrank.org/search?q={search_term_string}",
+              "query-input": "required name=search_term_string"
+            },
+            {
+              "@type": "RegisterAction",
+              "target": "https://campusrank.org/get-started"
+            },
+            {
+              "@type": "LoginAction",
+              "target": "https://campusrank.org/get-started"
+            },
+            ]
+          })}
+        </Script>
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
