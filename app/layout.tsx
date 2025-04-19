@@ -97,14 +97,6 @@ export default function RootLayout({
             "foundingDate": "2025",
             "knowsAbout": ["Coding", "Programming", "Education", "LeetCode", "GeeksForGeeks", "HackerRank", "Leaderboards", "College Students"],
             "areaServed": "Worldwide",
-            "audience": {
-              "@type": "Audience",
-              "audienceType": "College Students",
-              "geographicArea": {
-                "@type": "Country",
-                "name": "Global"
-              }
-            },
             "founder": {
               "@type": "Person",
               "name": "Priyanshu Chouhan",
@@ -149,10 +141,6 @@ export default function RootLayout({
             },
             {
               "@type": "RegisterAction",
-              "target": "https://campusrank.org/get-started"
-            },
-            {
-              "@type": "LoginAction",
               "target": "https://campusrank.org/get-started"
             },
             ]
