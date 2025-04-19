@@ -44,6 +44,8 @@ export async function updateApplicationStats() {
                 totalSolved: true
             }
         });
+        console.log('Total profile views:', totalProfileViews);
+        console.log('Total questions solved:', totalSolved._sum.totalSolved);
         if (!applicationStats) {
             await prisma.applicationStats.create({
                 data: {
@@ -59,13 +61,15 @@ export async function updateApplicationStats() {
 
         // Calculate views since last update
         const viewsSinceLastUpdate = profileViews.filter(view => view.createdAt > applicationStats.lastLeaderboardUpdate).length;
+        console.log('Views since last update:', viewsSinceLastUpdate);
         const profileViewsSinceLastUpdate = viewsSinceLastUpdate;
 
         // Calculate questions solved since last update
         const currentTotalSolved = totalSolved._sum.totalSolved ?? 0;
         const questionsSolvedSinceLastUpdate = Math.max(0, currentTotalSolved - applicationStats.totalQuestionsSolved);
+        console.log('Questions solved since last update:', questionsSolvedSinceLastUpdate);
 
-        await prisma.applicationStats.update({
+       const updatedStats = await prisma.applicationStats.update({
             where: { id: applicationStats.id },
             data: {
                 lastLeaderboardUpdate: new Date(),
@@ -75,6 +79,8 @@ export async function updateApplicationStats() {
                 questionsSolvedSinceLastUpdate
             },
         });
+        console.log('Updated application stats:', updatedStats);
+        return updatedStats;
     } catch (error) {
         await prisma.errorLog.create({
             data: {
