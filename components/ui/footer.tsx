@@ -26,6 +26,7 @@ function Footer() {
               <li><Link href="/blogs" className="text-gray-600 dark:text-white hover:text-gray-900">Blogs</Link></li>
               <li><Link href="/frequently-asked-questions" className="text-gray-600 dark:text-white hover:text-gray-900">FAQ</Link></li>
               <li><Link href="/about-us" className="text-gray-600 dark:text-white hover:text-gray-900">About Us</Link></li>
+              <li><Link href="/contact-us" className="text-gray-600 dark:text-white hover:text-gray-900">Contact Us</Link></li>
             </ul>
           </div>
 
