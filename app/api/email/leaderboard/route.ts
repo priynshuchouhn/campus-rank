@@ -35,7 +35,12 @@ export async function GET() {
     }
 
     if (errors.length > 0) {
-      return Response.json({ errors }, { status: 500 });
+      await prisma.errorLog.create({
+        data: {
+          errorAt: '[API] email/leaderboard/route.ts',
+          error: errors.join("##"),
+        }
+      });
     }
     return Response.json(datas);
   } catch (error) {

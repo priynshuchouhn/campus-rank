@@ -38,7 +38,8 @@ export async function GET() {
         // Get all users
         const users = await prisma.user.findMany({
             where: {
-                role: "USER"
+                role: "USER",
+                isActive: true,
             }
         });
 
@@ -56,7 +57,7 @@ export async function GET() {
         });
 
         // Send email notifications
-        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/email/leaderboard`);
+        await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/email/leaderboard`);
         
         // Update application stats
         await updateApplicationStats();
