@@ -57,7 +57,7 @@ export async function GET() {
         });
 
         // Send email notifications
-        await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/email/leaderboard`);
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/email/leaderboard`);
         
         // Update application stats
         await updateApplicationStats();
