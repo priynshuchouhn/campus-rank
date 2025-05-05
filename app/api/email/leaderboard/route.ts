@@ -1,6 +1,7 @@
 import EmailTemplate from '@/components/ui/email-template';
 import { getLeaderboard } from '@/lib/actions/leaderboard';
 import { prisma } from '@/lib/prisma';
+import { delay } from '@/lib/utils';
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -22,6 +23,7 @@ export async function GET() {
     const datas = []
     const errors = []
     for (const user of users) {
+        await delay(2000);
         const { data, error } = await resend.emails.send({
             from: 'Campus Rank <no-reply@campusrank.org>',
             to: [user.email],

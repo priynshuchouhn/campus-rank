@@ -48,6 +48,10 @@ export function slugify(text: string): string {
         .replace(/-+$/, '');            // Trim - from end of text
 }
 
+export function delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 
 
 

@@ -1,4 +1,5 @@
 import { prisma } from './prisma';
+import { delay } from './utils';
 
 export async function sendLeaderboardUpdateNotification() {
   try {
@@ -11,6 +12,7 @@ export async function sendLeaderboardUpdateNotification() {
 
     // Send notification to each user
     for (const subscription of subscriptions) {
+      await delay(1000);
       await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/push/send`, {
         method: 'POST',
         headers: {
