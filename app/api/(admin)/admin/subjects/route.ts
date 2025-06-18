@@ -5,49 +5,30 @@ import { auth } from "@/auth";
 
 // Schema for validation
 const sectionSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  description: z.string().min(10, "Description must be at least 10 characters"),
-  subjectId: z.string().min(10, "Description must be at least 10 characters"),
-  isPredefined: z.boolean().optional().default(true) // Always predefined in admin
+  subjectName: z.string().min(2, "Name must be at least 2 characters"),
+  isCoreSubject: z.boolean(),
 });
 
-// GET predefined sections
+// GET predefined subjects
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
     if (!session?.user || session.user.role !== "ADMIN") {
       return NextResponse.json({ message: "Unauthorized", success: false }, { status: 401 });
     }
-    // Get predefined sections with topic counts
-    const predefinedSections = await prisma.predefinedSection.findMany({
-      include: {
-        topics: true,
-      },
-      orderBy: {
-        createdAt: 'asc',
-      },
+    // Get predefined subjects with topic counts
+    const subjects = await prisma.subject.findMany({
+      // orderBy: {
+      //   createdAt: 'asc',
+      // },
     });
 
-    // Map to frontend format
-    const formattedSections = predefinedSections.map(section => ({
-      id: section.id,
-      name: section.title,
-      description: section.description || "",
-      topicsCount: section.topics.length,
-      topics: section.topics.map(topic => ({
-        id: topic.id,
-        title: topic.title,
-        description: topic.description,
-        sectionId: topic.predefinedSectionId,
-      })),
-    }));
-
-    return NextResponse.json({ message: "Sections fetched successfully", data: formattedSections, success: true });
+    return NextResponse.json({ message: "Subjects fetched successfully", data: subjects, success: true });
   } catch (error) {
-    console.error("Error fetching sections:", error);
+    console.error("Error fetching subjects:", error);
     await prisma.errorLog.create({
       data: {
-        errorAt: '[API] GET admin/sections/route.ts',
+        errorAt: '[API] GET admin/subjects/route.ts',
         error: error instanceof Error ? error.message : 'Unknown error',
       }
     });
@@ -58,7 +39,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// Create a new predefined section
+// Create a new predefined subject
 export async function POST(request: NextRequest) {
   try {
     // Parse and validate the request body
@@ -69,33 +50,31 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: "Unauthorized", success: false }, { status: 401 });
     }
     
-    // Create a predefined section
-    const section = await prisma.predefinedSection.create({
+    // Create a predefined subject
+    const subject = await prisma.subject.create({
       data: {
-        title: validatedData.name,
-        description: validatedData.description,
-        subjectId: validatedData.subjectId
+        subjectName: validatedData.subjectName,
+        isCoreSubject: validatedData.isCoreSubject,
       },
     });
     
     return NextResponse.json(
       { 
-        message: "Predefined section created successfully",
+        message: "Predefined subject created successfully",
         data: {
-          id: section.id,
-          name: section.title,
-          description: section.description || "",
-          topicsCount: 0,
+          id: subject.id,
+          subjectName: subject.subjectName,
+          isCoreSubject: subject.isCoreSubject,
         },
         success: true,
       },
       { status: 201 }
     );
   } catch (error) {
-    console.error("Error creating section:", error);
+    console.error("Error creating subject:", error);
     await prisma.errorLog.create({
       data: {
-        errorAt: '[API] POST admin/sections/route.ts',
+        errorAt: '[API] POST admin/subjects/route.ts',
         error: error instanceof Error ? error.message : 'Unknown error',
       }
     });

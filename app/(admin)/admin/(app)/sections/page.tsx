@@ -23,18 +23,21 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Search, Plus, Edit, Trash2, Loader2 } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import toast from "react-hot-toast";
 import { Section } from "@/lib/interfaces";
 import axios from "axios";
+import { Subject } from "@prisma/client";
+import { Select, SelectContent, SelectTrigger, SelectValue, SelectItem } from "@/components/ui/select";
 
 export const dynamic = 'force-dynamic';
 // Define schema for section validation
 const sectionSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   description: z.string().min(10, "Description must be at least 10 characters"),
+  subjectId: z.string().min(10, "Subject must be at least 10 characters")
 });
 
 type SectionFormValues = z.infer<typeof sectionSchema>;
@@ -43,6 +46,7 @@ type SectionFormValues = z.infer<typeof sectionSchema>;
 
 export default function SectionsPage() {
   const [sections, setSections] = useState<Section[]>([]);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showNewSectionDialog, setShowNewSectionDialog] = useState(false);
   const [editingSectionId, setEditingSectionId] = useState<string | null>(null);
@@ -55,8 +59,12 @@ export default function SectionsPage() {
     defaultValues: {
       name: "",
       description: "",
+      subjectId: ""
     },
   });
+
+  const { control } = newSectionForm;
+
 
   // Create form for editing a section
   const editSectionForm = useForm<SectionFormValues>({
@@ -64,6 +72,7 @@ export default function SectionsPage() {
     defaultValues: {
       name: "",
       description: "",
+      subjectId: ""
     },
   });
 
@@ -74,6 +83,8 @@ export default function SectionsPage() {
         setIsLoading(true);
         const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/sections`);
         setSections(response.data.data);
+        const subjects = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/subjects`);
+        setSubjects(subjects.data.data);
       } catch (error) {
         console.error("Error fetching sections:", error);
         toast.error("Failed to load sections");
@@ -152,6 +163,7 @@ export default function SectionsPage() {
     editSectionForm.reset({
       name: section.name,
       description: section.description,
+      subjectId: section.subjectId
     });
     setEditingSectionId(section.id);
   };
@@ -187,6 +199,36 @@ export default function SectionsPage() {
                 {newSectionForm.formState.errors.name && (
                   <p className="text-sm text-red-500">
                     {newSectionForm.formState.errors.name.message}
+                  </p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="name" className="text-sm font-medium">
+                  Subject Name
+                </label>
+                <Controller
+                  name="subjectId"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select a subject" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {subjects.map((subject) => (
+                          <SelectItem key={subject.id} value={subject.id}>
+                            {subject.subjectName}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                {newSectionForm.formState.errors.subjectId && (
+                  <p className="text-sm text-red-500">
+                    {newSectionForm.formState.errors.subjectId.message}
                   </p>
                 )}
               </div>
