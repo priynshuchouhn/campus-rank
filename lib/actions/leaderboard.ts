@@ -7,6 +7,10 @@ export async function getLeaderboard() {
     try {
         const leaderboard = await prisma.leaderboardStats.findMany({
             orderBy: { globalRank: "asc" },
+            where:{
+                isActive: true,
+                isDeleted: false,
+            },
             include: {
                 user: {
                     include: {
@@ -47,15 +51,6 @@ export async function updateApplicationStats() {
         console.log('Total profile views:', totalProfileViews);
         console.log('Total questions solved:', totalSolved._sum.totalSolved);
         if (!applicationStats) {
-            await prisma.applicationStats.create({
-                data: {
-                    lastLeaderboardUpdate: new Date(),
-                    totalProfileViews,
-                    totalQuestionsSolved: totalSolved._sum.totalSolved ?? 0,
-                    profileViewsSinceLastUpdate: 0,
-                    questionsSolvedSinceLastUpdate: 0,
-                },
-            });
             return;
         }
 
@@ -68,6 +63,7 @@ export async function updateApplicationStats() {
         const currentTotalSolved = totalSolved._sum.totalSolved ?? 0;
         const questionsSolvedSinceLastUpdate = Math.max(0, currentTotalSolved - applicationStats.totalQuestionsSolved);
         console.log('Questions solved since last update:', questionsSolvedSinceLastUpdate);
+        const totalQuestionSolvedOnPlatform = questionsSolvedSinceLastUpdate + applicationStats.totalQuestionSolvedOnPlatform;
 
        const updatedStats = await prisma.applicationStats.update({
             where: { id: applicationStats.id },
@@ -76,7 +72,8 @@ export async function updateApplicationStats() {
                 totalProfileViews,
                 totalQuestionsSolved: currentTotalSolved,
                 profileViewsSinceLastUpdate,
-                questionsSolvedSinceLastUpdate
+                questionsSolvedSinceLastUpdate,
+                totalQuestionSolvedOnPlatform
             },
         });
         console.log('Updated application stats:', updatedStats);

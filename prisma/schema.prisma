@@ -120,6 +120,8 @@ model LeaderboardStats {
   gfgRank         Int?
   lastUpdated     DateTime @updatedAt
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isActive Boolean @default(true)
+  isDeleted Boolean @default(false)
 }
 
 model ProfileView {
@@ -139,6 +141,8 @@ model ApplicationStats {
   totalQuestionsSolved           Int      @default(0)
   profileViewsSinceLastUpdate    Int      @default(0)
   questionsSolvedSinceLastUpdate Int      @default(0)
+  lastLeaderboardEmailAt         DateTime @default(now())
+  totalQuestionSolvedOnPlatform  Int      @default(0)
   createdAt                      DateTime @default(now())
 }
 

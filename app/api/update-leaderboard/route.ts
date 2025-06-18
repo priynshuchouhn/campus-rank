@@ -15,10 +15,10 @@ async function updateGlobalRanks() {
             }
         });
 
-    // Update global ranks
-    for (let i = 0; i < leaderboardStats.length; i++) {
-        await prisma.leaderboardStats.update({
-            where: { id: leaderboardStats[i].id },
+        // Update global ranks
+        for (let i = 0; i < leaderboardStats.length; i++) {
+            await prisma.leaderboardStats.update({
+                where: { id: leaderboardStats[i].id },
                 data: { globalRank: i + 1 }
             });
         }
@@ -57,8 +57,17 @@ export async function GET() {
         });
 
         // Send email notifications
-        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/email/leaderboard`);
-        
+        const appStats = await prisma.applicationStats.findFirst();
+        let targetDate: Date | null = null;
+        if (appStats?.lastLeaderboardEmailAt) {
+            targetDate = new Date(appStats.lastLeaderboardEmailAt);
+            targetDate.setDate(targetDate.getDate() + 5);
+            const now = new Date();
+            if (now >= targetDate) {
+                axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/email/leaderboard`);
+            }
+        }
+
         // Update application stats
         await updateApplicationStats();
 
@@ -68,10 +77,10 @@ export async function GET() {
         // Revalidate the leaderboard page
         revalidatePath('/', 'page');
 
-        return NextResponse.json({ 
-            success: true, 
+        return NextResponse.json({
+            success: true,
             message: 'Leaderboard updated successfully',
-            leaderboard 
+            leaderboard
         });
     } catch (error) {
         console.error('Error updating leaderboard:', error);
