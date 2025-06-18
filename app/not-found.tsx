@@ -13,7 +13,7 @@ function notFound() {
       <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
           <Link href="/" className="flex items-center gap-2 font-semibold">
-            <Image src="/logo.png" alt="Campus Rank" width={32} height={32} />
+            <Image src="/logo.jpg" alt="Campus Rank" width={48} height={48} className="rounded-full" />
             <span>Campus Rank</span>
           </Link>
           <ThemeToggle />

@@ -53,6 +53,23 @@ export function AuthForm() {
                         </form>
                     </div>
                 </div>
+                <div>
+                    <p className="mt-6 text-xs text-center text-muted-foreground">
+                        By signing in, you agree to our{" "}
+                        <a href="/terms-of-service" className="underline hover:text-primary" target="_blank" rel="noopener noreferrer">
+                            Terms of Service
+                        </a>
+                        ,{" "}
+                        <a href="/privacy-policy" className="underline hover:text-primary" target="_blank" rel="noopener noreferrer">
+                            Privacy Policy
+                        </a>
+                        , and{" "}
+                        <a href="/code-of-conduct" className="underline hover:text-primary" target="_blank" rel="noopener noreferrer">
+                            Community Guidelines
+                        </a>
+                        .
+                    </p>
+                </div>
             </CardContent>
         </Card>
     );
