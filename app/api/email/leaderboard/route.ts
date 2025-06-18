@@ -7,7 +7,14 @@ import { Resend } from 'resend';
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function GET() {
-    const users = await prisma.user.findMany({});
+    const users = await prisma.user.findMany({
+      where: {
+        isActive: true,
+        isDeleted: false,
+        role: 'USER'
+      }
+    });
+    const applicationStats = await prisma.applicationStats.findFirst();
     const leaderboards = await getLeaderboard();
 
     const topThree = leaderboards.slice(0, 3);
@@ -28,7 +35,7 @@ export async function GET() {
             from: 'Campus Rank <no-reply@campusrank.org>',
             to: [user.email],
             subject: '🎉 Campus Rank Leaderboard Update!',
-            react: await EmailTemplate({ type: 'leaderboard', data: { name: user.name, topUsers: topThreeUsers } }),
+            react: await EmailTemplate({ type: 'leaderboard', data: { name: user.name, topUsers: topThreeUsers, userCount: users.length, problemSolved: applicationStats?.totalQuestionSolvedOnPlatform ?? 0 } }),
         });
         if (error) {
             errors.push(error);

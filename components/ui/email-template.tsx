@@ -6,6 +6,8 @@ interface EmailTemplateProps {
         name?: string;
         rank?: number;
         score?: number;
+        userCount?: number;
+        problemSolved?:number;
         postTitle?: string;
         postUrl?: string;
         topUsers?: Array<{
@@ -226,7 +228,7 @@ const EmailTemplate: React.FC<EmailTemplateProps> = ({ type, data }) => {
                                                                     <td style={{ paddingRight: '8px' }}>
                                                                         <span style={{ fontSize: '16px' }}>👥</span>
                                                                     </td>
-                                                                    <td style={{ color: '#4b5563' }}>Total active participants: 234</td>
+                                                                    <td style={{ color: '#4b5563' }}>Total active participants: {data.userCount}</td>
                                                                 </tr>
                                                             </table>
                                                         </td>
@@ -238,12 +240,12 @@ const EmailTemplate: React.FC<EmailTemplateProps> = ({ type, data }) => {
                                                                     <td style={{ paddingRight: '8px' }}>
                                                                         <span style={{ fontSize: '16px' }}>🎯</span>
                                                                     </td>
-                                                                    <td style={{ color: '#4b5563' }}>Problems solved this week: 1,567</td>
+                                                                    <td style={{ color: '#4b5563' }}>Problems solved this week: {data.problemSolved}</td>
                                                                 </tr>
                                                             </table>
                                                         </td>
                                                     </tr>
-                                                    <tr>
+                                                    {/* <tr>
                                                         <td style={{ paddingBottom: '8px' }}>
                                                             <table cellPadding="0" cellSpacing="0">
                                                                 <tr>
@@ -254,8 +256,8 @@ const EmailTemplate: React.FC<EmailTemplateProps> = ({ type, data }) => {
                                                                 </tr>
                                                             </table>
                                                         </td>
-                                                    </tr>
-                                                    <tr>
+                                                    </tr> */}
+                                                    {/* <tr>
                                                         <td style={{ paddingBottom: '8px' }}>
                                                             <table cellPadding="0" cellSpacing="0">
                                                                 <tr>
@@ -266,8 +268,8 @@ const EmailTemplate: React.FC<EmailTemplateProps> = ({ type, data }) => {
                                                                 </tr>
                                                             </table>
                                                         </td>
-                                                    </tr>
-                                                    <tr>
+                                                    </tr> */}
+                                                    {/* <tr>
                                                         <td>
                                                             <table cellPadding="0" cellSpacing="0">
                                                                 <tr>
@@ -278,7 +280,7 @@ const EmailTemplate: React.FC<EmailTemplateProps> = ({ type, data }) => {
                                                                 </tr>
                                                             </table>
                                                         </td>
-                                                    </tr>
+                                                    </tr> */}
                                                 </table>
                                             </td>
                                         </tr>
