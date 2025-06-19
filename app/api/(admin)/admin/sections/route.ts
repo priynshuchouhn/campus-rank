@@ -22,6 +22,7 @@ export async function GET(request: NextRequest) {
     const predefinedSections = await prisma.predefinedSection.findMany({
       include: {
         topics: true,
+        subject: true,
       },
       orderBy: {
         createdAt: 'asc',
@@ -34,6 +35,7 @@ export async function GET(request: NextRequest) {
       name: section.title,
       description: section.description || "",
       topicsCount: section.topics.length,
+      subjectName: section.subject.subjectName,
       topics: section.topics.map(topic => ({
         id: topic.id,
         title: topic.title,

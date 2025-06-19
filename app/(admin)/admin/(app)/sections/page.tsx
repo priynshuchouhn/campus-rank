@@ -293,6 +293,7 @@ export default function SectionsPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
+                  <TableHead>Subject Name</TableHead>
                   <TableHead>Description</TableHead>
                   <TableHead className="text-right">Topics</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
@@ -302,7 +303,8 @@ export default function SectionsPage() {
                 {filteredSections.map((section) => (
                   <TableRow key={section.id}>
                     <TableCell className="font-medium">{section.name}</TableCell>
-                    <TableCell>{section.description}</TableCell>
+                    <TableCell className="font-medium">{section.subjectName}</TableCell>
+                    <TableCell>{section.description.slice(0,50)}...</TableCell>
                     <TableCell className="text-right">{section.topicsCount}</TableCell>
                     <TableCell>
                       <div className="flex justify-end gap-2">
