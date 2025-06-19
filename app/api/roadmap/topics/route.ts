@@ -18,11 +18,11 @@ export async function GET(request: NextRequest) {
                 include: {
                     resources: true,
                     predefinedSection: true,
+                    questions: true,
                 },
             },
             section: true,
             roadmap: true,
-            questions: true,
 
         },
     });

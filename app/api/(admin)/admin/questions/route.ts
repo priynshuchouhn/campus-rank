@@ -44,8 +44,6 @@ export async function GET() {
         id: true,
         title: true,
         difficulty: true,
-        section: true,
-        topicName: true,
         createdAt: true,
         updatedAt: true,
         testCases: true,
@@ -69,8 +67,6 @@ export async function GET() {
         id: question.id,
         title: question.title,
         difficulty: difficultyMap[question.difficulty],
-        section: question.section,
-        topic: question.topicName,
         testCases: question.testCases,
         constraints: [],
         sampleCodes: [],
@@ -139,8 +135,6 @@ export async function POST(request: NextRequest) {
         difficulty: difficultyMap[validatedData.difficulty] as "EASY" | "MEDIUM" | "HARD",
         timeComplexity: validatedData.timeComplexity,
         spaceComplexity: validatedData.spaceComplexity,
-        section: validatedData.section,
-        topicName: validatedData.topic,
         // Create test cases
         testCases: {
           create: validatedData.testCases.map(testCase => ({

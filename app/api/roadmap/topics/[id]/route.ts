@@ -24,17 +24,26 @@ export async function GET(
                     include: {
                         resources: true,
                         predefinedSection: true,
-                    },
-                },
-                questions: {
-                    include: {
-                        solvedBy: {
-                            where: {
-                                userId: session.user.id
+                        questions: {
+                            include: {
+                                solvedBy: {
+                                    where: {
+                                        userId: session.user.id
+                                    }
+                                }
                             }
                         }
-                    }
-                }
+                    },
+                },
+                // questions: {
+                //     include: {
+                //         solvedBy: {
+                //             where: {
+                //                 userId: session.user.id
+                //             }
+                //         }
+                //     }
+                // }
             },
         });
 
@@ -43,8 +52,8 @@ export async function GET(
         }
 
         // Calculate progress stats
-        const totalProblems = topic.questions.length;
-        const solvedProblems = topic.questions.filter(q => q.solvedBy.length > 0).length;
+        const totalProblems = topic.predefinedTopic.questions.length;
+        const solvedProblems = topic.predefinedTopic.questions.filter(q => q.solvedBy.length > 0).length;
         const completion = totalProblems > 0 ? Math.round((solvedProblems / totalProblems) * 100) : 0;
 
         // Format the response
@@ -58,7 +67,7 @@ export async function GET(
                 url: resource.url,
                 type: resource.type
             })),
-            problems: topic.questions.map(question => ({
+            problems: topic.predefinedTopic.questions.map(question => ({
                 id: question.id,
                 title: question.title,
                 difficulty: question.difficulty,
