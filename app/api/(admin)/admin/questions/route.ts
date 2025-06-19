@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { auth } from "@/auth";
-// import { getServerSession } from "next-auth";
-// import { authOptions } from "@/lib/auth";
 
 // Schema for validation
 const testCaseSchema = z.object({
@@ -132,6 +130,7 @@ export async function POST(request: NextRequest) {
       data: {
         title: validatedData.title,
         description: validatedData.description,
+        questionType: 'CODE',
         difficulty: difficultyMap[validatedData.difficulty] as "EASY" | "MEDIUM" | "HARD",
         timeComplexity: validatedData.timeComplexity,
         spaceComplexity: validatedData.spaceComplexity,

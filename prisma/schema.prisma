@@ -246,18 +246,27 @@ model Question {
   id                String               @id @default(cuid())
   title             String
   description       String
+  questionType      QuestionType
   difficulty        Difficulty
+  predefinedTopicId String?
+  predefinedTopic   PredefinedTopic?     @relation(fields: [predefinedTopicId], references: [id], onDelete: Cascade)
+
+  // Code Based Question
   timeComplexity    String?
   spaceComplexity   String?
   createdAt         DateTime             @default(now())
   updatedAt         DateTime             @updatedAt
-  predefinedTopicId String?
   constraints       Constraint[]
-  predefinedTopic   PredefinedTopic?     @relation(fields: [predefinedTopicId], references: [id])
   submissions       QuestionSubmission[]
   sampleCodes       SampleCode[]
   solvedBy          SolvedQuestion[]
   testCases         TestCase[]
+
+  //MCQ Based Question
+  options String[]
+  correctOption String?
+  explanation String?
+
 }
 
 model SampleCode {
@@ -475,4 +484,9 @@ enum ReportStatus {
   IN_PROGRESS
   RESOLVED
   CLOSED
+}
+
+enum QuestionType {
+ MCQ
+ CODE
 }
