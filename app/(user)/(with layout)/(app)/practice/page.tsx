@@ -1,4 +1,3 @@
-"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -18,6 +17,7 @@ import {
   Play,
   BarChart3,
 } from "lucide-react";
+import { fetchSubjectsToPracticeWithTopic } from "@/lib/actions/practice";
 
 const aptitudeTopics = [
   {
@@ -79,15 +79,17 @@ const recentAttempts = [
   },
 ];
 
-export default function AptitudeDashboard() {
-  const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
+export default async function AptitudeDashboard() {
+  const subjectLst = await fetchSubjectsToPracticeWithTopic()
+  console.log(subjectLst);
+  // const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
 
-  const overallStats = {
-    totalAttempts: 45,
-    averageScore: 82,
-    totalTimeSpent: "18h 30m",
-    bestScore: 95,
-  };
+  // const overallStats = {
+  //   totalAttempts: 45,
+  //   averageScore: 82,
+  //   totalTimeSpent: "18h 30m",
+  //   bestScore: 95,
+  // };
 
   return (
     <div className="min-h-screen bg-background -my-6">
@@ -162,38 +164,38 @@ export default function AptitudeDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Topic Selection */}
           <div className="lg:col-span-3">
-            <h2 className="text-2xl font-bold mb-6">Choose Practice Topic</h2>
-            <div className="space-y-6">
-              {aptitudeTopics.map((topic) => {
-                const IconComponent = topic.icon;
+            <h2 className="text-2xl font-bold mb-6 text-gray-500">Choose Practice Topic</h2>
+            <div className="space-y-6 mb-3" >
+              {subjectLst.map((subject) => {
+                // const IconComponent = topic.icon;
                 return (
                   <Card
-                    key={topic.id}
-                    className={`transition-all duration-200 hover:shadow-lg cursor-pointer border-2 ${
-                      selectedTopic === topic.id
-                        ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/20"
-                        : "border-transparent hover:border-gray-200"
-                    }`}
-                    onClick={() => setSelectedTopic(topic.id)}
+                    key={subject.id}
+                    // className={`transition-all duration-200 hover:shadow-lg cursor-pointer border-2 ${
+                    //   selectedTopic === topic.id
+                    //     ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/20"
+                    //     : "border-transparent hover:border-gray-200"
+                    // }`}
+                    // onClick={() => setSelectedTopic(topic.id)}
                   >
                     <CardContent className="p-6">
                       <div className="flex items-start gap-4">
-                        <div className={`p-3 rounded-lg ${topic.color} bg-opacity-10`}>
+                        {/* <div className={`p-3 rounded-lg ${topic.color} bg-opacity-10`}>
                           <IconComponent className={`h-6 w-6 text-white`} style={{ color: topic.color.replace('bg-', '').replace('-500', '') }} />
-                        </div>
+                        </div> */}
                         <div className="flex-1">
                           <div className="flex items-center justify-between mb-2">
-                            <h3 className="text-xl font-semibold">{topic.title}</h3>
-                            <Link href={`/aptitude/quiz/${topic.id}`}>
+                            <h3 className="text-xl font-semibold">{subject.subjectName}</h3>
+                            <Link href={`/aptitude/quiz/${subject.id}`}>
                               <Button size="sm" className="gap-2">
                                 <Play className="h-4 w-4" />
                                 Start Quiz
                               </Button>
                             </Link>
                           </div>
-                          <p className="text-muted-foreground mb-4">{topic.description}</p>
+                          {/* <p className="text-muted-foreground mb-4">{subject.description}</p> */}
                           <div className="grid grid-cols-3 gap-4 text-sm">
-                            <div>
+                            {/* <div>
                               <span className="text-muted-foreground">Questions:</span>
                               <span className="ml-2 font-medium">{topic.questions}</span>
                             </div>
@@ -204,17 +206,17 @@ export default function AptitudeDashboard() {
                             <div>
                               <span className="text-muted-foreground">Avg Time:</span>
                               <span className="ml-2 font-medium">{topic.avgTime}</span>
-                            </div>
+                            </div> */}
                           </div>
                           <div className="mt-4">
                             <p className="text-sm text-muted-foreground mb-2">Subtopics:</p>
                             <div className="flex flex-wrap gap-2">
-                              {topic.topics.map((subtopic, index) => (
+                              {subject.sections.map((section, index) => (
                                 <span
                                   key={index}
                                   className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-md text-xs"
                                 >
-                                  {subtopic}
+                                  {section.title}
                                 </span>
                               ))}
                             </div>
