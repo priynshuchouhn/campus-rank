@@ -154,13 +154,13 @@ export default async function Dashboard() {
                                             </p>
                                         </div>
                                         <div className="flex justify-between items-center mt-2">
-                                            <p className="text-sm text-muted-foreground">Coding Score</p>
+                                            <p className="text-sm text-muted-foreground dark:text-accent-foreground">Coding Score</p>
                                             <p className="text-lg font-bold text-purple-600 dark:text-purple-400">
                                                 {user.gfgProfile?.codingScore || '0'}
                                             </p>
                                         </div>
                                         <div className="flex justify-between items-center mt-2">
-                                            <p className="text-sm text-muted-foreground">Institute Rank</p>
+                                            <p className="text-sm text-muted-foreground dark:text-accent-foreground">Institute Rank</p>
                                             <p className="text-lg font-bold text-purple-600 dark:text-purple-400">
                                                 {user.gfgProfile?.rank || '0'}
                                             </p>
@@ -170,7 +170,7 @@ export default async function Dashboard() {
 
                                 <div className="">
                                     <h3 className="text-base font-medium mb-3">HackerRank Badges</h3>
-                                    <div className="p-4 bg-muted rounded-lg">
+                                    <div className="p-4 bg-muted rounded-lg dark:bg-background">
                                         {user.hackerrankProfile?.badges && user.hackerrankProfile.badges.length > 0 ? (
                                             <div className="grid grid-cols-4 gap-2">
                                                 {user.hackerrankProfile.badges.map((badge: any, idx: number) => {
@@ -223,7 +223,7 @@ export default async function Dashboard() {
                                                 })}
                                             </div>
                                         ) : (
-                                            <div className="flex items-center justify-center h-full text-muted-foreground">
+                                            <div className="flex items-center justify-center h-full text-muted-foreground dark:text-accent-foreground dark:justify-start">
                                                 No badges earned yet
                                             </div>
                                         )}
