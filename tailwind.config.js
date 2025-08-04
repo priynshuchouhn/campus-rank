@@ -26,32 +26,42 @@ module.exports = {
         background: "var(--background)",
         foreground: "var(--foreground)",
         primary: {
-          DEFAULT: "var(--primary)",
-          foreground: "var(--primary-foreground)",
+          DEFAULT: "#007BDB", // Campus Rank Primary Blue
+          foreground: "#FFFFFF", // Text on Primary
         },
         secondary: {
-          DEFAULT: "var(--secondary)",
-          foreground: "var(--secondary-foreground)",
+          DEFAULT: "#3EBE82", // Campus Rank Green
+          foreground: "#FFFFFF",
         },
         destructive: {
-          DEFAULT: "var(--destructive)",
-          foreground: "var(--destructive-foreground)",
+          DEFAULT: "#EF4444",
+          foreground: "#FFFFFF",
         },
         muted: {
-          DEFAULT: "var(--muted)",
-          foreground: "var(--muted-foreground)",
+          DEFAULT: "#E5E7EB",
+          foreground: "#6B7280",
         },
         accent: {
-          DEFAULT: "var(--accent)",
-          foreground: "var(--accent-foreground)",
+          DEFAULT: "#00B3E3", // Light Blue Accent
+          foreground: "#FFFFFF",
         },
         popover: {
-          DEFAULT: "var(--popover)",
-          foreground: "var(--popover-foreground)",
+          DEFAULT: "#F9FAFB",
+          foreground: "#111827",
         },
         card: {
-          DEFAULT: "var(--card)",
-          foreground: "var(--card-foreground)",
+          DEFAULT: "#FFFFFF",
+          foreground: "#1F2937",
+        },
+        campus: {
+          blue: "#007BDB",
+          lightBlue: "#00B3E3",
+          green: "#3EBE82",
+          darkTeal: "#1D7864",
+          lightTeal: "#3EC7A0",
+          white: "#FFFFFF",
+          bg: "#1F2C45",
+          bgDark: "#162135",
         },
       },
       borderRadius: {
@@ -69,10 +79,11 @@ module.exports = {
         shimmer: 'shimmer 1.5s ease-in-out infinite'
       },
       backgroundImage: {
+        'campus-gradient': 'linear-gradient(135deg, #1F2C45, #162135)',
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
     },
   },
   plugins: [],
-} 
+}
