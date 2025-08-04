@@ -58,7 +58,7 @@ function notFound() {
                 href="mailto:support@campusrank.com"
                 className="text-primary hover:underline"
               >
-                support@campusrank.com
+                support@campusrank.org
               </a>
             </p>
           </div>

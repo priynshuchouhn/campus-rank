@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Trophy, ArrowRight, Users, Zap, TrendingUp, Target, Crown, Star, Medal } from "lucide-react";
 import Link from "next/link";
+import { timeAgo } from "@/lib/utils";
 
 
 export function LeaderboardPreview({leaderboard}:any) {
@@ -73,7 +74,7 @@ export function LeaderboardPreview({leaderboard}:any) {
                 <h3 className="text-2xl font-bold dark:text-accent-foreground">This Week&apos;s Champions</h3>
                 <Crown className="h-6 w-6 text-yellow-500 animate-pulse" />
               </div>
-              <p className="text-muted-foreground">Updated in real-time • Last sync: 2 minutes ago</p>
+              <p className="text-muted-foreground">Updated in real-time • Last sync: <span className="font-semibold text-primary dark:text-accent">{timeAgo(topUsers[1]?.lastUpdated)}</span> </p>
             </CardHeader>
             
             <CardContent className="relative">
