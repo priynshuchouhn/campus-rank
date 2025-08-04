@@ -107,34 +107,34 @@ export default async function Dashboard() {
                     <CardContent>
                         <div className="space-y-6">
                             <div>
-                            <div className="mb-4 p-4 bg-muted rounded-lg">
+                            <div className="mb-4 p-4 bg-muted rounded-lg dark:bg-background">
                                     <div className="flex justify-between items-center">
-                                        <p className="text-sm text-muted-foreground">Total Solved</p>
+                                        <p className="text-sm text-muted-foreground dark:text-accent-foreground">Total Solved</p>
                                         <p className="text-xl font-bold">{user.totalSolved || 0}</p>
                                     </div>
                                     <div className="mt-2 bg-background rounded-full h-2.5">
                                         <div
-                                            className="bg-primary h-2.5 rounded-full"
+                                            className="bg-primary h-2.5 rounded-full dark:bg-accent"
                                             style={{ width: `${Math.min((user.totalSolved || 0) / 5, 100)}%` }}
                                         ></div>
                                     </div>
                                 </div>
                                 <h3 className="text-base font-medium mb-3">LeetCode Problems</h3>
                                 <div className="grid grid-cols-3 gap-4 text-center">
-                                    <div className="p-4 bg-muted rounded-lg">
-                                        <p className="text-sm text-muted-foreground">Easy</p>
+                                    <div className="p-4 bg-muted rounded-lg dark:bg-background">
+                                        <p className="text-sm text-muted-foreground dark:text-accent-foreground">Easy</p>
                                         <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                                             {user.easySolved || 0}
                                         </p>
                                     </div>
-                                    <div className="p-4 bg-muted rounded-lg">
-                                        <p className="text-sm text-muted-foreground">Medium</p>
+                                    <div className="p-4 bg-muted rounded-lg dark:bg-background">
+                                        <p className="text-sm text-muted-foreground dark:text-accent-foreground">Medium</p>
                                         <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
                                             {user.mediumSolved || 0}
                                         </p>
                                     </div>
-                                    <div className="p-4 bg-muted rounded-lg">
-                                        <p className="text-sm text-muted-foreground">Hard</p>
+                                    <div className="p-4 bg-muted rounded-lg dark:bg-background">
+                                        <p className="text-sm text-muted-foreground dark:text-accent-foreground">Hard</p>
                                         <p className="text-2xl font-bold text-red-600 dark:text-red-400">
                                             {user.hardSolved || 0}
                                         </p>
@@ -146,9 +146,9 @@ export default async function Dashboard() {
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="">
                                     <h3 className="text-base font-medium mb-3">GeeksForGeeks</h3>
-                                    <div className="p-4 bg-muted rounded-lg">
+                                    <div className="p-4 bg-muted rounded-lg dark:bg-background">
                                         <div className="flex justify-between items-center">
-                                            <p className="text-sm text-muted-foreground">Problems Solved</p>
+                                            <p className="text-sm text-muted-foreground dark:text-accent-foreground">Problems Solved</p>
                                             <p className="text-xl font-bold text-purple-600 dark:text-purple-400">
                                                 {user.gfgProfile?.solvedProblems || '0'}
                                             </p>
