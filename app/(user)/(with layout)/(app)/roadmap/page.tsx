@@ -327,7 +327,7 @@ export default function RoadmapPage() {
                     <Card key={section.id}>
                         <CardHeader>
                             <CardTitle className="md:text-2xl text-lg flex items-center gap-2">
-                                <BookOpen className="h-6 w-6 text-blue-500" />
+                                <BookOpen className="h-6 w-6 text-primary dark:text-accent" />
                                 {section.title}
                             </CardTitle>
                         </CardHeader>
@@ -410,7 +410,7 @@ export default function RoadmapPage() {
                                                         {topic.predefinedTopic.preRequisites.map((prerequisite, index) => (
                                                             <li
                                                                 key={index}
-                                                                className="flex items-center gap-2 p-2 bg-muted rounded-lg"
+                                                                className="flex items-center gap-2 p-2 bg-muted rounded-lg dark:bg-background"
                                                             >
                                                                 <ChevronRight className="h-4 w-4" />
                                                                 {prerequisite}
