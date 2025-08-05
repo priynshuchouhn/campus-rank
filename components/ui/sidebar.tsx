@@ -1,7 +1,7 @@
 'use client'
 import { usePathname } from 'next/navigation'
 import { Separator } from '@radix-ui/react-dropdown-menu'
-import { Home, BookOpen, Code, User, Settings, LogOut, Notebook, Target, Info, Shield, FileText, HelpCircle } from 'lucide-react'
+import { Home, BookOpen, Code, User, Settings, LogOut, Notebook, Target, Info, Shield, FileText, HelpCircle, Trophy } from 'lucide-react'
 import React from 'react'
 import { Button } from './button'
 import { SidebarNavItem } from './sidebar-nav-item'
@@ -94,6 +94,14 @@ function Sidebar({ user }: { user: any }) {
                 <>
                     <nav className="space-y-4">
                         <div className="space-y-1">
+                            <p className="text-sm font-medium text-muted-foreground px-4 mb-2">Explore</p>
+                            <SidebarNavItem
+                                href="/leaderboard"
+                                icon={<Trophy className="h-4 w-4" />}
+                                title="Leaderboard"
+                                isActive={isLinkActive('/leaderboard')}
+                            />
+                            <Separator className="mt-4" />
                             <p className="text-sm font-medium text-muted-foreground px-4 mb-2">Information</p>
                             <SidebarNavItem
                                 href="/about-us"
@@ -113,9 +121,9 @@ function Sidebar({ user }: { user: any }) {
                                 title="Terms of Service"
                                 isActive={isLinkActive('/terms-of-service')}
                             />
-                        <Separator className="mt-4" />
-                        <p className="text-sm font-medium text-muted-foreground px-4 mb-2">Get Started</p>
-                        <SidebarNavItem
+                            <Separator className="mt-4" />
+                            <p className="text-sm font-medium text-muted-foreground px-4 mb-2">Get Started</p>
+                            <SidebarNavItem
                                 href="/dashboard"
                                 icon={<LogOut className="h-4 w-4" />}
                                 title="Login"

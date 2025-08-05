@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 function NavbarItems() {
     const pathname = usePathname();
-    const isNotHome = pathname !== '/';
+    const isNotHome = pathname !== '/' && pathname !== '/leaderboard';
     if (isNotHome) return null;
     return (
         <div className='items-center gap-2 md:flex hidden'>
