@@ -4,7 +4,7 @@ import { ArrowRight, Rocket, Star, User } from "lucide-react";
 export const CTASection = () => {
   return (
     <section className="py-20 px-4 bg-background text-foreground">
-      <div className="container mx-auto">
+      <div className="lg:container mx-auto">
         <div className="relative rounded-3xl p-12 md:p-16 text-center bg-gradient-to-r from-primary to-secondary text-white overflow-hidden dark:from-background dark:to-background">
           {/* Background Pattern */}
           <div className="absolute inset-0 opacity-10">
@@ -14,7 +14,7 @@ export const CTASection = () => {
             <div className="absolute bottom-10 right-10 w-12 h-12 border border-white/30 rounded-full"></div>
           </div>
 
-          <div className="relative z-10 max-w-4xl mx-auto space-y-8">
+          <div className="relative z-10 lg:max-w-4xl mx-auto space-y-8">
             {/* Badge */}
             <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium">
               <Rocket className="h-4 w-4" />
