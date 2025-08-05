@@ -23,7 +23,7 @@ export function LeaderboardPreview({leaderboard}:any) {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(120,119,198,0.05),transparent_50%)]"></div>
       </div>
       
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="lg:container mx-auto px-4 relative z-10">
         {/* Hero Header */}
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-campus/10 text-primary mb-6 animate-fade-in dark:text-accent">
@@ -99,11 +99,11 @@ export function LeaderboardPreview({leaderboard}:any) {
                       </div>
                     )}
                     
-                    <div className="flex items-center justify-between">
+                    <div className="flex lg:items-center justify-between lg:flex-row flex-col gap-3">
                       <div className="flex items-center gap-4">
                         {/* Avatar with Status */}
                         <div className="relative">
-                          <Avatar className={`h-16 w-16 ring-2 transition-all duration-300 ${
+                          <Avatar className={`lg:h-16 lg:w-16 h-8 w-8 ring-2 transition-all duration-300 ${
                             index === 0 ? 'ring-yellow-500/50' : 'ring-campus/30'
                           }`}>
                             <AvatarImage src={leaderboard.user.image} alt={leaderboard.user.name} />
@@ -111,7 +111,7 @@ export function LeaderboardPreview({leaderboard}:any) {
                           </Avatar>
                           
                           {/* Rank Number */}
-                          <div className={`absolute -top-2 -right-2 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold animate-bounce ${
+                          <div className={`absolute lg:-top-2 lg:-right-2 -top-1 -right-1 lg:w-7 lg:h-7 w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold animate-bounce ${
                             index === 0 ? 'bg-gradient-to-r from-yellow-400 to-yellow-600 text-white' :
                             index === 1 ? 'bg-gradient-to-r from-gray-300 to-gray-500 text-white' :
                             'bg-gradient-to-r from-orange-400 to-orange-600 text-white'
