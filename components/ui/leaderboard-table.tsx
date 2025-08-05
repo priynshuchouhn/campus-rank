@@ -111,8 +111,8 @@ export function LeaderboardTable({ leaderboards, searchQuery = "", isLoggedIn }:
                       <div className="flex items-center gap-2">
                         {leaderboard.globalRank! <= 3 && (
                           <Trophy className={`h-4 w-4 ${leaderboard.globalRank === 1 ? 'text-yellow-500' :
-                              leaderboard.globalRank === 2 ? 'text-gray-400' :
-                                'text-orange-600'
+                            leaderboard.globalRank === 2 ? 'text-gray-400' :
+                              'text-orange-600'
                             }`} />
                         )}
                         <span className="font-medium dark:text-foreground">{leaderboard.globalRank}</span>
@@ -157,29 +157,31 @@ export function LeaderboardTable({ leaderboards, searchQuery = "", isLoggedIn }:
         </CardContent>
         <CardFooter className="w-full">
           {!isLoggedIn ? (
-              <div className="p-6 text-center w-full">
-                <div className="flex items-center justify-center gap-2 text-muted-foreground">
+            <div className="p-6 text-center w-full">
+              <div className="flex items-center justify-center gap-2 text-muted-foreground flex-col lg:flex-row">
+                <div className="flex items-center gap-2">
                   <Lock className="h-4 w-4" />
                   <span>Showing top 5 users only.</span>
-                  <AuthDialog>
-                    <Button variant="link" className="p-0 h-auto">
-                      Sign in to view full rankings
-                    </Button>
-                  </AuthDialog>
                 </div>
+                <AuthDialog>
+                  <Button variant="link" className="p-0 h-auto">
+                    Sign in to view full rankings
+                  </Button>
+                </AuthDialog>
               </div>
-            ): 
-          <Pagination>
-            <PaginationContent>
-              {Array.from({ length: totalPages }, (_, index) => (
-                <PaginationItem key={index}>
-                  <PaginationLink isActive={currentPage === index + 1} onClick={() => setCurrentPage(index + 1)}>
-                    {index + 1}
-                  </PaginationLink>
-                </PaginationItem>
-              ))}
-            </PaginationContent>
-          </Pagination>}
+            </div>
+          ) :
+            <Pagination>
+              <PaginationContent>
+                {Array.from({ length: totalPages }, (_, index) => (
+                  <PaginationItem key={index}>
+                    <PaginationLink isActive={currentPage === index + 1} onClick={() => setCurrentPage(index + 1)}>
+                      {index + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+              </PaginationContent>
+            </Pagination>}
         </CardFooter>
       </Card>
 
