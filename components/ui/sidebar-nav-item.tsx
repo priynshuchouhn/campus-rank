@@ -31,8 +31,8 @@ export function SidebarNavItem({ href, icon, title, isActive, badge, ...props }:
                     <Badge
                         variant="outline"
                         className={clsx("ml-auto text-xs py-0 px-1.5 h-5 bg-yellow-100/50 text-yellow-800 border-yellow-300", {
-                            "bg-yellow-100/50 text-yellow-800 border-yellow-300": badge === "Coming Soon",
-                            "bg-green-100/50 text-green-800 border-green-300": badge === "New",
+                            "bg-yellow-100/50 text-yellow-800 border-yellow-300 dark:bg-yellow-300": badge === "Coming Soon",
+                            "bg-green-100/50 text-green-800 border-green-300 dark:bg-green-300": badge === "New",
                         })}
                     >
                         {badge}

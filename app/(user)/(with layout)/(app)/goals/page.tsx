@@ -214,7 +214,7 @@ export default function GoalsPage() {
             <div className="flex items-center justify-between mb-6">
                 <h1 className="text-3xl font-bold">Weekly Goals</h1>
                 <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-primary" />
+                    <CheckCircle2 className="h-5 w-5 text-primary dark:text-accent" />
                     <span className="font-medium">{completedGoals} of {goals.length} completed</span>
                 </div>
             </div>
