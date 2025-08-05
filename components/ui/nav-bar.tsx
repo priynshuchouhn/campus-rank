@@ -6,7 +6,7 @@ import { auth } from '@/auth'
 import Image from 'next/image'
 import { Separator } from '@radix-ui/react-dropdown-menu'
 import { Menu } from 'lucide-react'
-import { Sheet, SheetTrigger, SheetContent, SheetTitle } from './sheet'
+import { Sheet, SheetTrigger, SheetContent, SheetTitle, SheetClose } from './sheet'
 import Sidebar from './sidebar'
 import NavbarItems from './nav-bar-items'
 import InstallPrompt from './install-prompt'
@@ -24,7 +24,9 @@ async function Navbar() {
         </SheetTrigger>
         <SheetContent side="left" className="w-72 p-2">
           <Separator />
-          <Sidebar user={user} />
+          <SheetClose asChild>
+            <Sidebar user={user} />
+          </SheetClose>
         </SheetContent>
       </Sheet>
       <Link href="/" className='flex items-center gap-2'>
