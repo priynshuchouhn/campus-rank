@@ -43,6 +43,14 @@ export async function GET() {
         datas.push(data);
     }
 
+    await prisma.applicationStats.update({
+      where: {
+        id: applicationStats?.id
+      },data: {
+        lastLeaderboardEmailAt : new Date() 
+      }
+    })
+
     if (errors.length > 0) {
       await prisma.errorLog.create({
         data: {

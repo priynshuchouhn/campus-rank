@@ -5,7 +5,7 @@ import Image from 'next/image';
 
 function Footer() {
   return (
-    <footer className="bg-gray-100 border-t dark:bg-gray-900">
+    <footer className="bg-gradient-to-r from-primary/10 to-secondary/30 border-t dark:bg-gray-900">
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-4">

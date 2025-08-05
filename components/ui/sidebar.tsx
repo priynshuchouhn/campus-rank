@@ -18,7 +18,7 @@ function Sidebar({ user }: { user: any }) {
                 <>
                     <nav className="mt-4 space-y-4">
                         <div className="space-y-1">
-                            <p className="text-sm font-medium text-muted-foreground px-4 mb-2">Dashboard</p>
+                            <p className="text-sm font-medium text-muted-foreground px-4 mb-2 ">Dashboard</p>
                             <SidebarNavItem
                                 href="/dashboard"
                                 icon={<Home className="h-4 w-4" />}

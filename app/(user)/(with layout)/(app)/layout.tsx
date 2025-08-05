@@ -16,7 +16,7 @@ export default async function AppLayout({
     return (
         <div className="flex min-h-screen">
             {/* Desktop Sidebar */}
-            <aside className="hidden md:flex flex-col w-72 border-r bg-card">
+            <aside className="hidden md:flex flex-col w-72 border-r bg-card dark:bg-background">
                 <Separator />
                 <ScrollArea className="flex-1 p-4">
                     <div>
