@@ -23,6 +23,7 @@ import {
   Fullscreen,
 } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 // import { AptitudeSubject, AptitudeTopic, AptitudeQuestion, QuizSession } from "@/app/types/aptitude";
 
 // Mock data - in real app, this would come from API
@@ -394,6 +395,9 @@ export default function QuizPage() {
             <div className="flex items-center gap-4">
               <div>
                 <Button variant={'ghost'}><Fullscreen/></Button>
+              </div>
+              <div>
+                <ThemeToggle />
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <Clock className="h-4 w-4" />

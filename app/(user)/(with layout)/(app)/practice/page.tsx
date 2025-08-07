@@ -147,7 +147,7 @@ export default function AptitudeDashboard() {
                                     <div key={topic.id} className="grid lg:grid-cols-5 grid-cols-2 gap-3">
                                       <div className="lg:col-span-3 col-span-2"> <span className="font-bold">{topic.title}</span> : <span className="text-xs">{topic.description}</span></div>
                                       <div><Badge variant={getBadgeVariant(topic.level)}>{topic.level}</Badge></div>
-                                      <div className="text-end"><Button onClick={() => handleStartQuiz(topic.id)}>Start Quiz <Play /></Button></div>
+                                      <div className="text-end"><Button disabled={true} onClick={() => handleStartQuiz(topic.id)}>Start Quiz <Play /></Button></div>
                                     </div>
                                   )}
                                 </AccordionContent>
