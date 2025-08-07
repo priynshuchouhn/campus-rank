@@ -30,6 +30,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Base URLs
   const baseUrls = [
     { url: "https://campusrank.org/", lastModified: new Date() },
+    { url: "https://campusrank.org/leaderboard", lastModified: new Date() },
     { url: "https://campusrank.org/about-us", lastModified: new Date() },
     { url: "https://campusrank.org/code-of-conduct", lastModified: new Date() },
     { url: "https://campusrank.org/terms-of-service", lastModified: new Date() },
