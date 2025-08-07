@@ -68,8 +68,6 @@ export async function GET(
       difficulty: difficultyMap[question.difficulty],
       timeComplexity: question.timeComplexity,
       spaceComplexity: question.spaceComplexity,
-      section: question.section,
-      topic: question.topicName,
       testCases: question.testCases,
       constraints: question.constraints.map(c => c.value),
       sampleCodes: question.sampleCodes.map(sc => ({
@@ -177,8 +175,6 @@ export async function PUT(
         difficulty: difficultyMap[validatedData.difficulty] as "EASY" | "MEDIUM" | "HARD",
         timeComplexity: validatedData.timeComplexity,
         spaceComplexity: validatedData.spaceComplexity,
-        section: validatedData.section,
-        topicName: validatedData.topic,
         // Create test cases
         testCases: {
           create: validatedData.testCases.map(testCase => ({

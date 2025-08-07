@@ -40,28 +40,28 @@ function Sidebar({ user }: { user: any }) {
                                 icon={<BookOpen className="h-4 w-4" />}
                                 title="Roadmap"
                                 isActive={isLinkActive('/roadmap') && pathname === '/roadmap'}
-                                badge="New"
+                                // badge="New"
                             />
                             <SidebarNavItem
                                 href="/roadmap/topics"
                                 icon={<Notebook className="h-4 w-4" />}
                                 title="Topics"
                                 isActive={pathname.includes('/roadmap/topics')}
-                                badge="New"
+                                // badge="New"
                             />
                             <SidebarNavItem
-                                href="#"
+                                href="/practice"
                                 icon={<Code className="h-4 w-4" />}
                                 title="Practice"
                                 isActive={pathname.includes('/practice')}
-                                badge="Coming Soon"
+                                badge="Beta"
                             />
                             <SidebarNavItem
                                 href="/goals"
                                 icon={<Target className="h-4 w-4" />}
                                 title="Weekly Goals"
                                 isActive={isLinkActive('/goals')}
-                                badge="New"
+                                // badge="New"
                             />
                         </div>
 

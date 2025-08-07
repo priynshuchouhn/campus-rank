@@ -48,6 +48,8 @@ model User {
   pushSubscription    PushSubscription[]
   institution         Institution?         @relation(fields: [institutionId], references: [id])
   batch               Batch?               @relation(fields: [batchId], references: [id])
+
+  LeaderboardHistory LeaderboardHistory[]
 }
 
 model LeetCodeProfile {
@@ -120,8 +122,8 @@ model LeaderboardStats {
   gfgRank         Int?
   lastUpdated     DateTime @updatedAt
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  isActive Boolean @default(true)
-  isDeleted Boolean @default(false)
+  isActive        Boolean  @default(true)
+  isDeleted       Boolean  @default(false)
 }
 
 model ProfileView {
@@ -146,6 +148,13 @@ model ApplicationStats {
   createdAt                      DateTime @default(now())
 }
 
+model Subject {
+  id            String              @id @default(cuid())
+  subjectName   String
+  isCoreSubject Boolean
+  sections      PredefinedSection[]
+}
+
 model Roadmap {
   id        String    @id @default(cuid())
   userId    String    @unique
@@ -163,6 +172,8 @@ model PredefinedSection {
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
   topics      PredefinedTopic[] @relation("PredefinedSectionTopics")
+  subjectId   String
+  subject     Subject          @relation(fields: [subjectId], references: [id], onDelete: Cascade )
 }
 
 model Section {
@@ -216,7 +227,6 @@ model Topic {
   completed         Boolean         @default(false)
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
-  questions         Question[]
   predefinedTopic   PredefinedTopic @relation(fields: [predefinedTopicId], references: [id])
   roadmap           Roadmap         @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
   section           Section         @relation("SectionTopics", fields: [sectionId], references: [id], onDelete: Cascade)
@@ -238,22 +248,27 @@ model Question {
   id                String               @id @default(cuid())
   title             String
   description       String
+  questionType      QuestionType
   difficulty        Difficulty
-  timeComplexity    String
-  spaceComplexity   String
-  section           String
-  topicName         String
-  topicId           String?
+  predefinedTopicId String?
+  predefinedTopic   PredefinedTopic?     @relation(fields: [predefinedTopicId], references: [id], onDelete: Cascade)
+
+  // Code Based Question
+  timeComplexity    String?
+  spaceComplexity   String?
   createdAt         DateTime             @default(now())
   updatedAt         DateTime             @updatedAt
-  predefinedTopicId String?
   constraints       Constraint[]
-  predefinedTopic   PredefinedTopic?     @relation(fields: [predefinedTopicId], references: [id])
-  topic             Topic?               @relation(fields: [topicId], references: [id])
   submissions       QuestionSubmission[]
   sampleCodes       SampleCode[]
   solvedBy          SolvedQuestion[]
   testCases         TestCase[]
+
+  //MCQ Based Question
+  options String[]
+  correctOption String?
+  explanation String?
+
 }
 
 model SampleCode {
@@ -409,6 +424,19 @@ model Batch {
   @@unique([institutionId, code])
 }
 
+model LeaderboardHistory {
+  id        String   @id @default(cuid())
+  userId    String
+  rank      Int
+  snapshotAt DateTime
+  rankChange   Int?
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, snapshotAt]) // Prevents duplicate entries for the same user at same time
+}
+
 enum Role {
   USER
   ADMIN
@@ -471,4 +499,9 @@ enum ReportStatus {
   IN_PROGRESS
   RESOLVED
   CLOSED
+}
+
+enum QuestionType {
+ MCQ
+ CODE
 }

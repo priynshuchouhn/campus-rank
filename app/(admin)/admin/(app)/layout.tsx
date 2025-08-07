@@ -17,6 +17,7 @@ import {
   FolderTree,
   HelpCircle,
   Mail,
+  BookCheck,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -42,6 +43,11 @@ const sidebarItems = [
     title: "Users",
     href: "/admin/users",
     icon: Users,
+  },
+  {
+    title: "Subjects",
+    href: "/admin/subjects",
+    icon: BookCheck,
   },
   {
     title: "Sections",

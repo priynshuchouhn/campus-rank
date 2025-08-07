@@ -112,7 +112,7 @@ export default async function Dashboard() {
                                         <p className="text-sm text-muted-foreground dark:text-accent-foreground">Total Solved</p>
                                         <p className="text-xl font-bold">{user.totalSolved || 0}</p>
                                     </div>
-                                    <div className="mt-2 bg-background rounded-full h-2.5">
+                                    <div className="mt-2 bg-background rounded-full h-2.5 dark:bg-gray-100">
                                         <div
                                             className="bg-primary h-2.5 rounded-full dark:bg-accent"
                                             style={{ width: `${Math.min((user.totalSolved || 0) / 5, 100)}%` }}

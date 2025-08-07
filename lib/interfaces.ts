@@ -151,6 +151,8 @@ export interface Section {
     id: string;
     name: string;
     description: string;
+    subjectId: string;
+    subjectName: string
     topicsCount: number;
     isPredefined?: boolean;
     topics: Topic[];
