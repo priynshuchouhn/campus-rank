@@ -119,13 +119,15 @@ export function LeaderboardTable({ leaderboards, searchQuery = "", isLoggedIn }:
                       </div>
                     </td>
                     <td className="p-4">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage src={leaderboard.user.image} alt={leaderboard.user.name} />
-                          <AvatarFallback>{leaderboard.user.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <span className="font-medium dark:text-foreground">{leaderboard.user.name}</span>
-                      </div>
+                      <Link href={`/user/${leaderboard.user.username}`}>
+                        <div className="flex items-center gap-3">
+                          <Avatar className="h-8 w-8">
+                            <AvatarImage src={leaderboard.user.image} alt={leaderboard.user.name} />
+                            <AvatarFallback>{leaderboard.user.name.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                          <span className="font-medium dark:text-foreground">{leaderboard.user.name}</span>
+                        </div>
+                      </Link>
                     </td>
                     <td className="p-4 text-center">
                       <Badge variant="outline" className="font-mono">
