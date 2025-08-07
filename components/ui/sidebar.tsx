@@ -25,6 +25,12 @@ function Sidebar({ user }: { user: any }) {
                                 title="Home"
                                 isActive={isLinkActive('/dashboard')}
                             />
+                            <SidebarNavItem
+                                href="/leaderboard"
+                                icon={<Trophy className="h-4 w-4" />}
+                                title="Leaderboard"
+                                isActive={isLinkActive('/leaderboard')}
+                            />
                         </div>
 
                         <div className="space-y-1">

@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Star, Quote } from "lucide-react";
+import Link from "next/link";
 
 const testimonials = [
   {
@@ -91,10 +92,12 @@ const TestimonialsSection = () => {
           <p className="text-lg text-muted-foreground mb-4">
             Ready to write your own success story?
           </p>
-          <div className="inline-flex items-center gap-2 text-primary font-medium dark:text-accent">
+          <Link href={'/dashboard'}>
+          <div className="inline-flex items-center gap-2 cursor-pointer text-primary font-medium dark:text-accent">
             <span>Join 50+ students already preparing</span>
             <span className="animate-pulse">→</span>
           </div>
+          </Link>
         </div>
       </div>
     </section>
