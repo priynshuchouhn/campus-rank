@@ -11,56 +11,56 @@ export async function GET() {
       where: {
         isActive: true,
         isDeleted: false,
-        role: 'USER'
+        role: 'USER',
       }
     });
     const applicationStats = await prisma.applicationStats.findFirst();
     const leaderboards = await getLeaderboard();
-
+    
     const topThree = leaderboards.slice(0, 3);
     const topThreeUsers = topThree.map((el) => {
-        return {
-            name: el.user.name,
-            rank: el.globalRank || 0,
-            score: el.overallScore,
-        }
-    })
-
-  try {
-    const datas = []
-    const errors = []
-    for (const user of users) {
-        await delay(2000);
-        const { data, error } = await resend.emails.send({
-            from: 'Campus Rank <no-reply@campusrank.org>',
-            to: [user.email],
-            subject: '🎉 Campus Rank Leaderboard Update!',
-            react: await EmailTemplate({ type: 'leaderboard', data: { name: user.name, topUsers: topThreeUsers, userCount: users.length, problemSolved: applicationStats?.totalQuestionSolvedOnPlatform ?? 0 } }),
-        });
-        if (error) {
-            errors.push(error);
-        }
-        datas.push(data);
-    }
-
-    await prisma.applicationStats.update({
-      where: {
-        id: applicationStats?.id
-      },data: {
-        lastLeaderboardEmailAt : new Date() 
+      return {
+        name: el.user.name,
+        rank: el.globalRank || 0,
+        score: el.overallScore,
       }
     })
-
-    if (errors.length > 0) {
-      await prisma.errorLog.create({
-        data: {
-          errorAt: '[API] email/leaderboard/route.ts',
-          error: errors.join("##"),
+    
+    try {
+      const datas = []
+      const errors = []
+      for (const user of users) {
+        await delay(2000);
+        const { data, error } = await resend.emails.send({
+          from: 'Campus Rank <no-reply@campusrank.org>',
+          to: [user.email],
+          subject: '🎉 Campus Rank Leaderboard Update!',
+          react: await EmailTemplate({ type: 'leaderboard', data: { name: user.name, topUsers: topThreeUsers, userCount: users.length, problemSolved: applicationStats?.totalQuestionSolvedOnPlatform ?? 0 } }),
+        });
+        if (error) {
+          errors.push(error);
         }
-      });
-    }
-    return Response.json(datas);
-  } catch (error) {
+        datas.push(data);
+      }
+      
+      const appstats = await prisma.applicationStats.update({
+        where: {
+          id: applicationStats?.id
+        },data: {
+          lastLeaderboardEmailAt : new Date() 
+        }
+      })
+      
+      if (errors.length > 0) {
+        await prisma.errorLog.create({
+          data: {
+            errorAt: '[API] email/leaderboard/route.ts',
+            error: errors.join("##"),
+          }
+        });
+      }
+    return Response.json({datas, appstats});
+  } catch (error:any) {
     await prisma.errorLog.create({
       data: {
         errorAt: '[API] email/leaderboard/route.ts',
