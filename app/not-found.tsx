@@ -51,7 +51,7 @@ function notFound() {
             </Button>
           </div>
 
-          <div className="mt-12 p-4 bg-muted/50 rounded-lg">
+          <div className="mt-12 p-4 bg-muted/50 rounded-lg dark:bg-background">
             <p className="text-sm text-muted-foreground">
               Need help? Contact our support team at{" "}
               <a

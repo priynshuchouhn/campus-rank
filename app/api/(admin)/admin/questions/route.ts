@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { auth } from "@/auth";
-// import { getServerSession } from "next-auth";
-// import { authOptions } from "@/lib/auth";
 
 // Schema for validation
 const testCaseSchema = z.object({
@@ -44,8 +42,6 @@ export async function GET() {
         id: true,
         title: true,
         difficulty: true,
-        section: true,
-        topicName: true,
         createdAt: true,
         updatedAt: true,
         testCases: true,
@@ -69,8 +65,6 @@ export async function GET() {
         id: question.id,
         title: question.title,
         difficulty: difficultyMap[question.difficulty],
-        section: question.section,
-        topic: question.topicName,
         testCases: question.testCases,
         constraints: [],
         sampleCodes: [],
@@ -136,11 +130,10 @@ export async function POST(request: NextRequest) {
       data: {
         title: validatedData.title,
         description: validatedData.description,
+        questionType: 'CODE',
         difficulty: difficultyMap[validatedData.difficulty] as "EASY" | "MEDIUM" | "HARD",
         timeComplexity: validatedData.timeComplexity,
         spaceComplexity: validatedData.spaceComplexity,
-        section: validatedData.section,
-        topicName: validatedData.topic,
         // Create test cases
         testCases: {
           create: validatedData.testCases.map(testCase => ({

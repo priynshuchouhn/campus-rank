@@ -7,6 +7,7 @@ import { auth } from "@/auth";
 const sectionSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   description: z.string().min(10, "Description must be at least 10 characters"),
+  subjectId: z.string().min(10, "Description must be at least 10 characters"),
   isPredefined: z.boolean().optional().default(true) // Always predefined in admin
 });
 
@@ -21,6 +22,7 @@ export async function GET(request: NextRequest) {
     const predefinedSections = await prisma.predefinedSection.findMany({
       include: {
         topics: true,
+        subject: true,
       },
       orderBy: {
         createdAt: 'asc',
@@ -33,6 +35,7 @@ export async function GET(request: NextRequest) {
       name: section.title,
       description: section.description || "",
       topicsCount: section.topics.length,
+      subjectName: section.subject.subjectName,
       topics: section.topics.map(topic => ({
         id: topic.id,
         title: topic.title,
@@ -73,6 +76,7 @@ export async function POST(request: NextRequest) {
       data: {
         title: validatedData.name,
         description: validatedData.description,
+        subjectId: validatedData.subjectId
       },
     });
     
