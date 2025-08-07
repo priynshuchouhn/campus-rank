@@ -12,7 +12,6 @@ export async function GET() {
         isActive: true,
         isDeleted: false,
         role: 'USER',
-        email: 'priynshuchouhn@gmail.com'
       }
     });
     const applicationStats = await prisma.applicationStats.findFirst();
