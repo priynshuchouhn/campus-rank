@@ -20,8 +20,9 @@ import {
 import { fetchSubjectsToPracticeWithTopic } from "@/lib/actions/practice";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
-import { PredefinedSection, PredefinedTopic, Subject } from "@prisma/client";
+import { PredefinedSection, Subject } from "@prisma/client";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 const aptitudeTopics = [
   {
@@ -59,36 +60,41 @@ const aptitudeTopics = [
   },
 ];
 
-const handleStartQuiz = (topicId:string) => {
 
-}
 
 
 export default function AptitudeDashboard() {
-  const [subjectLst, setSubjectLst] = useState<(Subject & {sections: PredefinedSection[]})[]>([]);
+  const [subjectLst, setSubjectLst] = useState<(Subject & { sections: PredefinedSection[] })[]>([]);
   const [isLoading, setisLoading] = useState<boolean>(false);
-  useEffect(()=>{
-    async function fetchSubjects(){
-      try{
+  const router = useRouter();
+  useEffect(() => {
+    async function fetchSubjects() {
+      try {
         setisLoading(true)
         const data = await fetchSubjectsToPracticeWithTopic();
-        console.log(data);  
+        console.log(data);
         setSubjectLst(data);
-      }catch(error){
+      } catch (error) {
         toast.error("Something went wrong");
-      }finally{
+      } finally {
         setisLoading(false)
       }
     }
     fetchSubjects();
-  },[])
-   if (isLoading) {
-        return (
-            <div className="flex items-center justify-center min-h-screen">
-                <Loader2 className="h-8 w-8 animate-spin" />
-            </div>
-        );
-    }
+  }, [])
+
+  const handleStartQuiz = (topicId: string) => {
+    console.log(topicId);
+    const examId = '53vfdvw45vfv45'
+    router.push(`quiz/${'cmc2d37ic00024h4mc7k4gtjj'}/${'arithmetic'}/${topicId}/${examId}`);
+  }
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-background -my-6">
       {/* Hero Section */}
@@ -131,17 +137,17 @@ export default function AptitudeDashboard() {
                               collapsible
                               className="w-full"
                               defaultValue={subject.sections[0].id}>
-                              {subject.sections.map((section:any, index) => (<AccordionItem key={section.id} value={section.id}>
+                              {subject.sections.map((section: any, index) => (<AccordionItem key={section.id} value={section.id}>
                                 <AccordionTrigger className="text-lg">{section.title}</AccordionTrigger>
                                 <AccordionContent className="flex flex-col gap-4 text-balance">
                                   <p className="font-semibold text-muted-foreground">
                                     {section.description}
                                   </p>
-                                  {section.topics.map((topic:any) =>
+                                  {section.topics.map((topic: any) =>
                                     <div key={topic.id} className="grid lg:grid-cols-5 grid-cols-2 gap-3">
                                       <div className="lg:col-span-3 col-span-2"> <span className="font-bold">{topic.title}</span> : <span className="text-xs">{topic.description}</span></div>
                                       <div><Badge variant={getBadgeVariant(topic.level)}>{topic.level}</Badge></div>
-                                      <div className="text-end"><Button onClick={()=> handleStartQuiz(topic.id)}>Start Quiz <Play /></Button></div>
+                                      <div className="text-end"><Button onClick={() => handleStartQuiz(topic.id)}>Start Quiz <Play /></Button></div>
                                     </div>
                                   )}
                                 </AccordionContent>
@@ -155,7 +161,7 @@ export default function AptitudeDashboard() {
                 );
               })}
             </div>
-            
+
           </div>
         </div>
       </div>
@@ -170,7 +176,7 @@ function getBadgeVariant(name: string): "default" | "secondary" | "destructive" 
     case 'BEGINNER':
       return 'success';
     case 'INTERMEDIATE':
-      return 'warning';  
+      return 'warning';
     default:
       return 'default';
   }
