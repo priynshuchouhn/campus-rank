@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Rocket, Star, User } from "lucide-react";
+import Link from "next/link";
 
 export const CTASection = () => {
   return (
@@ -35,6 +36,7 @@ export const CTASection = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link href={'/dashboard'}>
               <Button 
                 size="lg" 
                 className="bg-white text-primary hover:bg-white/90 font-semibold group dark:text-white"
@@ -42,6 +44,7 @@ export const CTASection = () => {
                 Join Campus Rank Now
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
+              </Link>
               {/* <Button 
                 variant="outline" 
                 size="lg"

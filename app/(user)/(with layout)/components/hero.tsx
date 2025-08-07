@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Trophy, Target, Users } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 const HeroSection = () => {
   return (
@@ -23,19 +24,23 @@ const HeroSection = () => {
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground max-w-lg">
-              One-stop platform for college students to master DSA, practice coding, 
+              One-stop platform for college students to master DSA, practice coding,
               and crack top tech placements. Built for students, by students.
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4">
-            <Button size="lg" className="group">
-              Join Campus Rank Now
-              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
+            <Link href={'/dashboard'}>
+              <Button size="lg" className="group">
+                Join Campus Rank Now
+                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
+            <Link href={'/leaderboard'}>
             <Button variant="outline" size="lg">
-              View Features
+              View Leaderboard
             </Button>
+            </Link>
           </div>
 
           {/* Quick Stats */}
