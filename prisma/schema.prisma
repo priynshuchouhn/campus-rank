@@ -48,6 +48,8 @@ model User {
   pushSubscription    PushSubscription[]
   institution         Institution?         @relation(fields: [institutionId], references: [id])
   batch               Batch?               @relation(fields: [batchId], references: [id])
+
+  LeaderboardHistory LeaderboardHistory[]
 }
 
 model LeetCodeProfile {
@@ -420,6 +422,18 @@ model Batch {
   users         User[]
 
   @@unique([institutionId, code])
+}
+
+model LeaderboardHistory {
+  id        String   @id @default(cuid())
+  userId    String
+  rank      Int
+  snapshotAt DateTime
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, snapshotAt]) // Prevents duplicate entries for the same user at same time
 }
 
 enum Role {
