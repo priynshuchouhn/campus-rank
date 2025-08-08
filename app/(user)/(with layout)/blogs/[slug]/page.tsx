@@ -79,12 +79,12 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                             <span className='block md:hidden'>Back to Blogs</span>
                         </Button>
                     </Link>
-                    <h1 className="md:text-3xl text-2xl font-bold text-gray-900">{post.title}</h1>
+                    <h1 className="md:text-3xl text-2xl font-bold text-gray-900 dark:text-accent">{post.title}</h1>
                 </div>
-                <p className="md:text-xl text-sm text-gray-600 mb-6">{post.description}</p>
+                <p className="md:text-xl text-sm text-gray-600 mb-6 dark:text-gray-400">{post.description}</p>
 
                 {/* Author and Meta Info */}
-                <div className="grid grid-cols-2 md:grid-cols-3 md:gap-6 gap-2 text-gray-600">
+                <div className="grid grid-cols-2 md:grid-cols-3 md:gap-6 gap-2 text-gray-600 dark:text-gray-400">
                     <div className="flex items-center gap-2 col-span-2 md:col-span-1 mb-2 md:mb-0">
                         {post.author.image ? (
                             <Image
@@ -138,11 +138,11 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
             {post.tags && post.tags.length > 0 && (
                 <div className="mt-8 pt-6 border-t border-gray-200">
                     <div className="flex items-center gap-2 flex-wrap">
-                        <Tag className="w-5 h-5 text-gray-600" />
+                        <Tag className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                         {post.tags.map((tag: string) => (
                             <span
                                 key={tag}
-                                className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
+                                className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm dark:bg-gray-950 dark:text-gray-200"
                             >
                                 {tag}
                             </span>
