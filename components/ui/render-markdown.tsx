@@ -212,7 +212,7 @@ export const RenderMarkdown = ({ content, previewMode = false }: { content: stri
                             i % 2 === 0 ? (
                                 part
                             ) : (
-                                <code key={i} className="bg-gray-100 px-1.5 py-0.5 rounded text-sm">
+                                <code key={i} className="bg-gray-100 px-1.5 py-0.5 rounded text-sm dark:bg-gray-950">
                                     {part}
                                 </code>
                             )
@@ -292,7 +292,7 @@ export const RenderMarkdown = ({ content, previewMode = false }: { content: stri
                 };
 
                 return (
-                    <blockquote key={index} className="border-l-4 border-gray-300 pl-4 italic my-4 text-gray-600">
+                    <blockquote key={index} className="border-l-4 border-gray-300 pl-4 italic my-4 text-gray-600 dark:text-gray-300">
                         <p>{renderBlockquoteContent(quoteContent)}</p>
                     </blockquote>
                 );
@@ -375,13 +375,13 @@ export const RenderMarkdown = ({ content, previewMode = false }: { content: stri
 
             // Default paragraph
             return (
-                <p key={index} className="mb-4 text-gray-800 leading-relaxed">
+                <p key={index} className="mb-4 text-gray-800 leading-relaxed dark:text-gray-400">
                     {item}
                 </p>
             );
         } else if (item.type === 'code') {
             return (
-                <pre key={index} className="bg-gray-100 p-4 rounded-lg my-4 overflow-x-auto">
+                <pre key={index} className="bg-gray-100 p-4 rounded-lg my-4 overflow-x-auto dark:bg-gray-950">
                     <code className={`text-sm font-mono ${item.language ? `language-${item.language}` : ''}`}>
                         {item.content}
                     </code>
