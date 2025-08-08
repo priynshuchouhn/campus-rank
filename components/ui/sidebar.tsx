@@ -54,7 +54,7 @@ function Sidebar({ user }: { user: any }) {
                                 icon={<Code className="h-4 w-4" />}
                                 title="Practice"
                                 isActive={pathname.includes('/practice')}
-                                badge="Beta"
+                                badge="New"
                             />
                             <SidebarNavItem
                                 href="/goals"

@@ -23,6 +23,9 @@ import { Badge } from "@/components/ui/badge";
 import { PredefinedSection, Subject } from "@prisma/client";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { createQuiz, fetchNotSubmittedQuiz } from "@/lib/actions/quiz";
+import { slugify, timeAgo } from "@/lib/utils";
+import Link from "next/link";
 
 const aptitudeTopics = [
   {
@@ -65,28 +68,41 @@ const aptitudeTopics = [
 
 export default function AptitudeDashboard() {
   const [subjectLst, setSubjectLst] = useState<(Subject & { sections: PredefinedSection[] })[]>([]);
+  const [incompleteQuizLst, setInCompleteQuizList] = useState<any[]>([])
   const [isLoading, setisLoading] = useState<boolean>(false);
+  const [isQuizCreating, setIsQuizCreating] = useState<boolean>(false);
   const router = useRouter();
   useEffect(() => {
-    async function fetchSubjects() {
+    async function fetchSubjectsQuizes() {
       try {
         setisLoading(true)
-        const data = await fetchSubjectsToPracticeWithTopic();
-        console.log(data);
-        setSubjectLst(data);
+        const [subjects, quizes] = await Promise.all([fetchSubjectsToPracticeWithTopic(), fetchNotSubmittedQuiz()]);
+        setSubjectLst(subjects);
+        setInCompleteQuizList(quizes ?? []);
       } catch (error) {
         toast.error("Something went wrong");
       } finally {
         setisLoading(false)
       }
     }
-    fetchSubjects();
+    fetchSubjectsQuizes();
   }, [])
 
-  const handleStartQuiz = (topicId: string) => {
-    console.log(topicId);
-    const examId = '53vfdvw45vfv45'
-    router.push(`quiz/${'cmc2d37ic00024h4mc7k4gtjj'}/${'arithmetic'}/${topicId}/${examId}`);
+  const handleStartQuiz = async (topicId: string) => {
+    try {
+      setIsQuizCreating(true);
+      const data = await createQuiz(topicId);
+      if (!data) {
+        toast.error("Failed to start quiz");
+        return;
+      }
+      router.push(`quiz/${data.subject}/${data.section}/${data.topic}/${data.examId}`);
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to start quiz");
+    } finally {
+      setIsQuizCreating(false);
+    }
   }
   if (isLoading) {
     return (
@@ -116,10 +132,30 @@ export default function AptitudeDashboard() {
         </div>
       </div>
 
-      <div className="lg:container mx-auto lg:px-4 lg:py-8">
+      <div className="lg:container mx-auto lg:px-4 lg:py-8 py-4">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {incompleteQuizLst.length > 0 && <div className="lg:col-span-3">
+            <h2 className="text-2xl font-bold mb-6 text-gray-500">Pick where you left</h2>
+            <div className="space-y-6 mb-3" >
+              <Card>
+                <CardContent>
+                  {incompleteQuizLst.map(el => <div key={el.id} className="grid grid-cols-1 lg:grid-cols-5 gap-3 border p-2 rounded-sm my-2">
+                    <div className="col-span-4">
+                      <p className="text-lg text-primary font-semibold">{el.topic.predefinedSection.subject.subjectName}</p>
+                      <p>{el.topic.title} - <span className="text-gray-500 font-bold text-xs">{timeAgo(el.createdAt)}</span></p>
+                    </div>
+                    <div className="flex items-center justify-start lg:justify-end ">
+                      <Link href={`quiz/${slugify(el.topic.predefinedSection.subject.subjectName)}/${slugify(el.topic.predefinedSection.title)}/${slugify(el.topic.title)}/${el.id}`}>
+                        <Button variant={'outline'} size={'sm'} className="min-w-3.5">{<>Continue Quiz <Play /></>}</Button>
+                      </Link>
+                    </div>
+                  </div>)}
+                </CardContent>
+              </Card>
+            </div>
+          </div>}
           {/* Topic Selection */}
-          <div className="lg:col-span-3">
+          {subjectLst.length > 0 && <div className="lg:col-span-3">
             <h2 className="text-2xl font-bold mb-6 text-gray-500">Choose Practice Topic</h2>
             <div className="space-y-6 mb-3" >
               {subjectLst.map((subject) => {
@@ -147,7 +183,7 @@ export default function AptitudeDashboard() {
                                     <div key={topic.id} className="grid lg:grid-cols-5 grid-cols-2 gap-3">
                                       <div className="lg:col-span-3 col-span-2"> <span className="font-bold">{topic.title}</span> : <span className="text-xs">{topic.description}</span></div>
                                       <div><Badge variant={getBadgeVariant(topic.level)}>{topic.level}</Badge></div>
-                                      <div className="text-end"><Button disabled={true} onClick={() => handleStartQuiz(topic.id)}>Start Quiz <Play /></Button></div>
+                                      <div className="text-end"><Button className="min-w-3.5" disabled={isQuizCreating} onClick={() => handleStartQuiz(topic.id)}>{isQuizCreating ? <Loader2 className="animate-spin" /> : <>Start Quiz <Play /></>}</Button></div>
                                     </div>
                                   )}
                                 </AccordionContent>
@@ -162,7 +198,7 @@ export default function AptitudeDashboard() {
               })}
             </div>
 
-          </div>
+          </div>}
         </div>
       </div>
     </div>
