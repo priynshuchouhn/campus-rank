@@ -24,7 +24,8 @@ import { PredefinedSection, Subject } from "@prisma/client";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { createQuiz, fetchNotSubmittedQuiz } from "@/lib/actions/quiz";
-import { timeAgo } from "@/lib/utils";
+import { slugify, timeAgo } from "@/lib/utils";
+import Link from "next/link";
 
 const aptitudeTopics = [
   {
@@ -91,7 +92,7 @@ export default function AptitudeDashboard() {
     try {
       setIsQuizCreating(true);
       const data = await createQuiz(topicId);
-      if(!data){
+      if (!data) {
         toast.error("Failed to start quiz");
         return;
       }
@@ -99,7 +100,7 @@ export default function AptitudeDashboard() {
     } catch (error) {
       console.log(error);
       toast.error("Failed to start quiz");
-    }finally{
+    } finally {
       setIsQuizCreating(false);
     }
   }
@@ -133,7 +134,7 @@ export default function AptitudeDashboard() {
 
       <div className="lg:container mx-auto lg:px-4 lg:py-8 py-4">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-         {incompleteQuizLst.length > 0 && <div className="lg:col-span-3">
+          {incompleteQuizLst.length > 0 && <div className="lg:col-span-3">
             <h2 className="text-2xl font-bold mb-6 text-gray-500">Pick where you left</h2>
             <div className="space-y-6 mb-3" >
               <Card>
@@ -143,14 +144,18 @@ export default function AptitudeDashboard() {
                       <p className="text-lg text-primary font-semibold">{el.topic.predefinedSection.subject.subjectName}</p>
                       <p>{el.topic.title} - <span className="text-gray-500 font-bold text-xs">{timeAgo(el.createdAt)}</span></p>
                     </div>
-                    <div className="flex items-center justify-start lg:justify-end "><Button variant={'outline'} size={'sm'} className="min-w-3.5">{<>Continue Quiz <Play /></>}</Button></div>
+                    <div className="flex items-center justify-start lg:justify-end ">
+                      <Link href={`quiz/${slugify(el.topic.predefinedSection.subject.subjectName)}/${slugify(el.topic.predefinedSection.title)}/${slugify(el.topic.title)}/${el.id}`}>
+                        <Button variant={'outline'} size={'sm'} className="min-w-3.5">{<>Continue Quiz <Play /></>}</Button>
+                      </Link>
+                    </div>
                   </div>)}
                 </CardContent>
               </Card>
             </div>
           </div>}
           {/* Topic Selection */}
-         {subjectLst.length > 0 && <div className="lg:col-span-3">
+          {subjectLst.length > 0 && <div className="lg:col-span-3">
             <h2 className="text-2xl font-bold mb-6 text-gray-500">Choose Practice Topic</h2>
             <div className="space-y-6 mb-3" >
               {subjectLst.map((subject) => {
@@ -178,7 +183,7 @@ export default function AptitudeDashboard() {
                                     <div key={topic.id} className="grid lg:grid-cols-5 grid-cols-2 gap-3">
                                       <div className="lg:col-span-3 col-span-2"> <span className="font-bold">{topic.title}</span> : <span className="text-xs">{topic.description}</span></div>
                                       <div><Badge variant={getBadgeVariant(topic.level)}>{topic.level}</Badge></div>
-                                      <div className="text-end"><Button className="min-w-3.5" disabled={isQuizCreating} onClick={() => handleStartQuiz(topic.id)}>{isQuizCreating ? <Loader2 className="animate-spin"/> : <>Start Quiz <Play /></>}</Button></div>
+                                      <div className="text-end"><Button className="min-w-3.5" disabled={isQuizCreating} onClick={() => handleStartQuiz(topic.id)}>{isQuizCreating ? <Loader2 className="animate-spin" /> : <>Start Quiz <Play /></>}</Button></div>
                                     </div>
                                   )}
                                 </AccordionContent>

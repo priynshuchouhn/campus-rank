@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, use, useMemo } from "react";
+import { useState, useEffect, use, useMemo, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,14 +27,23 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { fetchQuiz } from "@/lib/actions/quiz";
 import { unslugify } from "@/lib/utils";
+import { useFullscreen } from "@/lib/hooks/useFullscreen";
 
 
 export default function QuizPage() {
   const params = useParams();
   const router = useRouter();
+  const containerRef = useRef<HTMLDivElement>(null);
   const { subjectName, sectionName, topicName, quizId } = params;
+  const { isFullscreen, enterFullScreen, exitFullScreen } = useFullscreen();
 
   const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [quizStarted, setQuizStarted] = useState(false);
+  const [quizCompleted, setQuizCompleted] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  const [quizData, setQuizData] = useState<any>();
+  const [isLoading, setisLoading] = useState<boolean>(false);
   const [selectedAnswers, setSelectedAnswers] = useState<{ [key: string]: string }>(() => {
     const stored = sessionStorage.getItem('response');
     try {
@@ -44,12 +53,6 @@ export default function QuizPage() {
       return {};
     }
   });
-  const [timeLeft, setTimeLeft] = useState(0);
-  const [quizStarted, setQuizStarted] = useState(false);
-  const [quizCompleted, setQuizCompleted] = useState(false);
-  const [showResults, setShowResults] = useState(false);
-  const [quizData, setQuizData] = useState<any>();
-  const [isLoading, setisLoading] = useState<boolean>(false);
   const currentQ = useMemo(() => {
     if (!quizData) return null;
     return quizData.questions[currentQuestion]
@@ -67,8 +70,11 @@ export default function QuizPage() {
         if (!quizDataRes) return;
         setQuizData(quizDataRes);
         setTimeLeft(quizDataRes.timeAlloted);
+        const isQuizStarted = quizDataRes.status != 'CREATED' && quizDataRes.status != 'SUBMITTED';
+        setQuizStarted(isQuizStarted)
+        setQuizCompleted(quizDataRes.status == 'SUBMITTED')
       } catch (error) {
-
+        console.log(error);
       } finally {
         setisLoading(false)
       }
@@ -141,7 +147,8 @@ export default function QuizPage() {
     };
   };
 
-  const startQuiz = () => {
+  const startQuiz = async () => {
+    await enterFullScreen();
     setQuizStarted(true);
   };
 
@@ -352,14 +359,20 @@ export default function QuizPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background" ref={containerRef}>
       <header className="border-b">
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
-            <div></div>
+            <div>
+              <p className="text-2xl">{unslugify(topicName)}</p>
+            </div>
             <div className="flex items-center gap-4">
               <div>
-                <Button variant={'ghost'}><Fullscreen /></Button>
+                <Button variant={'ghost'} onClick={() =>
+                  isFullscreen
+                    ? exitFullScreen()
+                    : enterFullScreen()
+                }><Fullscreen /></Button>
               </div>
               <div>
                 <ThemeToggle />
