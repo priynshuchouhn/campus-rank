@@ -131,7 +131,7 @@ export function LeaderboardTable({ leaderboards, searchQuery = "", isLoggedIn }:
                     </td>
                     <td className="p-4 text-center">
                       <Badge variant="outline" className="font-mono">
-                        {leaderboard.user.totalSolved}
+                        {(Number(leaderboard.user.totalSolved) || 0) + (Number(leaderboard.user.gfgProfile?.solvedProblems) || 0)}
                       </Badge>
                     </td>
                     <td className="p-4 text-center">
