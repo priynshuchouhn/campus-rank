@@ -25,9 +25,10 @@ import {
 } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { fetchQuiz } from "@/lib/actions/quiz";
-import { unslugify } from "@/lib/utils";
+import { fetchQuiz, saveQuizData, startQuizInDb } from "@/lib/actions/quiz";
+import { getTimeLeft, unslugify } from "@/lib/utils";
 import { useFullscreen } from "@/lib/hooks/useFullscreen";
+import toast from "react-hot-toast";
 
 
 export default function QuizPage() {
@@ -36,7 +37,6 @@ export default function QuizPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { subjectName, sectionName, topicName, quizId } = params;
   const { isFullscreen, enterFullScreen, exitFullScreen } = useFullscreen();
-
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [timeLeft, setTimeLeft] = useState(0);
   const [quizStarted, setQuizStarted] = useState(false);
@@ -44,15 +44,20 @@ export default function QuizPage() {
   const [showResults, setShowResults] = useState(false);
   const [quizData, setQuizData] = useState<any>();
   const [isLoading, setisLoading] = useState<boolean>(false);
-  const [selectedAnswers, setSelectedAnswers] = useState<{ [key: string]: string }>(() => {
+  const [selectedAnswers, setSelectedAnswers] = useState<{ [key: string]: string }>({});
+  const [responses, setResponses] = useState<any>([]);
+  useEffect(() => {
     const stored = sessionStorage.getItem('response');
     try {
-      return stored ? JSON.parse(stored) : {};
+      if (stored) {
+        setSelectedAnswers(JSON.parse(stored));
+      }
     } catch (e) {
-      console.error("Failed to parse session storage:", e);
-      return {};
+      console.error('Failed to parse stored response', e);
+    } finally {
+      setisLoading(false);
     }
-  });
+  }, []);
   const currentQ = useMemo(() => {
     if (!quizData) return null;
     return quizData.questions[currentQuestion]
@@ -66,13 +71,15 @@ export default function QuizPage() {
     async function fetchQuizdata() {
       try {
         setisLoading(true);
-        const quizDataRes = await fetchQuiz(quizId);
-        if (!quizDataRes) return;
-        setQuizData(quizDataRes);
-        setTimeLeft(quizDataRes.timeAlloted);
-        const isQuizStarted = quizDataRes.status != 'CREATED' && quizDataRes.status != 'SUBMITTED';
+        const { quiz, response } = await fetchQuiz(quizId);
+        if (!quiz) return;
+        setQuizData(quiz);
+        const timeLeft = quiz.startedAt ? getTimeLeft(quiz.startedAt, quiz.timeAlloted) : quiz.timeAlloted;
+        setTimeLeft(timeLeft);
+        const isQuizStarted = quiz.status != 'CREATED' && quiz.status != 'SUBMITTED';
         setQuizStarted(isQuizStarted)
-        setQuizCompleted(quizDataRes.status == 'SUBMITTED')
+        setQuizCompleted(quiz.status == 'SUBMITTED');
+        setResponses(response)
       } catch (error) {
         console.log(error);
       } finally {
@@ -87,8 +94,7 @@ export default function QuizPage() {
       const timer = setInterval(() => {
         setTimeLeft((prev) => {
           if (prev <= 1000) {
-            setQuizCompleted(true);
-            setShowResults(true);
+            handleSubmit();
             return 0;
           }
           return prev - 1000;
@@ -125,7 +131,12 @@ export default function QuizPage() {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    const body = {
+      quizId,
+      quizResponse: selectedAnswers
+    }
+    const data = await saveQuizData(body);
     setQuizCompleted(true);
     setShowResults(true);
     sessionStorage.removeItem('response');
@@ -148,18 +159,23 @@ export default function QuizPage() {
   };
 
   const startQuiz = async () => {
-    await enterFullScreen();
-    setQuizStarted(true);
+    const isQuizStarted = await startQuizInDb(quizId)
+    if (isQuizStarted) {
+      enterFullScreen();
+      setQuizStarted(true);
+      return;
+    }
+    toast.error('Failed to start quiz');
   };
 
-  const restartQuiz = () => {
-    setCurrentQuestion(0);
-    setSelectedAnswers({});
-    setTimeLeft(quizData ? (quizData.timeAlloted / (60 * 1000)) : 0);
-    setQuizStarted(false);
-    setQuizCompleted(false);
-    setShowResults(false);
-  };
+  // const restartQuiz = () => {
+  //   setCurrentQuestion(0);
+  //   setSelectedAnswers({});
+  //   setTimeLeft(quizData ? (quizData.timeAlloted / (60 * 1000)) : 0); // seconds
+  //   setQuizStarted(false);
+  //   setQuizCompleted(false);
+  //   setShowResults(false);
+  // };
 
   if (isLoading) {
     return (<div className="min-h-screen flex items-center justify-center">
@@ -221,10 +237,10 @@ export default function QuizPage() {
                 </div>
 
                 <div className="flex gap-4 justify-center">
-                  <Button onClick={restartQuiz} className="gap-2">
+                  {/* <Button onClick={restartQuiz} className="gap-2">
                     <RotateCcw className="h-4 w-4" />
                     Retake Quiz
-                  </Button>
+                  </Button> */}
                   <Link href="/practice">
                     <Button variant="outline" className="gap-2">
                       <Home className="h-4 w-4" />
@@ -301,7 +317,7 @@ export default function QuizPage() {
     );
   }
 
-  if (!quizStarted) {
+  if (!quizStarted && !quizCompleted) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="container mx-auto px-4 py-8">
@@ -358,6 +374,105 @@ export default function QuizPage() {
     );
   }
 
+  if (quizCompleted && quizData) {
+    const correctCount = responses.filter((r: any) => r.isCorrect).length;
+    return (
+      <div className="min-h-screen bg-background">
+
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-2xl mx-auto">
+            <Card className="border-2 border-orange-200 bg-orange-50 dark:bg-orange-950/20 dark:border-orange-800">
+              <CardHeader className="text-center">
+                <div className="mx-auto w-16 h-16 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center mb-4">
+                  <CheckCircle className="h-8 w-8 text-orange-600 dark:text-orange-400" />
+                </div>
+                <CardTitle className="text-2xl text-orange-800 dark:text-orange-200 mb-2">
+                  Quiz Already Submitted
+                </CardTitle>
+                <p className="text-orange-700 dark:text-orange-300 mb-2">
+                  You have already completed this quiz
+                </p>
+                <p className="text-sm text-orange-600 dark:text-orange-400">
+                  {unslugify(subjectName)} → {unslugify(topicName)}
+                </p>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg border">
+                    <div className="text-2xl font-bold text-green-600 dark:text-green-400 mb-1">
+                      {Math.floor((correctCount / quizData.questions.length) * 100)}%
+                    </div>
+                    <p className="text-sm text-muted-foreground">Your Score</p>
+                  </div>
+                  <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg border">
+                    <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-1">
+                      {correctCount}/{quizData.questions.length}
+                    </div>
+                    <p className="text-sm text-muted-foreground">Correct</p>
+                  </div>
+                  <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg border">
+                    <div className="text-2xl font-bold text-purple-600 dark:text-purple-400 mb-1">
+                      {formatTime(quizData.submittedAt - quizData.startedAt)}
+                    </div>
+                    <p className="text-sm text-muted-foreground">Time Taken</p>
+                  </div>
+                </div>
+
+                <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Clock className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm font-medium">Completed On</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(quizData.submittedAt).toLocaleString('en-IN', {
+                      day: '2-digit',
+                      month: 'short',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      second: '2-digit',
+                      hour12: true
+                    })}
+                  </p>
+                </div>
+
+                <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-blue-600 dark:text-blue-400 text-sm font-bold">i</span>
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-1">
+                        Want to improve your score?
+                      </h4>
+                      <p className="text-sm text-blue-700 dark:text-blue-300">
+                        You can retake this quiz to practice more and potentially achieve a better score.
+                        Your previous attempt will be replaced with the new one.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3">
+                  {/* <Button variant="outline" className="flex-1 gap-2">
+                    <BookOpen className="h-4 w-4" />
+                    View Detailed Results
+                  </Button> */}
+                  <Link href="/practice" className="flex-1">
+                    <Button variant="outline" className="w-full gap-2">
+                      <Home className="h-4 w-4" />
+                      Back to Dashboard
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background" ref={containerRef}>
       <header className="border-b">
@@ -379,7 +494,7 @@ export default function QuizPage() {
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <Clock className="h-4 w-4" />
-                <span className={`font-mono ${timeLeft < 300 ? 'text-red-500' : ''}`}>
+                <span className={`font-mono ${timeLeft < 1000 * 15 ? 'text-red-500' : ''}`}>
                   {formatTime(timeLeft)}
                 </span>
               </div>

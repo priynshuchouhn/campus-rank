@@ -49,9 +49,8 @@ model User {
   institution         Institution?         @relation(fields: [institutionId], references: [id])
   batch               Batch?               @relation(fields: [batchId], references: [id])
 
-  LeaderboardHistory LeaderboardHistory[]
-
-  Quiz Quiz[]
+  leaderboardHistory LeaderboardHistory[]
+  quiz Quiz[]
 }
 
 model LeetCodeProfile {
@@ -208,7 +207,7 @@ model PredefinedTopic {
   resources           Resource[]
   topics              Topic[]
 
-  Quiz Quiz[]
+  quiz Quiz[]
 }
 
 model Resource {
@@ -273,8 +272,8 @@ model Question {
   correctOption String?
   explanation   String?
 
-  Quiz Quiz[]
-  QuizResponse QuizResponse[]
+  quiz Quiz[]
+  quizResponse QuizResponse[]
 }
 
 model SampleCode {
@@ -452,7 +451,7 @@ model Quiz {
   submittedAt DateTime?
   status      QuizStatus      @default(CREATED)
   timeAlloted Int
-  QuizResponse QuizResponse[]
+  quizResponse QuizResponse[]
   topic       PredefinedTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)
   user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt   DateTime        @default(now())

@@ -3,6 +3,12 @@
 import { auth } from "@/auth";
 import { prisma } from "../prisma";
 import { slugify } from "../utils";
+import { Prisma } from "@prisma/client";
+
+type FetchQuizReturn = {
+  quiz: Prisma.QuizGetPayload<{ include: { questions: true } }> | null;
+  response: Prisma.QuizResponseGetPayload<any>[];
+};
 
 export async function createQuiz(topicId: string) {
     const session = await auth();
@@ -57,22 +63,26 @@ export async function createQuiz(topicId: string) {
     return { examId: quiz.id, subject: slugify(quiz.topic.predefinedSection.subject.subjectName), section: slugify(quiz.topic.predefinedSection.title), topic: slugify(quiz.topic.title) };
 }
 
-export async function fetchQuiz(quizId: any) {
+export async function fetchQuiz(quizId: any): Promise<FetchQuizReturn> {
     const session = await auth();
-    if (!session) return;
+    if (!session) return {quiz: null, response: []};;
     try {
-        const quiz = await prisma.quiz.findUnique({
+        const [quiz, response] = await Promise.all([prisma.quiz.findUnique({
             where: {
                 id: quizId,
                 userId: session.user.id
             }, include: {
-                questions: true
+                questions: true,
             }
-        })
-        return quiz;
+        }), prisma.quizResponse.findMany({
+            where: {
+                quizId: quizId,
+            }
+        })])
+        return { quiz, response };
     } catch (error) {
         console.log(error)
-        return null;
+        return {quiz: null, response: []};
     }
 }
 
@@ -113,4 +123,48 @@ export async function fetchNotSubmittedQuiz() {
         console.log(error)
         return [];
     }
+}
+
+export async function saveQuizData(data: any) {
+    const session = await auth();
+    if (!session) return;
+    const quiz = await prisma.quiz.update({
+        where: { id: data.quizId, userId: session.user.id },
+        data: {
+            status: 'SUBMITTED',
+            submittedAt: new Date()
+        },
+        include: {
+            questions: true
+        }
+    });
+    const quizResponse = [];
+    for (const [questionId, selectedOption] of Object.entries(data.quizResponse)) {
+        const responseData = {
+            questionId: questionId,
+            response: selectedOption as string,
+            isCorrect: quiz?.questions.find(q => q.id == questionId)?.correctOption == selectedOption,
+            quizId: data.quizId
+        };
+        quizResponse.push(responseData);
+    }
+    const savedQuizResponse = await prisma.quizResponse.createMany({
+        data: quizResponse
+    })
+    console.log(savedQuizResponse);
+}
+
+
+export async function startQuizInDb(quizId: any) {
+    const session = await auth();
+    if (!session) return;
+    const quiz = await prisma.quiz.update({
+        where: { id: quizId, userId: session.user.id },
+        data: {
+            status: 'STARTED',
+            startedAt: new Date()
+        },
+    });
+    if (quiz) return true;
+    return false;
 }
