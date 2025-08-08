@@ -50,6 +50,8 @@ model User {
   batch               Batch?               @relation(fields: [batchId], references: [id])
 
   LeaderboardHistory LeaderboardHistory[]
+
+  Quiz Quiz[]
 }
 
 model LeetCodeProfile {
@@ -173,7 +175,7 @@ model PredefinedSection {
   updatedAt   DateTime          @updatedAt
   topics      PredefinedTopic[] @relation("PredefinedSectionTopics")
   subjectId   String
-  subject     Subject          @relation(fields: [subjectId], references: [id], onDelete: Cascade )
+  subject     Subject           @relation(fields: [subjectId], references: [id], onDelete: Cascade)
 }
 
 model Section {
@@ -205,6 +207,8 @@ model PredefinedTopic {
   questions           Question[]
   resources           Resource[]
   topics              Topic[]
+
+  Quiz Quiz[]
 }
 
 model Resource {
@@ -245,30 +249,32 @@ model SolvedQuestion {
 }
 
 model Question {
-  id                String               @id @default(cuid())
+  id                String           @id @default(cuid())
   title             String
   description       String
   questionType      QuestionType
   difficulty        Difficulty
   predefinedTopicId String?
-  predefinedTopic   PredefinedTopic?     @relation(fields: [predefinedTopicId], references: [id], onDelete: Cascade)
+  predefinedTopic   PredefinedTopic? @relation(fields: [predefinedTopicId], references: [id], onDelete: Cascade)
 
   // Code Based Question
-  timeComplexity    String?
-  spaceComplexity   String?
-  createdAt         DateTime             @default(now())
-  updatedAt         DateTime             @updatedAt
-  constraints       Constraint[]
-  submissions       QuestionSubmission[]
-  sampleCodes       SampleCode[]
-  solvedBy          SolvedQuestion[]
-  testCases         TestCase[]
+  timeComplexity  String?
+  spaceComplexity String?
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  constraints     Constraint[]
+  submissions     QuestionSubmission[]
+  sampleCodes     SampleCode[]
+  solvedBy        SolvedQuestion[]
+  testCases       TestCase[]
 
   //MCQ Based Question
-  options String[]
+  options       String[]
   correctOption String?
-  explanation String?
+  explanation   String?
 
+  Quiz Quiz[]
+  QuizResponse QuizResponse[]
 }
 
 model SampleCode {
@@ -425,16 +431,42 @@ model Batch {
 }
 
 model LeaderboardHistory {
-  id        String   @id @default(cuid())
-  userId    String
-  rank      Int
+  id         String   @id @default(cuid())
+  userId     String
+  rank       Int
   snapshotAt DateTime
-  rankChange   Int?
-  createdAt DateTime @default(now())
+  rankChange Int?
+  createdAt  DateTime @default(now())
 
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, snapshotAt]) // Prevents duplicate entries for the same user at same time
+}
+
+model Quiz {
+  id          String          @id @default(cuid())
+  userId      String
+  topicId     String
+  questions   Question[]
+  startedAt   DateTime?
+  submittedAt DateTime?
+  status      QuizStatus      @default(CREATED)
+  timeAlloted Int
+  QuizResponse QuizResponse[]
+  topic       PredefinedTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime        @default(now())
+
+}
+
+model QuizResponse {
+  id String @id @default(cuid())
+  questionId String
+  response String
+  isCorrect Boolean
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  quizId String
+  quiz Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
 }
 
 enum Role {
@@ -502,6 +534,12 @@ enum ReportStatus {
 }
 
 enum QuestionType {
- MCQ
- CODE
+  MCQ
+  CODE
+}
+
+enum QuizStatus {
+  CREATED
+  STARTED
+  SUBMITTED
 }
