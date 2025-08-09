@@ -1,3 +1,5 @@
+import { LucideIcon } from "lucide-react";
+
 export interface User {
     id: string;
     name: string;
@@ -193,4 +195,17 @@ export interface BlogPost {
     tags: string[];
     content: string;
   }
+
+  export interface MenuItem {
+  href: string;
+  icon: LucideIcon;  // or React.ComponentType<React.SVGProps<SVGSVGElement>>
+  title: string;
+  exact?: boolean;
+  badge?: string;  // <--- optional badge here
+}
+
+export interface MenuSection {
+  section: string;
+  items: MenuItem[];
+}
   
