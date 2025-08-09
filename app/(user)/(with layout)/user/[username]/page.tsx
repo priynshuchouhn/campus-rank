@@ -5,6 +5,7 @@ import { HackerRankBadge } from "@prisma/client";
 import { getUserProfile } from "@/lib/actions/users";
 import { redirect } from "next/navigation";
 import { ShareButton } from "@/components/ui/share-button";
+import { Badge } from "@/components/ui/badge";
 
 export default async function UserProfile({
     params,
@@ -42,7 +43,7 @@ export default async function UserProfile({
                                         <h1 className="md:text-3xl text-xl font-bold mb-2">{user.name}</h1>
                                         <p className="text-muted-foreground mb-4">@{user.username}</p>
                                     </div>
-                                    <ShareButton
+                                    {user.isPublic && <ShareButton
                                         name={user.name || ""}
                                         username={user.username || ""}
                                         image={user.image}
@@ -59,10 +60,10 @@ export default async function UserProfile({
                                             name: badge.name,
                                             stars: badge.stars
                                         }))}
-                                    />
+                                    />}
                                 </div>
                                 <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-                                    {user.leetcodeUsername && (
+                                    {user.isPublic && user.leetcodeUsername && (
                                         <a
                                             href={`https://leetcode.com/${user.leetcodeUsername}`}
                                             target="_blank"
@@ -73,7 +74,7 @@ export default async function UserProfile({
                                             <span>LeetCode</span>
                                         </a>
                                     )}
-                                    {user.hackerrankUsername && (
+                                    {user.isPublic && user.hackerrankUsername && (
                                         <a
                                             href={`https://www.hackerrank.com/${user.hackerrankUsername}`}
                                             target="_blank"
@@ -84,7 +85,7 @@ export default async function UserProfile({
                                             <span>HackerRank</span>
                                         </a>
                                     )}
-                                    {user.gfgUsername && (
+                                    {user.isPublic && user.gfgUsername && (
                                         <a
                                             href={`https://auth.geeksforgeeks.org/user/${user.gfgUsername}`}
                                             target="_blank"
@@ -95,6 +96,7 @@ export default async function UserProfile({
                                             <span>GeeksforGeeks</span>
                                         </a>
                                     )}
+                                    {!user.isPublic && <Badge variant={'destructive'} className="font-semibold capitalize">This profile is private</Badge>}
                                 </div>
                             </div>
                         </div>
@@ -113,25 +115,25 @@ export default async function UserProfile({
                             <div className="text-center p-4 rounded-lg bg-blue-100 dark:bg-blue-900/20 relative overflow-hidden">
                                 <p className="text-sm text-muted-foreground">Total Solved</p>
                                 <p className="text-2xl font-bold text-blue-500">
-                                    {user.totalSolved || 0}
+                                   {user.isPublic ? user.totalSolved || 0 : 'Hidden'}
                                 </p>
                             </div>
                             <div className="text-center p-4 rounded-lg bg-purple-100 dark:bg-purple-900/20 relative overflow-hidden">
                                 <p className="text-sm text-muted-foreground">Campus Rank</p>
                                 <p className="text-2xl font-bold text-purple-500">
-                                    #{user.leaderboardStats?.globalRank || 0}
+                                   {user.isPublic?  '#'+user.leaderboardStats?.globalRank || 0: 'Hidden'}
                                 </p>
                             </div>
                             <div className="text-center p-4 rounded-lg bg-rose-100 dark:bg-rose-900/20 relative overflow-hidden">
                                 <p className="text-sm text-muted-foreground">LeetCode Global Rank</p>
                                 <p className="text-2xl font-bold text-rose-500">
-                                    {user.leetcodeProfile?.ranking || 0}
+                                    {user.isPublic ? user.leetcodeProfile?.ranking || 0 : 'Hidden'}
                                 </p>
                             </div>
                             <div className="text-center p-4 rounded-lg bg-amber-100 dark:bg-amber-900/20 relative overflow-hidden">
                                 <p className="text-sm text-muted-foreground">GFG Institute Rank</p>
                                 <p className="text-2xl font-bold text-amber-500">
-                                    {user.gfgProfile?.rank || 0}
+                                    {user.isPublic ? user.gfgProfile?.rank || 0 : 'Hidden'}
                                 </p>
                             </div>
                         </div>
@@ -150,19 +152,19 @@ export default async function UserProfile({
                             <div className="text-center p-4 bg-green-50 dark:bg-green-950/20 rounded-lg">
                                 <p className="text-sm text-muted-foreground">Easy</p>
                                 <p className="text-2xl font-bold text-green-500">
-                                    {user.easySolved || 0}
+                                    {user.isPublic ? user.easySolved || 0 : 'Hidden'}
                                 </p>
                             </div>
                             <div className="text-center p-4 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg">
                                 <p className="text-sm text-muted-foreground">Medium</p>
                                 <p className="text-2xl font-bold text-yellow-500">
-                                    {user.mediumSolved || 0}
+                                    {user.isPublic ? user.mediumSolved || 0 : 'Hidden'}
                                 </p>
                             </div>
                             <div className="text-center p-4 bg-red-50 dark:bg-red-950/20 rounded-lg">
                                 <p className="text-sm text-muted-foreground">Hard</p>
                                 <p className="text-2xl font-bold text-red-500">
-                                    {user.hardSolved || 0}
+                                    {user.isPublic ? user.hardSolved || 0: 'Hidden'}
                                 </p>
                             </div>
                         </div>
@@ -170,7 +172,7 @@ export default async function UserProfile({
                 </Card>
 
                 {/* HackerRank Badges */}
-                {user.hackerrankProfile?.badges && user.hackerrankProfile.badges.length > 0 && (
+                {user.isPublic && user.hackerrankProfile?.badges && user.hackerrankProfile.badges.length > 0 && (
                     <Card className="mb-8">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
@@ -255,13 +257,13 @@ export default async function UserProfile({
                             <div className="text-center p-4 bg-purple-50 dark:bg-purple-950/20 rounded-lg">
                                 <p className="text-sm text-muted-foreground">Problems Solved</p>
                                 <p className="text-2xl font-bold text-purple-500">
-                                    {user.gfgProfile?.solvedProblems || 0}
+                                    {user.isPublic ? user.gfgProfile?.solvedProblems || 0 : 'Hidden'}
                                 </p>
                             </div>
                             <div className="text-center p-4 bg-purple-50 dark:bg-purple-950/20 rounded-lg">
                                 <p className="text-sm text-muted-foreground">Coding Score</p>
                                 <p className="text-2xl font-bold text-purple-500">
-                                    {user.gfgProfile?.codingScore || 0}
+                                    {user.isPublic ? user.gfgProfile?.codingScore || 0 : 'Hidden'}
                                 </p>
                             </div>
                         </div>

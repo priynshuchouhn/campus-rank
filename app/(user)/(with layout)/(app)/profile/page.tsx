@@ -54,8 +54,8 @@ export default async function Profile() {
               <div>
                 <h3 className="text-sm font-medium text-muted-foreground mb-2">Profile Visibility</h3>
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                  <span>Public</span>
+                  <div className={`w-3 h-3 rounded-full ${user.isPublic ? 'bg-green-500' : 'bg-red-900'}`}></div>
+                  <span>{user.isPublic ? 'Public' : 'Private'}</span>
                 </div>
               </div>
 
