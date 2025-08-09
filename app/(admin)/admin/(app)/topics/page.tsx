@@ -39,6 +39,7 @@ interface Topic {
     description: string;
     resources: Resource[];
     sectionId: string;
+    questions: any[]
     sectionName: string;
 }
 
@@ -82,6 +83,7 @@ export default function TopicsPage() {
                 }
 
                 const response = await axios.get(url);
+                console.log(response.data.data);
                 setTopics(response.data.data);
             } catch (error) {
                 console.error("Error fetching topics:", error);
@@ -106,7 +108,6 @@ export default function TopicsPage() {
 
         try {
             await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/topics/${topicId}`);
-
             setTopics(topics.filter(topic => topic.id !== topicId));
             toast.success("Topic deleted successfully");
         } catch (error) {
@@ -176,6 +177,7 @@ export default function TopicsPage() {
                                 <TableRow>
                                     <TableHead>Title</TableHead>
                                     <TableHead>Section</TableHead>
+                                    <TableHead>Questions</TableHead>
                                     <TableHead>Resources</TableHead>
                                     <TableHead className="text-right">Actions</TableHead>
                                 </TableRow>
@@ -189,6 +191,7 @@ export default function TopicsPage() {
                                             </div>
                                         </TableCell>
                                         <TableCell>{topic.sectionName}</TableCell>
+                                        <TableCell>{topic.questions}</TableCell>
                                         <TableCell>
                                             <div className="flex flex-wrap gap-1">
                                                 {topic.resources.map((resource, i) => (

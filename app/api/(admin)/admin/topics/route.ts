@@ -43,7 +43,8 @@ export async function GET(request: NextRequest) {
       where: whereClause,
       include: {
         resources: true,
-        predefinedSection: true
+        predefinedSection: true,
+        questions: true
       },
       orderBy: {
         createdAt: 'desc',
@@ -57,6 +58,7 @@ export async function GET(request: NextRequest) {
       description: topic.description || "",
       sectionId: topic.predefinedSectionId,
       sectionName: topic.predefinedSection.title,
+      questions: topic.questions.length ?? 0,
       level: topic.level,
       preRequisites: topic.preRequisites,
       subTopics: topic.subTopics,

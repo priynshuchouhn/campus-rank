@@ -155,50 +155,81 @@ export default function AptitudeDashboard() {
             </div>
           </div>}
           {/* Topic Selection */}
-          {subjectLst.length > 0 && <div className="lg:col-span-3">
-            <h2 className="text-2xl font-bold mb-6 text-gray-500">Choose Practice Topic</h2>
-            <div className="space-y-6 mb-3" >
-              {subjectLst.map((subject) => {
-                return (
-                  <Card key={subject.id}>
-                    <CardContent className="p-6">
-                      <div className="flex items-start gap-4">
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between mb-2">
-                            <h3 className="text-xl font-semibold text-primary dark:text-accent">{subject.subjectName}</h3>
-                          </div>
-                          <div className="mt-4">
+          {subjectLst.length > 0 && (
+            <div className="lg:col-span-3">
+              <h2 className="text-2xl font-bold mb-6 text-gray-500">Choose Practice Topic</h2>
+              <div className="space-y-6 mb-3">
+                <Accordion type="single" collapsible className="w-full">
+                  {subjectLst.map((subject) => (
+                    subject.sections.length > 0 && <AccordionItem key={subject.id} value={subject.id} className="mb-3 border-b-0">
+                      <Card>
+                        <CardContent className="p-0">
+                          <AccordionTrigger className="px-6 py-4">
+                            <div>
+                              <h3 className="text-xl font-semibold text-primary dark:text-accent mb-3">
+                                {subject.subjectName}
+                              </h3>
+                              <div className="flex flex-wrap gap-2">{subject.sections.map(el => <Badge key={el.id} variant={'outline'}>{el.title}</Badge>)}</div>
+                            </div>
+                          </AccordionTrigger>
+                          <AccordionContent className="p-6">
                             <Accordion
                               type="single"
                               collapsible
                               className="w-full"
-                              defaultValue={subject.sections[0].id}>
-                              {subject.sections.map((section: any, index) => (<AccordionItem key={section.id} value={section.id}>
-                                <AccordionTrigger className="text-lg">{section.title}</AccordionTrigger>
-                                <AccordionContent className="flex flex-col gap-4 text-balance">
-                                  <p className="font-semibold text-muted-foreground">
-                                    {section.description}
-                                  </p>
-                                  {section.topics.map((topic: any) =>
-                                    <div key={topic.id} className="grid lg:grid-cols-5 grid-cols-2 gap-3">
-                                      <div className="lg:col-span-3 col-span-2"> <span className="font-bold">{topic.title}</span> : <span className="text-xs">{topic.description}</span></div>
-                                      <div><Badge variant={getBadgeVariant(topic.level)}>{topic.level}</Badge></div>
-                                      <div className="text-end"><Button className="min-w-3.5" disabled={isQuizCreating} onClick={() => handleStartQuiz(topic.id)}>{isQuizCreating ? <Loader2 className="animate-spin" /> : <>Start Quiz <Play /></>}</Button></div>
-                                    </div>
-                                  )}
-                                </AccordionContent>
-                              </AccordionItem>))}
+                              defaultValue={subject.sections.length > 0 ? subject.sections[0].id : '0'}
+                            >
+                              {subject.sections.map((section: any) => (
+                                <AccordionItem key={section.id} value={section.id}>
+                                  <AccordionTrigger className="text-lg">{section.title}</AccordionTrigger>
+                                  <AccordionContent className="flex flex-col gap-4 text-balance">
+                                    <p className="font-semibold text-muted-foreground">
+                                      {section.description}
+                                    </p>
+                                    {section.topics.map((topic: any) => (
+                                      <div
+                                        key={topic.id}
+                                        className="grid lg:grid-cols-5 grid-cols-2 gap-3"
+                                      >
+                                        <div className="lg:col-span-3 col-span-2">
+                                          <span className="font-bold">{topic.title}</span> :{' '}
+                                          <span className="text-xs">{topic.description}</span>
+                                        </div>
+                                        <div>
+                                          <Badge variant={getBadgeVariant(topic.level)}>{topic.level}</Badge>
+                                        </div>
+                                        <div className="text-end">
+                                          <Button
+                                            className="min-w-3.5"
+                                            disabled={isQuizCreating}
+                                            onClick={() => handleStartQuiz(topic.id)}
+                                          >
+                                            {isQuizCreating ? (
+                                              <Loader2 className="animate-spin" />
+                                            ) : (
+                                              <>
+                                                Start Quiz <Play />
+                                              </>
+                                            )}
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </AccordionContent>
+                                </AccordionItem>
+                              ))}
                             </Accordion>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+                          </AccordionContent>
+                        </CardContent>
+                      </Card>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </div>
             </div>
+          )}
 
-          </div>}
+
         </div>
       </div>
     </div>
