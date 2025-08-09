@@ -24,9 +24,7 @@ async function Navbar() {
         </SheetTrigger>
         <SheetContent side="left" className="w-72 p-2">
           <Separator />
-          <SheetClose asChild>
-            <Sidebar user={user} />
-          </SheetClose>
+            <Sidebar user={user} withSheetClose={true} />
         </SheetContent>
       </Sheet>
       <Link href="/" className='flex items-center gap-2'>
