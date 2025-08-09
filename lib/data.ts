@@ -31,7 +31,7 @@ export const authMenuItems: MenuSection[] = [
     section: "Account",
     items: [
       { href: "/profile", icon: User, title: "Profile" },
-      { href: "#", icon: Settings, title: "Settings" },
+      { href: "/settings", icon: Settings, title: "Settings" },
       { href: "/reports", icon: HelpCircle, title: "Reports" },
     ]
   }

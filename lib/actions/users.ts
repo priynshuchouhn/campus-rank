@@ -24,7 +24,7 @@ export async function fetchAndUpdateProfile(user: any) {
     try {
         // Add a 2-second delay for each user to prevent rate limiting
         await sleep(2000);
-        
+
         // Call the fetch-profile API endpoint using axios
         const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/fetch-profile`, {
             leetcodeUsername: user.leetcodeUsername,
@@ -143,18 +143,19 @@ export async function getUser() {
         const user = await prisma.user.findUnique({
             where: { email: email },
             include: {
-            leetcodeProfile: true,
-            hackerrankProfile: {
-                include: {
-                    badges: true
-                }
-            },
-            gfgProfile: true,
-            leaderboardStats: true,
-            profileView: true,
-        }
-    });
-    return user;
+                leetcodeProfile: true,
+                hackerrankProfile: {
+                    include: {
+                        badges: true
+                    }
+                },
+                gfgProfile: true,
+                leaderboardStats: true,
+                profileView: true,
+
+            }
+        });
+        return user;
     } catch (error) {
         await prisma.errorLog.create({
             data: {
@@ -164,7 +165,7 @@ export async function getUser() {
         });
         return null;
     }
-}   
+}
 
 export async function updateUser(values: any) {
     const session = await auth();
@@ -214,7 +215,7 @@ export async function updateUser(values: any) {
 }
 
 export async function getUserProfile(username: string) {
-    
+
 
     try {
         const user = await prisma.user.findMany({
@@ -280,9 +281,9 @@ export async function updateProfileView(username: string) {
         const profileView = await prisma.profileView.create({
             data: {
                 username,
-            browser,
-            device,
-            operatingSystem: os,
+                browser,
+                device,
+                operatingSystem: os,
             },
         });
         return profileView;
@@ -295,4 +296,28 @@ export async function updateProfileView(username: string) {
         });
         return null;
     }
+}
+
+export async function changeProfileVisiblity() {
+    const session = await auth();
+    if (!session) {
+        return false;
+    }
+
+    const currentUser = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { isPublic: true },
+    });
+
+    if(!currentUser) return false;
+
+    const user = await prisma.user.update({
+        where: { id: session.user.id },
+        data: {
+            isPublic: !currentUser.isPublic,
+        },
+    });
+
+    if(user) return true;
+    return false;
 }

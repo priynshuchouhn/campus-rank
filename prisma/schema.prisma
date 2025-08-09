@@ -29,6 +29,7 @@ model User {
   role                Role                 @default(USER)
   password            String?
   isActive            Boolean              @default(true)
+  isPublic            Boolean              @default(true)
   isDeleted           Boolean              @default(false)
   isLocked            Boolean              @default(false)
   lastLogin           DateTime?

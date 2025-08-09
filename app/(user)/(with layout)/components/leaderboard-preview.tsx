@@ -106,8 +106,8 @@ export function LeaderboardPreview({leaderboard}:any) {
                           <Avatar className={`lg:h-16 lg:w-16 h-8 w-8 ring-2 transition-all duration-300 ${
                             index === 0 ? 'ring-yellow-500/50' : 'ring-campus/30'
                           }`}>
-                            <AvatarImage src={leaderboard.user.image} alt={leaderboard.user.name} />
-                            <AvatarFallback>{leaderboard.user.name.charAt(0)}</AvatarFallback>
+                            <AvatarImage src={leaderboard.user.isPublic ? leaderboard.user.image: ''} alt={leaderboard.user.isPublic ? leaderboard.user.name : 'Shealth Learner'} />
+                            <AvatarFallback>{leaderboard.user.isPublic ? leaderboard.user.name.charAt(0): 'S'}</AvatarFallback>
                           </Avatar>
                           
                           {/* Rank Number */}
@@ -127,7 +127,7 @@ export function LeaderboardPreview({leaderboard}:any) {
                         
                         {/* User Info */}
                         <div>
-                          <div className="font-bold text-lg dark:text-accent">{leaderboard.user.name}</div>
+                          <div className="font-bold text-lg dark:text-accent">{leaderboard.user.isPublic ? leaderboard.user.name: 'Shealth Learner'}</div>
                           {/* <div className="text-sm text-muted-foreground">{user.university}</div> */}
                           <div className="flex items-center gap-3 mt-1">
                             <Badge variant="outline" className="text-xs">

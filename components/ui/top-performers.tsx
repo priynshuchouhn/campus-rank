@@ -250,66 +250,66 @@ export function TopPerformers({ leaderboards }: any) {
   //   </>
   // );
 
-  return(<>
-   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {leaderboards.slice(0, 3).map((leaderboard:any, index:number) => (
-            <Card key={leaderboard.id} className=" hover:scale-105 transition-bounce border-0 bg-card/50 backdrop-blur-sm relative dark:bg-background">
-              {index === 0 && (
-                <div className="absolute -top-2 -right-2 bg-primary dark:bg-accent text-white text-xs px-2 py-1 rounded-full font-bold">
-                  #1
+  return (<>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      {leaderboards.slice(0, 3).map((leaderboard: any, index: number) => (
+        <Card key={leaderboard.id} className=" hover:scale-105 transition-bounce border-0 bg-card/50 backdrop-blur-sm relative dark:bg-background">
+          {index === 0 && (
+            <div className="absolute -top-2 -right-2 bg-primary dark:bg-accent text-white text-xs px-2 py-1 rounded-full font-bold">
+              #1
+            </div>
+          )}
+          <CardHeader className="text-center pb-4">
+            <div className="relative mx-auto">
+              <Avatar className="h-16 w-16 mx-auto">
+                <AvatarImage src={leaderboard.user.isPublic ? leaderboard.user.image : ''} alt={leaderboard.user.isPublic ? leaderboard.user.name : 'Shealth Learner'} />
+                <AvatarFallback>{leaderboard.user.isPublic ? leaderboard.user.name.charAt(0) : 'S'}</AvatarFallback>
+              </Avatar>
+              {index < 3 && (
+                <div className="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs w-6 h-6 rounded-full flex items-center justify-center">
+                  {index + 1}
                 </div>
               )}
-              <CardHeader className="text-center pb-4">
-                <div className="relative mx-auto">
-                  <Avatar className="h-16 w-16 mx-auto">
-                    <AvatarImage src={leaderboard.user.image} alt={leaderboard.user.name} />
-                    <AvatarFallback>{leaderboard.user.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  {index < 3 && (
-                    <div className="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs w-6 h-6 rounded-full flex items-center justify-center">
-                      {index + 1}
-                    </div>
-                  )}
-                </div>
-                <CardTitle className="text-lg dark:text-accent">{leaderboard.user.name}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {/* LeetCode Stats */}
-                <div>
-                  <div className="text-sm font-medium text-muted-foreground mb-2 dark:text-foreground">LeetCode Solved</div>
-                  <div className="grid grid-cols-3 gap-2">
-                    <StatCard title="Easy" value={leaderboard.user.easySolved} color="green-500" />
-                    <StatCard title="Medium" value={leaderboard.user.mediumSolved} color="yellow-500" />
-                    <StatCard title="Hard" value={leaderboard.user.hardSolved} color="red-500" />
-                  </div>
-                </div>
+            </div>
+            <CardTitle className="text-lg dark:text-accent">{leaderboard.user.isPublic ? leaderboard.user.name : 'Shealth Learner'}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* LeetCode Stats */}
+            <div>
+              <div className="text-sm font-medium text-muted-foreground mb-2 dark:text-foreground">LeetCode Solved</div>
+              <div className="grid grid-cols-3 gap-2">
+                <StatCard title="Easy" value={leaderboard.user.easySolved} color="green-500" />
+                <StatCard title="Medium" value={leaderboard.user.mediumSolved} color="yellow-500" />
+                <StatCard title="Hard" value={leaderboard.user.hardSolved} color="red-500" />
+              </div>
+            </div>
 
-                {/* HackerRank Badges */}
-                {leaderboard.user.hackerrankProfile?.badges.length > 0 && (
-                  <div>
-                    <div className="text-sm font-medium text-muted-foreground mb-2 dark:text-foreground">HackerRank Badges</div>
-                    <div className="flex flex-wrap gap-1">
-                      {leaderboard.user.hackerrankProfile.badges.map((skill:any, idx:number) => (
-                        <HackerRankBadge key={idx} skill={skill.name} stars={Number(skill.stars)} />
-                      ))}
-                    </div>
-                  </div>
-                )}
+            {/* HackerRank Badges */}
+            {leaderboard.user.hackerrankProfile?.badges.length > 0 && (
+              <div>
+                <div className="text-sm font-medium text-muted-foreground mb-2 dark:text-foreground">HackerRank Badges</div>
+                <div className="flex flex-wrap gap-1">
+                  {leaderboard.user.hackerrankProfile.badges.map((skill: any, idx: number) => (
+                    <HackerRankBadge key={idx} skill={skill.name} stars={Number(skill.stars)} />
+                  ))}
+                </div>
+              </div>
+            )}
 
-                {/* GFG Stats */}
-                {leaderboard.user.gfgProfile && (
-                  <div>
-                    <div className="text-sm font-medium text-muted-foreground mb-2 dark:text-foreground">GeeksforGeeks</div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <StatCard title="Solved" value={leaderboard.user.gfgProfile?.solvedProblems || '0'} color="primary" />
-                      <StatCard title="Score" value={leaderboard.user.gfgProfile?.codingScore || '0'} color="purple-500" />
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+            {/* GFG Stats */}
+            {leaderboard.user.gfgProfile && (
+              <div>
+                <div className="text-sm font-medium text-muted-foreground mb-2 dark:text-foreground">GeeksforGeeks</div>
+                <div className="grid grid-cols-2 gap-2">
+                  <StatCard title="Solved" value={leaderboard.user.gfgProfile?.solvedProblems || '0'} color="primary" />
+                  <StatCard title="Score" value={leaderboard.user.gfgProfile?.codingScore || '0'} color="purple-500" />
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      ))}
+    </div>
   </>);
 }
 
