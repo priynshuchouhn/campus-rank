@@ -22,6 +22,7 @@ import {
   CircleCheck,
   Fullscreen,
   Loader2,
+  MenuIcon,
 } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
@@ -29,6 +30,7 @@ import { fetchQuiz, saveQuizData, startQuizInDb } from "@/lib/actions/quiz";
 import { getTimeLeft, unslugify } from "@/lib/utils";
 import { useFullscreen } from "@/lib/hooks/useFullscreen";
 import toast from "react-hot-toast";
+import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetClose, SheetFooter } from "@/components/ui/sheet";
 
 
 export default function QuizPage() {
@@ -80,6 +82,9 @@ export default function QuizPage() {
         setQuizStarted(isQuizStarted)
         setQuizCompleted(quiz.status == 'SUBMITTED');
         setResponses(response)
+        if (timeLeft <= 0) {
+          await handleSubmit();
+        }
       } catch (error) {
         console.log(error);
       } finally {
@@ -132,14 +137,21 @@ export default function QuizPage() {
   };
 
   const handleSubmit = async () => {
-    const body = {
-      quizId,
-      quizResponse: selectedAnswers
+    try {
+      setisLoading(true);
+      const body = {
+        quizId,
+        quizResponse: selectedAnswers
+      }
+      const data = await saveQuizData(body);
+      setQuizCompleted(true);
+      setShowResults(true);
+      sessionStorage.removeItem('response');
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setisLoading(false)
     }
-    const data = await saveQuizData(body);
-    setQuizCompleted(true);
-    setShowResults(true);
-    sessionStorage.removeItem('response');
   };
 
   const calculateScore = () => {
@@ -478,8 +490,41 @@ export default function QuizPage() {
       <header className="border-b">
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
-            <div>
-              <p className="text-2xl">{unslugify(topicName)}</p>
+            <div className="flex items-center justify-center gap-2">
+              <Sheet>
+                <SheetTrigger><MenuIcon className="lg:hidden" /></SheetTrigger>
+                <SheetContent side="left">
+                  <SheetHeader>
+                    <SheetTitle><p className="text-lg">{unslugify(topicName)}</p></SheetTitle>
+                    <SheetDescription>
+                      <div className="grid grid-cols-1 gap-2">
+                        {quizData.questions.map((_: any, index: number) => (
+                          <SheetClose key={index} asChild>
+                            <button
+                              onClick={() => setCurrentQuestion(index)}
+                              className={`w-full text-start rounded text-sm font-medium transition-colors p-3 ${index === currentQuestion
+                                ? "bg-primary text-white dark:bg-accent"
+                                : selectedAnswers[quizData.questions[index].id] !== undefined
+                                  ? "bg-green-100 text-green-800 dark:bg-green-950/90 dark:text-green-200"
+                                  : "bg-muted hover:bg-muted/80 dark:text-accent"
+                                }`}
+                            >
+                              Question {index + 1}
+                            </button>
+                          </SheetClose>
+                        ))}
+                      </div>
+                    </SheetDescription>
+                  </SheetHeader>
+                  <SheetFooter>
+                    <Button variant="success" size="sm" onClick={handleSubmit} className="inline-flex">
+                      <CircleCheck className="h-4 w-4 mr-2" />
+                      Submit
+                    </Button>
+                  </SheetFooter>
+                </SheetContent>
+              </Sheet>
+              <p className="text-lg lg:text-2xl hidden lg:block">{unslugify(topicName)}</p>
             </div>
             <div className="flex items-center gap-4">
               <div>
@@ -498,7 +543,7 @@ export default function QuizPage() {
                   {formatTime(timeLeft)}
                 </span>
               </div>
-              <Button variant="success" size="sm" onClick={handleSubmit}>
+              <Button variant="success" size="sm" onClick={handleSubmit} className="lg:inline-flex hidden">
                 <CircleCheck className="h-4 w-4 mr-2" />
                 Submit
               </Button>
@@ -540,7 +585,7 @@ export default function QuizPage() {
             </CardHeader>
             <CardContent>
               <RadioGroup
-                value={selectedAnswers[currentQ.id]?.toString()}
+                value={selectedAnswers[currentQ.id]?.toString() ?? ""}
                 onValueChange={(value) => handleAnswerSelect(currentQ.id, value)}
                 className="space-y-4"
               >
@@ -571,7 +616,7 @@ export default function QuizPage() {
               Previous
             </Button>
 
-            <div className="flex gap-2">
+            <div className="hidden lg:flex gap-2 flex-wrap">
               {quizData.questions.map((_: any, index: number) => (
                 <button
                   key={index}
