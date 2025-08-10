@@ -120,7 +120,6 @@ export default function RoadmapPage() {
                         title: topic.title,
                         section: topic.predefinedSection?.title || "Uncategorized"
                     }));
-                    console.log("Processed topics:", topics);
                     setPredefinedTopics(topics);
                 } else {
                     console.error("Failed to fetch topics:", topicsResponse.data);
@@ -244,78 +243,92 @@ export default function RoadmapPage() {
             return acc;
         }, {});
 
-        return Object.entries(groupedTopics).map(([section, topics]) => {
-            const sectionTopicIds = topics.map(topic => topic.id);
-            const allStrong = sectionTopicIds.every(id => strongTopics.includes(id));
-            const allWeak = sectionTopicIds.every(id => weakTopics.includes(id));
-            const someStrong = sectionTopicIds.some(id => strongTopics.includes(id));
-            const someWeak = sectionTopicIds.some(id => weakTopics.includes(id));
+        return (
+            <Accordion type="single" collapsible>
+                {Object.entries(groupedTopics).map(([section, topics]) => {
+                    const sectionTopicIds = topics.map(topic => topic.id);
+                    const allStrong = sectionTopicIds.every(id => strongTopics.includes(id));
+                    const allWeak = sectionTopicIds.every(id => weakTopics.includes(id));
 
-            return (
-                <div key={section} className="mb-6">
-                    <div className="flex md:items-center flex-col sm:flex-row justify-between gap-2 mb-3">
-                        <h3 className="text-lg font-semibold">{section}</h3>
-                        <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-2">
-                                <Checkbox
-                                    id={`section-strong-${section}`}
-                                    checked={allStrong}
-                                    onCheckedChange={() => handleSectionToggle(section, "strong")}
-                                />
-                                <Label htmlFor={`section-strong-${section}`} className="flex items-center gap-1">
-                                    <Star className="h-4 w-4 text-yellow-500" />
-                                    Strong
-                                </Label>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <Checkbox
-                                    id={`section-weak-${section}`}
-                                    checked={allWeak}
-                                    onCheckedChange={() => handleSectionToggle(section, "weak")}
-                                />
-                                <Label htmlFor={`section-weak-${section}`} className="flex items-center gap-1">
-                                    <AlertTriangle className="h-4 w-4 text-red-500" />
-                                    Need Practice
-                                </Label>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="space-y-4">
-                        {topics.map((topic) => (
-                            <div key={topic.id} className="flex md:items-center flex-col sm:flex-row justify-between gap-2 p-4 bg-card rounded-lg border">
-                                <div className="flex-1">
-                                    <p className="font-medium">{topic.title}</p>
-                                </div>
-                                <div className="flex items-center gap-4">
-                                    <div className="flex items-center gap-2">
-                                        <Checkbox
-                                            id={`strong-${topic.id}`}
-                                            checked={strongTopics.includes(topic.id)}
-                                            onCheckedChange={() => handleTopicToggle(topic.id, "strong")}
-                                        />
-                                        <Label htmlFor={`strong-${topic.id}`} className="flex items-center gap-1">
-                                            <Star className="h-4 w-4 text-yellow-500" />
-                                            <span className="text-sm md:text-base md:block hidden">Strong</span>
-                                        </Label>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <Checkbox
-                                            id={`weak-${topic.id}`}
-                                            checked={weakTopics.includes(topic.id)}
-                                            onCheckedChange={() => handleTopicToggle(topic.id, "weak")}
-                                        />
-                                        <Label htmlFor={`weak-${topic.id}`} className="flex items-center gap-1">
-                                            <AlertTriangle className="h-4 w-4 text-red-500" />
-                                            <span className="text-sm md:text-base md:block hidden">Need Practice</span>
-                                        </Label>
+                    return (
+                        <AccordionItem key={section} value={section}>
+                            <div className="mb-6">
+                                <div className="flex md:items-center flex-col sm:flex-row justify-between gap-2 mb-3">
+                                    <AccordionTrigger className="flex items-center">
+                                        <h3 className="text-lg font-semibold">{section}</h3>
+                                        <p className="text-primary italic dark:text-accent">{sectionTopicIds.length} Topics</p>
+                                    </AccordionTrigger>
+                                    <div className="flex items-center gap-4">
+                                        <div className="flex items-center gap-2">
+                                            <Checkbox
+                                                id={`section-strong-${section}`}
+                                                checked={allStrong}
+                                                onCheckedChange={() => handleSectionToggle(section, "strong")}
+                                            />
+                                            <Label htmlFor={`section-strong-${section}`} className="flex items-center gap-1">
+                                                <Star className="h-4 w-4 text-yellow-500" />
+                                                Strong
+                                            </Label>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Checkbox
+                                                id={`section-weak-${section}`}
+                                                checked={allWeak}
+                                                onCheckedChange={() => handleSectionToggle(section, "weak")}
+                                            />
+                                            <Label htmlFor={`section-weak-${section}`} className="flex items-center gap-1">
+                                                <AlertTriangle className="h-4 w-4 text-red-500" />
+                                                Need Practice
+                                            </Label>
+                                        </div>
                                     </div>
                                 </div>
+                                <AccordionContent>
+                                    <div className="space-y-4">
+                                        {topics.map(topic => (
+                                            <div
+                                                key={topic.id}
+                                                className="flex md:items-center flex-col sm:flex-row justify-between gap-2 p-4 bg-card rounded-lg border dark:bg-background"
+                                            >
+                                                <div className="flex-1">
+                                                    <p className="font-medium lg:text-base text-sm">{topic.title}</p>
+                                                </div>
+                                                <div className="flex items-center gap-4">
+                                                    <div className="flex items-center gap-2">
+                                                        <Checkbox
+                                                            id={`strong-${topic.id}`}
+                                                            checked={strongTopics.includes(topic.id)}
+                                                            onCheckedChange={() => handleTopicToggle(topic.id, "strong")}
+                                                        />
+                                                        <Label htmlFor={`strong-${topic.id}`} className="flex items-center gap-1">
+                                                            <Star className="h-4 w-4 text-yellow-500" />
+                                                            <span className="text-sm md:text-base md:block hidden">Strong</span>
+                                                        </Label>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <Checkbox
+                                                            id={`weak-${topic.id}`}
+                                                            checked={weakTopics.includes(topic.id)}
+                                                            onCheckedChange={() => handleTopicToggle(topic.id, "weak")}
+                                                        />
+                                                        <Label htmlFor={`weak-${topic.id}`} className="flex items-center gap-1">
+                                                            <AlertTriangle className="h-4 w-4 text-red-500" />
+                                                            <span className="text-sm md:text-base md:block hidden">Need Practice</span>
+                                                        </Label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </AccordionContent>
                             </div>
-                        ))}
-                    </div>
-                </div>
-            );
-        });
+                        </AccordionItem>
+                    );
+                })}
+            </Accordion>
+        );
+
+
     };
 
     const renderRoadmap = () => {

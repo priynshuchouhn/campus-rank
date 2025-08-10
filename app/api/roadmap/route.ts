@@ -154,8 +154,8 @@ export async function POST(request: NextRequest) {
                 },
             });
         }, {
-            timeout: 30000, // Increase timeout to 30 seconds
-            maxWait: 30000, // Maximum time to wait for the transaction
+            timeout: 60000, // Increase timeout to 30 seconds
+            maxWait: 60000, // Maximum time to wait for the transaction
             isolationLevel: 'Serializable' // Use serializable isolation level for consistency
         });
 
