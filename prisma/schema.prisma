@@ -51,7 +51,9 @@ model User {
   batch               Batch?               @relation(fields: [batchId], references: [id])
 
   leaderboardHistory LeaderboardHistory[]
-  quiz Quiz[]
+  quiz               Quiz[]
+
+  UserSession UserSession[]
 }
 
 model LeetCodeProfile {
@@ -273,7 +275,7 @@ model Question {
   correctOption String?
   explanation   String?
 
-  quiz Quiz[]
+  quiz         Quiz[]
   quizResponse QuizResponse[]
 }
 
@@ -444,29 +446,39 @@ model LeaderboardHistory {
 }
 
 model Quiz {
-  id          String          @id @default(cuid())
-  userId      String
-  topicId     String
-  questions   Question[]
-  startedAt   DateTime?
-  submittedAt DateTime?
-  status      QuizStatus      @default(CREATED)
-  timeAlloted Int
+  id           String          @id @default(cuid())
+  userId       String
+  topicId      String
+  questions    Question[]
+  startedAt    DateTime?
+  submittedAt  DateTime?
+  status       QuizStatus      @default(CREATED)
+  timeAlloted  Int
   quizResponse QuizResponse[]
-  topic       PredefinedTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)
-  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt   DateTime        @default(now())
-
+  topic        PredefinedTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime        @default(now())
 }
 
 model QuizResponse {
-  id String @id @default(cuid())
+  id         String   @id @default(cuid())
   questionId String
-  response String
-  isCorrect Boolean
-  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  quizId String
-  quiz Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  response   String
+  isCorrect  Boolean
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  quizId     String
+  quiz       Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+}
+
+model UserSession {
+  id        String   @id @default(cuid())
+  userId    String
+  pagePath  String
+  startTime DateTime
+  endTime   DateTime
+  duration  Int
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum Role {
