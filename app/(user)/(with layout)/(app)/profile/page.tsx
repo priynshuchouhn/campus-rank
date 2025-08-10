@@ -94,6 +94,13 @@ export default async function Profile() {
           </CardContent>
         </Card>
 
+         <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Institute Information</CardTitle>
+          </CardHeader>
+          <CardContent></CardContent>
+          </Card>
+
         {!user.isLocked && <ProfileForm user={user} />}
 
         <div className="mt-8 text-center text-sm text-muted-foreground">

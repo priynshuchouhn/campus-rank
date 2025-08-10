@@ -156,6 +156,7 @@ model Subject {
   id            String              @id @default(cuid())
   subjectName   String
   isCoreSubject Boolean
+  canHaveRoadmap Boolean @default(false)
   sections      PredefinedSection[]
 }
 

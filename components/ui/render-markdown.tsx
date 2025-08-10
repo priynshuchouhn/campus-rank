@@ -393,7 +393,7 @@ export const RenderMarkdown = ({ content, previewMode = false }: { content: stri
                 <div key={index} className="overflow-x-auto my-4">
                     <table className="min-w-full border-collapse">
                         <thead>
-                            <tr className="bg-gray-100">
+                            <tr className="bg-gray-100 dark:bg-gray-800">
                                 {header.map((cell, i) => (
                                     <th key={i} className="border px-4 py-2 text-left">
                                         {cell}
@@ -403,7 +403,7 @@ export const RenderMarkdown = ({ content, previewMode = false }: { content: stri
                         </thead>
                         <tbody>
                             {rows.map((row, i) => (
-                                <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                                <tr key={i} className={i % 2 === 0 ? 'bg-white dark:bg-primary/5' : 'bg-gray-50 dark:bg-background'}>
                                     {row.map((cell, j) => (
                                         <td key={j} className="border px-4 py-2">
                                             {cell}
