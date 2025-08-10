@@ -285,7 +285,7 @@ export default function QuizPage() {
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-2">
                               <h4 className="font-medium">
-                                Question {index + 1}: {question.question}
+                                Question {index + 1}: {question.title}
                               </h4>
                               <Badge className={
                                 question.difficulty === 'EASY' ? 'bg-green-100 text-green-800' :
