@@ -61,7 +61,7 @@ export function ProfileForm({ user }: any) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Profile Settings</CardTitle>
+        <CardTitle>Coding Platforms Settings</CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>

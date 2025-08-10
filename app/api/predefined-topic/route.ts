@@ -2,11 +2,34 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 export async function GET(request: NextRequest) {
+
     try {
+        const subjects = await prisma.subject.findMany({
+            where: {
+                canHaveRoadmap: true
+            }, include: {
+                sections: {
+                    select: {
+                        id: true
+                    }
+                }
+            }
+        })
+        const sectionIds = subjects
+  .flatMap(subject => subject.sections.map(section => section.id));
         const topics = await prisma.predefinedTopic.findMany({
+            where: {
+                predefinedSectionId : {
+                    in: sectionIds
+                }
+            },
             include: {
                 resources: true,
-                predefinedSection: true,
+                predefinedSection: {
+                    include: {
+                        subject: true
+                    }
+                },
                 questions: true,
             },
         });
