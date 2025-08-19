@@ -79,6 +79,8 @@ export async function fetchAndUpdateProfile(user: any) {
                 leetcodeScore,
                 hackerrankScore,
                 gfgScore,
+                isActive: user.isActive && !user.isDeleted, 
+                isDeleted: !user.isActive || user.isDeleted,
             },
             create: {
                 userId: user.id,
@@ -86,6 +88,8 @@ export async function fetchAndUpdateProfile(user: any) {
                 leetcodeScore,
                 hackerrankScore,
                 gfgScore,
+                isActive: user.isActive && !user.isDeleted,  
+                isDeleted: !user.isActive || user.isDeleted,
             },
         });
 
@@ -143,6 +147,7 @@ export async function getUser() {
         const user = await prisma.user.findUnique({
             where: { email: email },
             include: {
+                institution: true,
                 leetcodeProfile: true,
                 hackerrankProfile: {
                     include: {
@@ -309,7 +314,7 @@ export async function changeProfileVisiblity() {
         select: { isPublic: true },
     });
 
-    if(!currentUser) return false;
+    if (!currentUser) return false;
 
     const user = await prisma.user.update({
         where: { id: session.user.id },
@@ -318,6 +323,6 @@ export async function changeProfileVisiblity() {
         },
     });
 
-    if(user) return true;
+    if (user) return true;
     return false;
 }

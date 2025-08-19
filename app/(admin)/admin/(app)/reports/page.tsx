@@ -67,7 +67,7 @@ export default async function AdminReportsPage() {
                             </div>
                             <p className="text-sm">{report.description}</p>
                             <p className="text-xs text-muted-foreground">
-                                Submitted on {new Date(report.createdAt).toLocaleDateString('en-US', {
+                                Submitted on {new Date(report.createdAt).toLocaleDateString('en-IN', {
                                     year: 'numeric',
                                     month: 'long',
                                     day: 'numeric'
