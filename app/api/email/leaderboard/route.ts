@@ -27,8 +27,15 @@ export async function GET() {
     })
     
     try {
-      const datas = []
-      const errors = []
+      const appstats = await prisma.applicationStats.update({
+        where: {
+          id: applicationStats?.id
+        },data: {
+          lastLeaderboardEmailAt : new Date() 
+        }
+      })
+      const datas:any[] = []
+      const errors:any[] = []
       for (const user of users) {
         await delay(2000);
         const { data, error } = await resend.emails.send({
@@ -43,13 +50,8 @@ export async function GET() {
         datas.push(data);
       }
       
-      const appstats = await prisma.applicationStats.update({
-        where: {
-          id: applicationStats?.id
-        },data: {
-          lastLeaderboardEmailAt : new Date() 
-        }
-      })
+      
+      console.log(appstats)
       
       if (errors.length > 0) {
         await prisma.errorLog.create({

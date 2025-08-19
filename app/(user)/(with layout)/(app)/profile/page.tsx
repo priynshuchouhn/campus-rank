@@ -3,7 +3,7 @@ import { ProfileForm } from "@/components/ui/profile-form";
 import { getUser } from "@/lib/actions/users";
 import Image from "next/image";
 import { redirect } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, BookOpen, Calendar, Code2, GraduationCap, Plus } from "lucide-react";
 import Link from "next/link";
 import { ReportForm } from "@/components/ui/report-form";
 import { Button } from "@/components/ui/button";
@@ -94,15 +94,57 @@ export default async function Profile() {
           </CardContent>
         </Card>
 
-         <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Institute Information</CardTitle>
-          </CardHeader>
-          <CardContent></CardContent>
-          </Card>
+
 
         {!user.isLocked && <ProfileForm user={user} />}
 
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <GraduationCap className="w-5 h-5" />
+              Institute Details
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {user.institution ? <Link href={`institute/${user.institution?.code.toLowerCase()}`}>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg dark:bg-background">
+                  <BookOpen className="w-6 h-6 mt-1 text-primary" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide">Name</p>
+                    <p className="font-medium text-sm leading-tight">{user.institution?.name}</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  {/* <div className="p-3 bg-muted/50 rounded-lg">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Year</p>
+                  <p className="font-medium text-sm">{"Not Available"}</p>
+                </div> */}
+                  <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg dark:bg-background">
+                    <Code2 className="w-6 h-6 text-primary" />
+                    <div className="flex-1">
+                      <p className="text-xs text-muted-foreground uppercase tracking-wide">Branch</p>
+                      <p className="font-medium text-sm">{"Not Available"}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg dark:bg-background">
+                    <Calendar className="w-6 h-6 text-primary" />
+                    <div className="flex-1">
+                      <p className="text-xs text-muted-foreground uppercase tracking-wide">Batch</p>
+                      <p className="font-medium text-sm">{"Not Available"}</p>
+                    </div>
+                  </div>
+                  {/* <div className="p-3 bg-muted/50 rounded-lg dark:bg-background">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Batch</p>
+                  <p className="font-medium text-sm">{"Not Available"}</p>
+                </div> */}
+                </div>
+              </div>
+            </Link> : <>
+              <Button variant={'link'} disabled><Plus />Add Institute Info</Button>
+            </>}
+          </CardContent>
+        </Card>
         <div className="mt-8 text-center text-sm text-muted-foreground">
           <p>
             Your profile information is used to personalize your experience and to
@@ -110,6 +152,6 @@ export default async function Profile() {
           </p>
         </div>
       </div>
-    </main>
+    </main >
   );
 }

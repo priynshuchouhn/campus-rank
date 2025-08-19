@@ -59,7 +59,7 @@ export function ProfileForm({ user }: any) {
   }
 
   return (
-    <Card>
+    <Card className="mb-8">
       <CardHeader>
         <CardTitle>Coding Platforms Settings</CardTitle>
       </CardHeader>
