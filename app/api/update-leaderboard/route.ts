@@ -64,6 +64,8 @@ export async function GET() {
             targetDate.setDate(targetDate.getDate() + 5);
             const now = new Date();
             if (now >= targetDate) {
+                console.log("sending email");
+                console.log(targetDate, now);
                 axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/email/leaderboard`);
             }
         }
