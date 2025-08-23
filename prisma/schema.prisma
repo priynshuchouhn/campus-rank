@@ -54,6 +54,8 @@ model User {
   quiz               Quiz[]
 
   UserSession UserSession[]
+
+  FlashcardProgress FlashcardProgress[]
 }
 
 model LeetCodeProfile {
@@ -158,6 +160,8 @@ model Subject {
   isCoreSubject Boolean
   canHaveRoadmap Boolean @default(false)
   sections      PredefinedSection[]
+
+  FlashcardDeck FlashcardDeck[]
 }
 
 model Roadmap {
@@ -480,6 +484,51 @@ model UserSession {
   duration  Int
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model FlashcardDeck {
+  id          String      @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Relations
+  flashcards Flashcard[]
+  subjectId  String   // Link to Subject
+  subject    Subject  @relation(fields: [subjectId], references: [id])
+}
+
+model Flashcard {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String
+  hint      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  deckId    String
+  deck      FlashcardDeck @relation(fields: [deckId], references: [id])
+
+  FlashcardProgress FlashcardProgress[]
+}
+
+model FlashcardProgress {
+  id            String   @id @default(cuid())
+  userId        String
+  flashcardId   String
+  lastReviewed  DateTime?
+  nextReview    DateTime?
+  attempts      Int      @default(0)
+  correctCount  Int      @default(0)
+  easeFactor    Float    @default(2.5)
+
+  // Relations
+  user      User      @relation(fields: [userId], references: [id])
+  flashcard Flashcard @relation(fields: [flashcardId], references: [id])
+
+  @@unique([userId, flashcardId]) // unique progress per user per flashcard
 }
 
 enum Role {
