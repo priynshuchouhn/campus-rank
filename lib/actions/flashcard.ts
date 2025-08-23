@@ -1,3 +1,4 @@
+'use server'
 import { prisma } from "../prisma";
 
 export async function fetchFlashCardDeck() {
@@ -12,6 +13,22 @@ export async function fetchFlashCardDeck() {
             }
         })
         return decks;
+    } catch (error) {
+        console.log(error);
+        return [];
+    }
+}
+export async function fetchFlashCardsByDeckId(deckId:string) {
+    try {
+        const flashcard = await prisma.flashcard.findMany({
+            where:{
+                deckId
+            },
+            include:{
+                deck:true
+            }
+        })
+        return flashcard;
     } catch (error) {
         console.log(error);
         return [];
