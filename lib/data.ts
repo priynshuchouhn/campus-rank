@@ -1,5 +1,5 @@
 import { BlogPost, MenuSection } from "./interfaces";
-import { Home, BookOpen, Code, User, Settings, LogOut, Notebook, Target, Info, Shield, FileText, HelpCircle, Trophy } from 'lucide-react';
+import { Home, BookOpen, Code, User, Settings, LogOut, Notebook, Target, Info, Shield, FileText, HelpCircle, Trophy, FileStack } from 'lucide-react';
 
 
 export const categories = [
@@ -23,6 +23,7 @@ export const authMenuItems: MenuSection[] = [
     items: [
       { href: "/roadmap", icon: BookOpen, title: "Roadmap", exact: true },
       { href: "/roadmap/topics", icon: Notebook, title: "Topics" },
+      { href: "/flashcards", icon: FileStack, title: "Flashcards", badge: "New" },
       { href: "/practice", icon: Code, title: "Practice", badge: "New" },
       { href: "/goals", icon: Target, title: "Weekly Goals" },
     ]
