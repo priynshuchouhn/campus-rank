@@ -112,7 +112,7 @@ export default function AdminLayout({
       {/* Sidebar */}
       <aside
         className={`fixed left-0 top-0 z-40 h-screen w-[240px] transition-all duration-300 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
-          } border-r bg-card md:translate-x-0`}
+          } border-r bg-card md:translate-x-0 dark:bg-background`}
       >
         <div className="flex h-full flex-col">
           {/* Sidebar Header */}
@@ -146,7 +146,7 @@ export default function AdminLayout({
                     href={item.href}
                     className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${isActive
                       ? "bg-primary text-primary-foreground"
-                      : "hover:bg-muted"
+                      : "hover:bg-muted dark:hover:text-primary"
                       }`}
                     onClick={() => {
                       if (window.innerWidth < 768) {

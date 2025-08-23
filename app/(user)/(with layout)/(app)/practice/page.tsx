@@ -68,6 +68,7 @@ const aptitudeTopics = [
 
 export default function AptitudeDashboard() {
   const [subjectLst, setSubjectLst] = useState<(Subject & { sections: PredefinedSection[] })[]>([]);
+  const [openAccSubject, setOpenAccSubject] = useState<string>('')
   const [incompleteQuizLst, setInCompleteQuizList] = useState<any[]>([])
   const [isLoading, setisLoading] = useState<boolean>(false);
   const [isQuizCreating, setIsQuizCreating] = useState<boolean>(false);
@@ -118,10 +119,10 @@ export default function AptitudeDashboard() {
         <div className="absolute inset-0 bg-grid-white/10" />
         <div className="container mx-auto px-4 relative">
           <div className="max-w-3xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 bg-primary dark:bg-accent/30 px-4 py-2 rounded-full text-primary-foreground dark:text-accent mb-6">
+            {/* <div className="inline-flex items-center gap-2 bg-primary dark:bg-accent/30 px-4 py-2 rounded-full text-primary-foreground dark:text-accent mb-6">
               <Target className="h-4 w-4" />
               <span className="text-sm font-medium">Placement Preparation</span>
-            </div>
+            </div> */}
             <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
               Practice Hub
             </h1>
@@ -159,17 +160,17 @@ export default function AptitudeDashboard() {
             <div className="lg:col-span-3">
               <h2 className="text-2xl font-bold mb-6 text-gray-500">Choose Practice Topic</h2>
               <div className="space-y-6 mb-3">
-                <Accordion type="single" collapsible className="w-full">
+                <Accordion type="single" collapsible className="w-full" value={openAccSubject} onValueChange={(val) => setOpenAccSubject(val)}>
                   {subjectLst.map((subject) => (
                     subject.sections.length > 0 && <AccordionItem key={subject.id} value={subject.id} className="mb-3 border-b-0">
                       <Card>
                         <CardContent className="p-0">
                           <AccordionTrigger className="px-6 py-4">
                             <div>
-                              <h3 className="text-xl font-semibold text-primary dark:text-accent mb-3">
+                              <h3 className="text-xl font-semibold text-primary dark:text-accent">
                                 {subject.subjectName}
                               </h3>
-                              <div className="flex flex-wrap gap-2">{subject.sections.map(el => <Badge key={el.id} variant={'outline'}>{el.title}</Badge>)}</div>
+                              {openAccSubject != subject.id && <div className="flex flex-wrap gap-2 mt-3">{subject.sections.map(el => <Badge key={el.id} variant={'outline'}>{el.title}</Badge>)}</div>}
                             </div>
                           </AccordionTrigger>
                           <AccordionContent className="p-6">

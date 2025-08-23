@@ -20,7 +20,7 @@ export function SidebarNavItem({ href, icon, title, isActive, badge, ...props }:
                 variant="ghost"
                 className={cn(
                     "flex items-center justify-start gap-2 w-full h-10 px-4 mb-1",
-                    isActive ? "bg-accent text-accent-foreground font-medium" : "hover:bg-accent/50"
+                    isActive ? "bg-accent text-accent-foreground font-medium" : "hover:bg-accent/20 hover:text-accent dark:hover:text-white"
                 )}
                 {...props}
             >

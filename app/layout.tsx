@@ -5,6 +5,7 @@ import { ThemeProvider } from "next-themes";
 import { Toaster } from "react-hot-toast";
 import Script from "next/script";
 import { SessionProvider } from "next-auth/react";
+import Session from "@/components/ui/session";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -160,6 +161,7 @@ export default function RootLayout({
           <SessionProvider>
             {children}
             <Toaster />
+            <Session />
           </SessionProvider>
         </ThemeProvider>
         {/* Google Tag Manager (noscript) */}
