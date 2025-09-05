@@ -1,14 +1,12 @@
 'use client'
 import { usePathname } from 'next/navigation'
 import { Separator } from '@/components/ui/separator'
-import { Button } from './button'
 import { SidebarNavItem } from './sidebar-nav-item'
-import { signOutAction } from '@/lib/actions/signout'
 import { SheetClose } from '@/components/ui/sheet'
-import { LogOut } from 'lucide-react'
 import { authMenuItems, guestMenuItems } from '@/lib/data'
+import LogoutForm from './logout-form'
 
-function Sidebar({ user, withSheetClose=false }: { user: any, withSheetClose?: boolean }) {
+function Sidebar({ user, withSheetClose = false }: { user: any, withSheetClose?: boolean }) {
     const pathname = usePathname()
     const isLinkActive = (href: string, exact?: boolean) =>
         exact ? pathname === href : pathname === href || pathname.startsWith(href + '/')
@@ -49,30 +47,11 @@ function Sidebar({ user, withSheetClose=false }: { user: any, withSheetClose?: b
                 <>
                     <Separator className="mt-4" />
                     <div className="mt-4">
-                        <form action={signOutAction}>
-                           { withSheetClose ?
-                            <SheetClose asChild>
-                                <Button
-                                    variant="ghost"
-                                    className="flex items-center justify-start gap-2 w-full text-red-500"
-                                    type="submit"
-                                >
-                                    <LogOut className="h-4 w-4" />
-                                    <span>Logout</span>
-                                </Button>
-                            </SheetClose> :
-                            <Button
-                                variant="ghost"
-                                className="flex items-center justify-start gap-2 w-full text-red-500"
-                                type="submit"
-                            >
-                                <LogOut className="h-4 w-4" />
-                                <span>Logout</span>
-                            </Button>}
-                        </form>
+                        <LogoutForm withSheetClose={withSheetClose} />
                     </div>
                 </>
             )}
+
         </>
     )
 }
