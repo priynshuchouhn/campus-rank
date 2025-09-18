@@ -94,10 +94,10 @@ export default function AdminDashboard() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">2,350</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-2xl font-bold">83</div>
+            {/* <p className="text-xs text-muted-foreground">
               +180 from last month
-            </p>
+            </p> */}
           </CardContent>
         </Card>
         <Card>
@@ -109,9 +109,9 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">1,247</div>
-            <p className="text-xs text-muted-foreground">
+            {/* <p className="text-xs text-muted-foreground">
               +20% from last hour
-            </p>
+            </p> */}
           </CardContent>
         </Card>
         <Card>
@@ -122,10 +122,10 @@ export default function AdminDashboard() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">12,234</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-2xl font-bold">0</div>
+            {/* <p className="text-xs text-muted-foreground">
               +43% from last week
-            </p>
+            </p> */}
           </CardContent>
         </Card>
       </div>

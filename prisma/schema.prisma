@@ -40,7 +40,7 @@ model User {
   leaderboardStats    LeaderboardStats?
   leetcodeProfile     LeetCodeProfile?
   profileView         ProfileView[]
-  QuestionSubmission  QuestionSubmission[]
+  questionSubmission  QuestionSubmission[]
   roadmap             Roadmap?
   solvedQuestions     SolvedQuestion[]
   weeklyGoals         WeeklyGoal[]
@@ -53,9 +53,9 @@ model User {
   leaderboardHistory LeaderboardHistory[]
   quiz               Quiz[]
 
-  UserSession UserSession[]
+  userSession UserSession[]
 
-  FlashcardProgress FlashcardProgress[]
+  flashcardProgress FlashcardProgress[]
 }
 
 model LeetCodeProfile {
@@ -155,11 +155,11 @@ model ApplicationStats {
 }
 
 model Subject {
-  id            String              @id @default(cuid())
-  subjectName   String
-  isCoreSubject Boolean
-  canHaveRoadmap Boolean @default(false)
-  sections      PredefinedSection[]
+  id             String              @id @default(cuid())
+  subjectName    String
+  isCoreSubject  Boolean
+  canHaveRoadmap Boolean             @default(false)
+  sections       PredefinedSection[]
 
   FlashcardDeck FlashcardDeck[]
 }
@@ -259,29 +259,53 @@ model Question {
   id                String           @id @default(cuid())
   title             String
   description       String
-  questionType      QuestionType
-  difficulty        Difficulty
+  questionType      QuestionType // Enum: CODE | MCQ
+  difficulty        Difficulty // Enum: EASY | MEDIUM | HARD
   predefinedTopicId String?
   predefinedTopic   PredefinedTopic? @relation(fields: [predefinedTopicId], references: [id], onDelete: Cascade)
 
-  // Code Based Question
+  // Coding Question Fields
   timeComplexity  String?
   spaceComplexity String?
-  createdAt       DateTime             @default(now())
-  updatedAt       DateTime             @updatedAt
   constraints     Constraint[]
-  submissions     QuestionSubmission[]
-  sampleCodes     SampleCode[]
-  solvedBy        SolvedQuestion[]
   testCases       TestCase[]
+  submissions     QuestionSubmission[]
+  solvedBy        SolvedQuestion[]
+  sampleCodes     SampleCode[]
+  hints           String[]
+  examples        Example[] // Input/output examples
+  solution        String? // Editorial solution
+  languageSupport String[] // Supported programming languages
 
-  //MCQ Based Question
-  options       String[]
-  correctOption String?
+  // MCQ Fields
+  options       String[] // List of options
+  correctOption String? // Single correct option; can also use String[] for multiple correct
   explanation   String?
 
+  // Analytics / Stats
+  attemptCount     Int    @default(0) // Number of attempts
+  successCount     Int    @default(0) // Number of successful submissions
+  solvedPercentage Float? // Calculated or cached success rate
+
+  // Quiz Relationships
   quiz         Quiz[]
   quizResponse QuizResponse[]
+
+  // Common Fields
+  tags      String[] // e.g., ["DP", "Graph", "Array"]
+  isActive  Boolean  @default(true)
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Example {
+  id          String   @id @default(cuid())
+  input       String
+  output      String
+  description String?
+  questionId  String
+  question    Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 }
 
 model SampleCode {
@@ -299,7 +323,10 @@ model TestCase {
   questionId  String
   input       String
   output      String
-  explanation String
+  explanation String?
+  isHidden    Boolean  @default(false) // hidden test case (not visible to users)
+  isSample    Boolean  @default(false) // visible test case shown in UI
+  isActive    Boolean  @default(true) // soft disable
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   question    Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
@@ -315,16 +342,20 @@ model Constraint {
 }
 
 model QuestionSubmission {
-  id            String           @id @default(cuid())
-  questionId    String
-  userId        String
-  code          String
-  status        SubmissionStatus
-  createdAt     DateTime         @default(now())
-  executionTime Int?
-  memoryUsed    Int?
-  question      Question         @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  user          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String   @id @default(cuid())
+  userId      String
+  questionId  String
+  code        String
+  languageId  Int
+  verdict     String // e.g., "Accepted", "Wrong Answer", "TLE"
+  passedCount Int      @default(0) // how many test cases passed
+  totalCount  Int      @default(0) // total test cases for this question
+  results     Json // store per-testcase results { testCaseId: { status, stdout, stderr } }
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  question    Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  User User @relation(fields: [userId], references: [id])
 }
 
 model ErrorLog {
@@ -459,6 +490,7 @@ model Quiz {
   submittedAt  DateTime?
   status       QuizStatus      @default(CREATED)
   timeAlloted  Int
+  score        Int             @default(0)
   quizResponse QuizResponse[]
   topic        PredefinedTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)
   user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -487,16 +519,16 @@ model UserSession {
 }
 
 model FlashcardDeck {
-  id          String      @id @default(cuid())
+  id          String   @id @default(cuid())
   name        String
   description String?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   // Relations
   flashcards Flashcard[]
-  subjectId  String   // Link to Subject
-  subject    Subject  @relation(fields: [subjectId], references: [id])
+  subjectId  String // Link to Subject
+  subject    Subject     @relation(fields: [subjectId], references: [id])
 }
 
 model Flashcard {
@@ -508,21 +540,21 @@ model Flashcard {
   updatedAt DateTime @updatedAt
 
   // Relations
-  deckId    String
-  deck      FlashcardDeck @relation(fields: [deckId], references: [id])
+  deckId String
+  deck   FlashcardDeck @relation(fields: [deckId], references: [id])
 
   FlashcardProgress FlashcardProgress[]
 }
 
 model FlashcardProgress {
-  id            String   @id @default(cuid())
-  userId        String
-  flashcardId   String
-  lastReviewed  DateTime?
-  nextReview    DateTime?
-  attempts      Int      @default(0)
-  correctCount  Int      @default(0)
-  easeFactor    Float    @default(2.5)
+  id           String    @id @default(cuid())
+  userId       String
+  flashcardId  String
+  lastReviewed DateTime?
+  nextReview   DateTime?
+  attempts     Int       @default(0)
+  correctCount Int       @default(0)
+  easeFactor   Float     @default(2.5)
 
   // Relations
   user      User      @relation(fields: [userId], references: [id])
