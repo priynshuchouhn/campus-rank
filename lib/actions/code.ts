@@ -4,7 +4,7 @@ import axios from "axios";
 const JUDGE0_HEADERS = {
     "Content-Type": "application/json",
     "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
-    "x-rapidapi-key": process.env.NEXT_PUBLIC_JUDGE0_API_KEY as string, // set in .env.local
+    "x-rapidapi-key": process.env.JUDGE0_API_KEY as string, // set in .env.local
 };
 
 export const executeCode = async (source_code:string, language_id:number, stdin:string) => {
