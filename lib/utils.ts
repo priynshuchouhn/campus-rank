@@ -67,6 +67,67 @@ export function getTimeLeft(startedAt: Date, timeAllotted: number): number {
   return Math.max(0, Math.floor(timeLeft)); // return time left in seconds
 }
 
+type TestCase = { input: any; expectedOutput: any };
+
+export const codeTemplates: Record<
+  string,
+  (userCode: string, functionName: string, testCase: TestCase) => string
+> = {
+  java: (userCode, functionName, testCase) => {
+    return `
+class Solution {
+    ${userCode}
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Solution sol = new Solution();
+        System.out.println(java.util.Arrays.toString(
+            sol.${functionName}(${testCase.input})
+        ));
+    }
+}
+`;
+  },
+
+  cpp: (userCode, functionName, testCase) => {
+    return `
+#include <bits/stdc++.h>
+using namespace std;
+
+${userCode}
+
+int main() {
+    auto res = ${functionName}(${testCase.input});
+    for (auto v : res) cout << v << " ";
+    cout << "\\n";
+    return 0;
+}
+`;
+  },
+
+  python: (userCode, functionName, testCase) => {
+    return `
+${userCode}
+
+if __name__ == "__main__":
+    print(${functionName}(${testCase.input}))
+`;
+  },
+};
+
+export function generateCode(
+  language: string,
+  userCode: string,
+  functionName: string,
+  testCase: TestCase
+): string {
+  const template = codeTemplates[language];
+  if (!template) throw new Error(`Language not supported: ${language}`);
+  return template(userCode, functionName, testCase);
+}
+
+
 
 
 
