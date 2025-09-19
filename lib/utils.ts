@@ -128,6 +128,20 @@ export function generateCode(
 }
 
 
+export const getDifficultyColor = (difficulty: string) => {
+    switch (difficulty) {
+      case "Easy":
+        return "text-green-600 dark:text-green-400";
+      case "Medium":
+        return "text-orange-600 dark:text-orange-400";
+      case "Hard":
+        return "text-red-600 dark:text-red-400";
+      default:
+        return "text-gray-600";
+    }
+  };
+
+
 
 
 

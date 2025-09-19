@@ -258,6 +258,7 @@ model SolvedQuestion {
 model Question {
   id                String           @id @default(cuid())
   title             String
+  slug              String @default("")
   description       String
   questionType      QuestionType // Enum: CODE | MCQ
   difficulty        Difficulty // Enum: EASY | MEDIUM | HARD
@@ -314,13 +315,13 @@ model LanguageWrapper {
   id              String              @id @default(cuid())
   questionId      String
   language        ProgrammingLanguage
-  functionName    String?             // Function name in this language
-  className       String?             // Class name (Java only, null for Python/C++)
-  methodSignature String?             // Full signature for this language
-  template        String              // Wrapper template with {{CODE}} placeholder
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  question        Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  functionName    String? // Function name in this language
+  className       String? // Class name (Java only, null for Python/C++)
+  methodSignature String? // Full signature for this language
+  template        String // Wrapper template with {{CODE}} placeholder
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  question        Question            @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
   @@unique([questionId, language])
 }
