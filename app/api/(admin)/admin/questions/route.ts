@@ -70,7 +70,6 @@ export async function GET() {
         sampleCodes: [],
         createdAt: question.createdAt,
         updatedAt: question.updatedAt,
-        // Add required fields for the interface
         description: '',
         timeComplexity: '',
         spaceComplexity: '',

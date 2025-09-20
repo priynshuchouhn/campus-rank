@@ -326,3 +326,133 @@ export async function changeProfileVisiblity() {
     if (user) return true;
     return false;
 }
+
+
+export async function getAdminUsers(page: string = '1', pageSize: string = '25') {
+  try {
+    const session = await auth();
+
+    if (!session?.user || session.user.role !== "ADMIN") {
+      return {
+        message: "Unauthorized",
+        success: false,
+        data: null,
+      };
+    }
+
+    const skip = (+page - 1) * +pageSize;
+
+    // Fetch users with pagination
+    const [users, total] = await Promise.all([
+      prisma.user.findMany({
+        where: {
+          role: "USER",
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        skip,
+        take: +pageSize,
+      }),
+      prisma.user.count({
+        where: { role: "USER" },
+      }),
+    ]);
+
+    return {
+      message: "Users fetched successfully",
+      data: {
+        users,
+        pagination: {
+          total,
+          page: +page,
+          limit:+pageSize,
+          totalPages: Math.ceil(total / +pageSize),
+        },
+      },
+      success: true,
+    };
+  } catch (error) {
+    console.log(error);
+    await prisma.errorLog.create({
+      data: {
+        errorAt: "[Server Action] getUsersAction",
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
+    });
+
+    return {
+      message: "Error fetching users",
+      error: error instanceof Error ? error.message : "Unknown error",
+      success: false,
+    };
+  }
+}
+
+export async function getAdminUserDataById(userId: string) {
+  try {
+    const session = await auth();
+
+    if (!session?.user || session.user.role !== "ADMIN") {
+      return {
+        message: "Unauthorized",
+        success: false,
+        data: null,
+      };
+    }
+
+    const user = await prisma.user.findFirst({
+      where: {
+        id: userId,
+      },
+      include: {
+        quiz: true,
+        questionSubmission: true,
+        solvedQuestions: true,
+        weeklyGoals: true,
+        report: true,
+        userSession: true,
+        institution: true,
+        profileView: true,
+        pushSubscription: true,
+        flashcardProgress: true,
+        gfgProfile: true,
+        hackerrankProfile: true,
+        leaderboardStats: true,
+        leaderboardHistory: true,
+        leetcodeProfile: true,
+        batch: true,
+        blogPosts: true,
+      },
+    });
+
+    if (!user) {
+      return {
+        message: "User not found",
+        success: false,
+        data: null,
+      };
+    }
+
+    return {
+      message: "User fetched successfully",
+      data: user,
+      success: true,
+    };
+  } catch (error) {
+    console.log(error);
+    await prisma.errorLog.create({
+      data: {
+        errorAt: "[Server Action] getAdminUserDataById",
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
+    });
+
+    return {
+      message: "Error fetching user",
+      error: error instanceof Error ? error.message : "Unknown error",
+      success: false,
+    };
+  }
+}
+
