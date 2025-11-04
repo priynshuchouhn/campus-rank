@@ -372,7 +372,7 @@ function PracticePageContent() {
             const data = await executeCode(
                 code,
                 judge0Langs[language],
-                customInput
+                // customInput
             );
             setOutput(
                 data.stdout || data.stderr || data.compile_output || "No output"
@@ -393,7 +393,7 @@ function PracticePageContent() {
                 const data = await executeCode(
                     code,
                     judge0Langs[language],
-                    example.input
+                    // example.input
                 );
                 const actual = data.stdout?.trim();
                 const expected = example.output.trim();

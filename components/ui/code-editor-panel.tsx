@@ -7,6 +7,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
+import prettier from "prettier/standalone";
+import parserBabel from "prettier/plugins/babel";
+import estree from "prettier/plugins/estree";
+
+
 import {
     Play,
     Upload,
@@ -15,13 +20,15 @@ import {
     CheckCircle2,
     XCircle,
     Clock,
-    Zap
+    Zap,
 } from 'lucide-react';
 import Editor from '@monaco-editor/react';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { ThemeToggle } from './theme-toggle';
 import { Example, Question, SampleCode } from '@prisma/client';
+import { generateCode } from '@/lib/utils';
+import { executeCode } from '@/lib/actions/code';
 
 interface TestCase {
     input: string;
@@ -43,7 +50,7 @@ interface CodeEditorPanelProps {
 }
 
 export function CodeEditorPanel({ question }: any) {
-    const [selectedLanguage, setSelectedLanguage] = useState('java');
+    const [selectedLanguage, setSelectedLanguage] = useState('javascript');
     const [code, setCode] = useState("");
     const [isRunning, setIsRunning] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -56,7 +63,7 @@ export function CodeEditorPanel({ question }: any) {
         memory?: string;
         details?: string;
     } | null>(null);
-    const editorRef = useRef(null);
+    const editorRef = useRef<any>(null);
 
     const languages = [
         { value: 'javascript', language: 'JAVASCRIPT', label: 'JavaScript' },
@@ -64,6 +71,13 @@ export function CodeEditorPanel({ question }: any) {
         { value: 'java', language: 'JAVA', label: 'Java' },
         { value: 'cpp', language: 'CPP', label: 'C++' }
     ];
+
+    const judge0Langs: Record<string, number> = {
+        javascript: 63,
+        python: 71,
+        java: 62,
+        cpp: 54
+    };
 
     useEffect(() => {
         const sampleCode =
@@ -79,66 +93,116 @@ export function CodeEditorPanel({ question }: any) {
         setSubmissionResult(null);
     };
 
-    const simulateTestExecution = (testCase: TestCase): TestResult => {
-        const passed = Math.random() > 0.2; // 80% pass rate for demo
-        return {
-            passed,
-            input: testCase.input,
-            expectedOutput: testCase.expectedOutput,
-            actualOutput: passed ? testCase.expectedOutput : "Wrong output",
-            runtime: Math.floor(Math.random() * 50 + 10) + 'ms',
-            memory: (Math.random() * 10 + 40).toFixed(1) + 'MB'
-        };
-    };
 
-    const handleRunCode = () => {
+    const handleRunCode = async () => {
         setIsRunning(true);
         setSubmissionResult(null);
+        try {
+            const sampleCases = question.testCases.filter((tc: any) => tc.isSample);
 
-        setTimeout(() => {
-            const results = question.testCases.map((testCase: any) =>
-                simulateTestExecution(testCase)
+            const wrapper = question.languageWrapper.find(
+                (w: any) => w.language.toLowerCase() === selectedLanguage.toLowerCase()
             );
+
+            if (!wrapper) throw new Error(`No wrapper found for ${selectedLanguage}`);
+
+            const results: TestResult[] = [];
+            for (const testCase of sampleCases) {
+                const codeToRun = generateCode(
+                    selectedLanguage,
+                    code, // user’s code from editor
+                    wrapper.functionName || "solve",
+                    testCase // pass single testCase object
+                );
+
+                const judgeResult = await executeCode(codeToRun, judge0Langs[selectedLanguage]);
+                results.push({
+                    passed: judgeResult.stdout?.trim() ? Buffer.from(judgeResult.stdout?.trim(),'base64').toString('utf-8')?.trim() == testCase.expectedOutput.trim() : false,
+                    input: testCase.input,
+                    expectedOutput: testCase.expectedOutput,
+                    actualOutput: judgeResult.stdout?.trim() ? Buffer.from(judgeResult.stdout?.trim(),'base64').toString('utf-8') : (judgeResult.status.description === 'Compilation Error' ? Buffer.from(judgeResult.compile_output,'base64').toString('utf-8') : ""),
+                    runtime: judgeResult.time ? `${judgeResult.time}ms` : undefined,
+                    memory: judgeResult.memory ? `${judgeResult.memory}KB` : undefined,
+                });
+            }
+
             setTestResults(results);
+        } catch (err) {
+            console.error(err);
+        } finally {
             setIsRunning(false);
-        }, 1500);
+        }
     };
 
-    const handleSubmit = () => {
+
+    const handleSubmit = async () => {
         setIsSubmitting(true);
         setTestResults([]);
 
-        setTimeout(() => {
-            const results = question.testCases.map((testCase: any) =>
-                simulateTestExecution(testCase)
+        try {
+            const wrapper = question.languageWrapper.find(
+                (w: any) => w.language.toLowerCase() === selectedLanguage.toLowerCase()
             );
 
-            const passedTests = results.filter((r: any) => r.passed).length;
-            const totalTests = results.length;
+            if (!wrapper) throw new Error(`No wrapper found for ${selectedLanguage}`);
 
-            let status: 'Accepted' | 'Wrong Answer' | 'Time Limit Exceeded' | 'Runtime Error';
-            if (passedTests === totalTests) {
-                status = 'Accepted';
-            } else if (Math.random() > 0.8) {
-                status = 'Time Limit Exceeded';
-            } else if (Math.random() > 0.9) {
-                status = 'Runtime Error';
-            } else {
-                status = 'Wrong Answer';
+            const results: TestResult[] = [];
+            for (const testCase of question.testCases) {
+                const codeToRun = generateCode(
+                    selectedLanguage,
+                    code, // user’s code
+                    wrapper.functionName || "solve",
+                    testCase
+                );
+
+                const judgeResult = await executeCode(codeToRun, judge0Langs[selectedLanguage]);
+
+                results.push({
+                    passed: judgeResult.stdout?.trim() === testCase.expectedOutput.trim(),
+                    input: testCase.input,
+                    expectedOutput: testCase.expectedOutput,
+                    actualOutput: judgeResult.stdout?.trim() ?? "",
+                    runtime: judgeResult.time ? `${judgeResult.time}ms` : undefined,
+                    memory: judgeResult.memory ? `${judgeResult.memory}KB` : undefined,
+                });
             }
+
+            const passedTests = results.filter((r) => r.passed).length;
+            const totalTests = results.length;
+            const status = passedTests === totalTests ? "Accepted" : "Wrong Answer";
 
             setSubmissionResult({
                 status,
                 passedTests,
                 totalTests,
-                runtime: Math.floor(Math.random() * 100 + 50) + 'ms',
-                memory: (Math.random() * 20 + 40).toFixed(1) + 'MB'
+                runtime: results[0]?.runtime || "--",
+                memory: results[0]?.memory || "--",
             });
 
             setTestResults(results);
+        } catch (err) {
+            console.error(err);
+        } finally {
             setIsSubmitting(false);
-        }, 2000);
+        }
     };
+
+    const handleFormatCode = async () => {
+        if (!editorRef.current) return;
+        try {
+            const unformatted = code;
+            const formatted = await prettier.format(unformatted, {
+                parser: "babel",
+                plugins: [parserBabel,estree],
+                singleQuote: true,
+                semi: true,
+            });
+            setCode(formatted)
+        } catch (err) {
+            console.error("Formatting error:", err);
+        }
+    };
+
 
     const handleReset = () => {
         setCode(question.sampleCodes.find((c: any) => c.language.toLowerCase() == selectedLanguage.toLowerCase())?.code || '');
@@ -198,6 +262,10 @@ export function CodeEditorPanel({ question }: any) {
                         <RotateCcw className="w-4 h-4 mr-2" />
                         Reset
                     </Button>
+                     <Button variant="ghost" onClick={handleFormatCode}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-text-align-start-icon lucide-text-align-start"><path d="M21 5H3"/><path d="M15 12H3"/><path d="M17 19H3"/></svg>
+                    </Button>
+
 
                     <ThemeToggle />
                     <Button variant="ghost">

@@ -55,6 +55,7 @@ export default function CodeQuestionsPage() {
                                 language: code.language as ProgrammingLanguage,
                             })),
                             testCases: selectedProblem.testCases ?? [],
+                            languageWrapper: selectedProblem.languageWrappers ?? []
                         }} />
                     </ResizablePanel>
                 </ResizablePanelGroup>

@@ -60,9 +60,7 @@ export function ProblemPanel({ selectedProblem, problems }: ProblemPanelProps) {
                 <div className="flex items-center space-x-3">
                     <Sheet>
                         <SheetTrigger>
-                            <Button variant="ghost" size="sm" className="p-0 h-8 w-8">
                                 <PanelLeftClose className="h-4 w-4" />
-                            </Button>
                         </SheetTrigger>
                         <SheetContent side='left'>
                             <div className="border-r border-gray-200 dark:border-gray-800 flex flex-col overflow-hidden">

@@ -3,11 +3,11 @@ import { Home, BookOpen, Code, User, Settings, LogOut, Notebook, Target, Info, S
 
 
 export const categories = [
-    'DSA',
-    'Placements',
-    'LeetCode Tips',
-    'Success Stories',
-    'Interview Prep',
+  'DSA',
+  'Placements',
+  'LeetCode Tips',
+  'Success Stories',
+  'Interview Prep',
 ];
 
 export const authMenuItems: MenuSection[] = [
@@ -38,7 +38,7 @@ export const authMenuItems: MenuSection[] = [
   }
 ];
 
-export const guestMenuItems:MenuSection[] = [
+export const guestMenuItems: MenuSection[] = [
   {
     section: "Explore",
     items: [
@@ -63,6 +63,157 @@ export const guestMenuItems:MenuSection[] = [
 
 export const sampleQuestions = [
   {
+    id: 11,
+    title: "Sum of Array",
+    slug: 'sum-of-array',
+    difficulty: "Easy" as const,
+    tags: ["Array", "Math"],
+    description: `Given an array of integers nums, return the sum of all elements in the array.`,
+
+    constraints: [
+      "1 ≤ nums.length ≤ 10⁴",
+      "-10⁹ ≤ nums[i] ≤ 10⁹"
+    ],
+
+    examples: [
+      { input: "nums = [1,2,3,4]", output: "10", explanation: "1+2+3+4 = 10" },
+      { input: "nums = [5,5,5]", output: "15", explanation: "5+5+5 = 15" },
+      { input: "nums = [-1,1,-2,2]", output: "0", explanation: "-1+1-2+2 = 0" }
+    ],
+
+    hints: [
+      "Think of iterating through the array and keeping a running total.",
+      "You can also use built-in functions like sum() in Python or reduce() in JavaScript."
+    ],
+
+    timeComplexity: "O(n)",
+    spaceComplexity: "O(1)",
+
+    sampleCodes: [
+      {
+        id: 'sc5',
+        questionId: '2',
+        language: 'JAVASCRIPT',
+        code: `class Solution {
+    sumOfArray(nums) {
+        
+    }
+}`,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: 'sc6',
+        questionId: '2',
+        language: 'PYTHON',
+        code: `class Solution:
+    def sumOfArray(self, nums: List[int]) -> int:
+        `,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: 'sc7',
+        questionId: '2',
+        language: 'JAVA',
+        code: `class Solution {
+    public int sumOfArray(int[] nums) { }
+}`,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: 'sc8',
+        questionId: '2',
+        language: 'CPP',
+        code: `class Solution {
+public:
+    int sumOfArray(const vector<int>& nums) { }
+};`,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    ],
+
+    testCases: [
+      { input: "nums = [1,2,3,4]", expectedOutput: "10", isSample: true },
+      { input: "nums = [5,5,5]", expectedOutput: "15", isSample: true },
+      { input: "nums = [-1,1,-2,2]", expectedOutput: "0" }
+    ],
+
+    languageWrappers: [
+      {
+        id: 5,
+        questionId: "2",
+        language: "JAVA",
+        functionName: "sumOfArray",
+        className: "Solution",
+        methodSignature: "public int sumOfArray(int[] nums)",
+        template: `
+class {{CLASS_NAME}} {
+    {{CODE}}
+}
+
+public class Main {
+    public static void main(String[] args) {
+        {{CLASS_NAME}} sol = new {{CLASS_NAME}}();
+        System.out.println(sol.{{FUNCTION_NAME}}({{INPUT}}));
+    }
+}
+      `,
+      },
+      {
+        id: 6,
+        questionId: "2",
+        language: "CPP",
+        functionName: "sumOfArray",
+        className: "Solution",
+        methodSignature: "int sumOfArray(vector<int>& nums)",
+        template: `
+#include <bits/stdc++.h>
+using namespace std;
+
+{{CODE}}
+
+int main() {
+    Solution sol;
+    cout << sol.{{FUNCTION_NAME}}({{INPUT}}) << "\\n";
+    return 0;
+}
+      `,
+      },
+      {
+        id: 7,
+        questionId: "2",
+        language: "PYTHON",
+        functionName: "sumOfArray",
+        className: "Solution",
+        methodSignature: "def sumOfArray(self, nums: List[int]) -> int:",
+        template: `
+{{CODE}}
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.{{FUNCTION_NAME}}({{INPUT}}))
+      `,
+      },
+      {
+        id: 8,
+        questionId: "2",
+        language: "JAVASCRIPT",
+        functionName: "sumOfArray",
+        className: "Solution",
+        methodSignature: "sumOfArray(nums)",
+        template: `
+{{CODE}}
+
+const sol = new Solution();
+console.log(sol.{{FUNCTION_NAME}}({{INPUT}}));
+      `,
+      },
+    ]
+  },
+  {
     id: 1,
     title: "Two Sum",
     slug: 'two-sum',
@@ -75,7 +226,7 @@ You may assume that each input would have exactly one solution, and you may not 
 You can return the answer in any order.`,
     constraints: [
       "2 ≤ nums.length ≤ 10⁴",
-      "-10⁹ ≤ nums[i] ≤ 10⁹", 
+      "-10⁹ ≤ nums[i] ≤ 10⁹",
       "-10⁹ ≤ target ≤ 10⁹",
       "Only one valid answer exists."
     ],
@@ -92,15 +243,91 @@ You can return the answer in any order.`,
     timeComplexity: "O(n)",
     spaceComplexity: "O(n)",
     sampleCodes: [
-      { id: 'sc1', questionId: '1', language: 'JAVASCRIPT', code: `var twoSum = function(nums, target) { };`, createdAt: new Date(), updatedAt: new Date() },
+      {
+        id: 'sc1', questionId: '1', language: 'JAVASCRIPT', code: `class Solution {
+    twoSum(nums, target) {
+      
+    }
+}`, createdAt: new Date(), updatedAt: new Date()
+      },
       { id: 'sc2', questionId: '1', language: 'PYTHON', code: `class Solution:\n    def twoSum(self, nums: List[int], target: int) -> List[int]:\n        `, createdAt: new Date(), updatedAt: new Date() },
       { id: 'sc3', questionId: '1', language: 'JAVA', code: `class Solution {\n    public int[] twoSum(int[] nums, int target) { }\n}`, createdAt: new Date(), updatedAt: new Date() },
-      { id: 'sc4', questionId: '1', language: 'CPP', code: `class Solution {\npublic:\n    vector<int> twoSum(vector<int>& nums, int target) { }\n};`, createdAt: new Date(), updatedAt: new Date() }
+      { id: 'sc4', questionId: '1', language: 'CPP', code: `class Solution {\npublic:\n    vector<int> twoSum(const vector<int>& nums, int target) { }\n};`, createdAt: new Date(), updatedAt: new Date() }
     ],
     testCases: [
-      { input: "nums = [2,7,11,15], target = 9", expectedOutput: "[0,1]" },
-      { input: "nums = [3,2,4], target = 6", expectedOutput: "[1,2]" },
+      { input: "nums = [2,7,11,15], target = 9", expectedOutput: "[0,1]", isSample: true },
+      { input: "nums = [3,2,4], target = 6", expectedOutput: "[1,2]", isSample: true },
       { input: "nums = [3,3], target = 6", expectedOutput: "[0,1]" }
+    ],
+    languageWrappers: [
+      {
+        id: 1,
+        questionId: "1",
+        language: "JAVA",
+        functionName: "twoSum",
+        className: "Solution",
+        methodSignature: "public int[] twoSum(int[] nums, int target)",
+        template: `
+class {{CLASS_NAME}} {
+    {{CODE}}
+}
+
+public class Main {
+    public static void main(String[] args) {
+        {{CLASS_NAME}} sol = new {{CLASS_NAME}}();
+        System.out.println(java.util.Arrays.toString(sol.{{FUNCTION_NAME}}({{INPUT}})));
+    }
+}
+    `,
+      },
+      {
+        id: 2,
+        questionId: "1",
+        language: "CPP",
+        functionName: "twoSum",
+        className: null,
+        methodSignature: "vector<int> twoSum(vector<int>& nums, int target)",
+        template: `
+#include <bits/stdc++.h>
+using namespace std;
+
+{{CODE}}
+
+int main() {
+    auto res = {{FUNCTION_NAME}}({{INPUT}});
+    for (auto v : res) cout << v << " ";
+    cout << "\\n";
+    return 0;
+}
+    `,
+      },
+      {
+        id: 3,
+        questionId: "1",
+        language: "PYTHON",
+        functionName: "twoSum",
+        className: null,
+        methodSignature: "def twoSum(nums: List[int], target: int) -> List[int]:",
+        template: `
+{{CODE}}
+
+if __name__ == "__main__":
+    print({{FUNCTION_NAME}}({{INPUT}}))
+    `,
+      },
+      {
+        id: 4,
+        questionId: "1",
+        language: "JAVASCRIPT",
+        functionName: "twoSum",
+        className: null,
+        methodSignature: "function twoSum(nums, target)",
+        template: `
+{{CODE}}
+
+console.log({{FUNCTION_NAME}}({{INPUT}}));
+    `,
+      },
     ]
   },
   {
@@ -131,8 +358,79 @@ You can return the answer in any order.`,
       { id: 'sc8', questionId: '2', language: 'CPP', code: `class Solution {\npublic:\n    ListNode* reverseList(ListNode* head) {\n        ListNode* prev = nullptr;\n        ListNode* curr = head;\n        while (curr) {\n            ListNode* nextTemp = curr->next;\n            curr->next = prev;\n            prev = curr;\n            curr = nextTemp;\n        }\n        return prev;\n    }\n};`, createdAt: new Date(), updatedAt: new Date() }
     ],
     testCases: [
-      { input: "head = [1,2,3,4,5]", expectedOutput: "[5,4,3,2,1]" },
+      { input: "head = [1,2,3,4,5]", expectedOutput: "[5,4,3,2,1]", isSample: true },
       { input: "head = [1,2]", expectedOutput: "[2,1]" }
+    ],
+    languageWrappers: [
+      {
+        id: 5,
+        questionId: "2",
+        language: "JAVA",
+        functionName: "reverseList",
+        className: "Solution",
+        methodSignature: "public ListNode reverseList(ListNode head)",
+        template: `
+class {{CLASS_NAME}} {
+    {{CODE}}
+}
+
+public class Main {
+    public static void main(String[] args) {
+        // Linked list setup omitted for simplicity
+        {{CLASS_NAME}} sol = new {{CLASS_NAME}}();
+        System.out.println(sol.{{FUNCTION_NAME}}({{INPUT}}));
+    }
+}
+    `,
+      },
+      {
+        id: 6,
+        questionId: "2",
+        language: "CPP",
+        functionName: "reverseList",
+        className: null,
+        methodSignature: "ListNode* reverseList(ListNode* head)",
+        template: `
+#include <bits/stdc++.h>
+using namespace std;
+
+{{CODE}}
+
+int main() {
+    // Linked list setup omitted
+    auto res = {{FUNCTION_NAME}}({{INPUT}});
+    cout << res; // print head
+    return 0;
+}
+    `,
+      },
+      {
+        id: 7,
+        questionId: "2",
+        language: "PYTHON",
+        functionName: "reverseList",
+        className: null,
+        methodSignature: "def reverseList(head: ListNode) -> ListNode:",
+        template: `
+{{CODE}}
+
+if __name__ == "__main__":
+    print({{FUNCTION_NAME}}({{INPUT}}))
+    `,
+      },
+      {
+        id: 8,
+        questionId: "2",
+        language: "JAVASCRIPT",
+        functionName: "reverseList",
+        className: null,
+        methodSignature: "function reverseList(head)",
+        template: `
+{{CODE}}
+
+console.log({{FUNCTION_NAME}}({{INPUT}}));
+    `,
+      },
     ]
   },
   {
@@ -166,9 +464,77 @@ You can return the answer in any order.`,
       { id: 'sc12', questionId: '3', language: 'CPP', code: `class Solution {\npublic:\n    bool isValid(string s) {\n        stack<char> st;\n        unordered_map<char,char> mp = {{')','('},{'}','{'},{']','['}};\n        for (char c : s) {\n            if (mp.count(c)) {\n                if (st.empty() || st.top() != mp[c]) return false;\n                st.pop();\n            } else st.push(c);\n        }\n        return st.empty();\n    }\n};`, createdAt: new Date(), updatedAt: new Date() }
     ],
     testCases: [
-      { input: "s = '()'", expectedOutput: "true" },
-      { input: "s = '()[]{}'", expectedOutput: "true" },
+      { input: "s = '()'", expectedOutput: "true", isSample: true },
+      { input: "s = '()[]{}'", expectedOutput: "true", isSample: true },
       { input: "s = '(]'", expectedOutput: "false" }
+    ],
+    languageWrappers: [
+      {
+        id: 9,
+        questionId: "3",
+        language: "JAVA",
+        functionName: "isValid",
+        className: "Solution",
+        methodSignature: "public boolean isValid(String s)",
+        template: `
+class {{CLASS_NAME}} {
+    {{CODE}}
+}
+
+public class Main {
+    public static void main(String[] args) {
+        {{CLASS_NAME}} sol = new {{CLASS_NAME}}();
+        System.out.println(sol.{{FUNCTION_NAME}}({{INPUT}}));
+    }
+}
+    `,
+      },
+      {
+        id: 10,
+        questionId: "3",
+        language: "CPP",
+        functionName: "isValid",
+        className: null,
+        methodSignature: "bool isValid(string s)",
+        template: `
+#include <bits/stdc++.h>
+using namespace std;
+
+{{CODE}}
+
+int main() {
+    cout << {{FUNCTION_NAME}}({{INPUT}}) << "\\n";
+    return 0;
+}
+    `,
+      },
+      {
+        id: 11,
+        questionId: "3",
+        language: "PYTHON",
+        functionName: "isValid",
+        className: null,
+        methodSignature: "def isValid(s: str) -> bool:",
+        template: `
+{{CODE}}
+
+if __name__ == "__main__":
+    print({{FUNCTION_NAME}}({{INPUT}}))
+    `,
+      },
+      {
+        id: 12,
+        questionId: "3",
+        language: "JAVASCRIPT",
+        functionName: "isValid",
+        className: null,
+        methodSignature: "function isValid(s)",
+        template: `
+{{CODE}}
+
+console.log({{FUNCTION_NAME}}({{INPUT}}));
+    `,
+      },
     ]
   },
   {
@@ -200,8 +566,80 @@ You can return the answer in any order.`,
       { id: 'sc16', questionId: '4', language: 'CPP', code: `class Solution {\npublic:\n    vector<vector<int>> merge(vector<vector<int>>& intervals) {\n        if (intervals.empty()) return {};\n        sort(intervals.begin(), intervals.end());\n        vector<vector<int>> merged;\n        merged.push_back(intervals[0]);\n        for (auto &interval : intervals) {\n            if (merged.back()[1] >= interval[0])\n                merged.back()[1] = max(merged.back()[1], interval[1]);\n            else\n                merged.push_back(interval);\n        }\n        return merged;\n    }\n};`, createdAt: new Date(), updatedAt: new Date() }
     ],
     testCases: [
-      { input: "intervals = [[1,3],[2,6],[8,10],[15,18]]", expectedOutput: "[[1,6],[8,10],[15,18]]" },
+      { input: "intervals = [[1,3],[2,6],[8,10],[15,18]]", expectedOutput: "[[1,6],[8,10],[15,18]]", isSample: true },
       { input: "intervals = [[1,4],[4,5]]", expectedOutput: "[[1,5]]" }
+    ],
+    languageWrappers: [
+      {
+        id: 13,
+        questionId: "4",
+        language: "JAVA",
+        functionName: "merge",
+        className: "Solution",
+        methodSignature: "public int[][] merge(int[][] intervals)",
+        template: `
+class {{CLASS_NAME}} {
+    {{CODE}}
+}
+
+public class Main {
+    public static void main(String[] args) {
+        {{CLASS_NAME}} sol = new {{CLASS_NAME}}();
+        System.out.println(java.util.Arrays.deepToString(sol.{{FUNCTION_NAME}}({{INPUT}})));
+    }
+}
+    `,
+      },
+      {
+        id: 14,
+        questionId: "4",
+        language: "CPP",
+        functionName: "merge",
+        className: null,
+        methodSignature: "vector<vector<int>> merge(vector<vector<int>>& intervals)",
+        template: `
+#include <bits/stdc++.h>
+using namespace std;
+
+{{CODE}}
+
+int main() {
+    auto res = {{FUNCTION_NAME}}({{INPUT}});
+    for (auto& v : res) {
+        for (auto x : v) cout << x << " ";
+        cout << "\\n";
+    }
+    return 0;
+}
+    `,
+      },
+      {
+        id: 15,
+        questionId: "4",
+        language: "PYTHON",
+        functionName: "merge",
+        className: null,
+        methodSignature: "def merge(intervals: List[List[int]]) -> List[List[int]]:",
+        template: `
+{{CODE}}
+
+if __name__ == "__main__":
+    print({{FUNCTION_NAME}}({{INPUT}}))
+    `,
+      },
+      {
+        id: 16,
+        questionId: "4",
+        language: "JAVASCRIPT",
+        functionName: "merge",
+        className: null,
+        methodSignature: "function merge(intervals)",
+        template: `
+{{CODE}}
+
+console.log({{FUNCTION_NAME}}({{INPUT}}));
+    `,
+      },
     ]
   },
   {
@@ -229,9 +667,431 @@ You can return the answer in any order.`,
       { id: 'sc20', questionId: '5', language: 'CPP', code: `class Solution {\npublic:\n    int climbStairs(int n) {\n        vector<int> dp(n+1);\n        dp[0] = dp[1] = 1;\n        for (int i = 2; i <= n; i++) dp[i] = dp[i-1] + dp[i-2];\n        return dp[n];\n    }\n};`, createdAt: new Date(), updatedAt: new Date() }
     ],
     testCases: [
-      { input: "n = 2", expectedOutput: "2" },
+      { input: "n = 2", expectedOutput: "2", isSample: true },
       { input: "n = 3", expectedOutput: "3" }
+    ],
+    languageWrappers: [
+      {
+        id: 17,
+        questionId: "5",
+        language: "JAVA",
+        functionName: "climbStairs",
+        className: "Solution",
+        methodSignature: "public int climbStairs(int n)",
+        template: `
+class {{CLASS_NAME}} {
+    {{CODE}}
+}
+
+public class Main {
+    public static void main(String[] args) {
+        {{CLASS_NAME}} sol = new {{CLASS_NAME}}();
+        System.out.println(sol.{{FUNCTION_NAME}}({{INPUT}}));
+    }
+}
+    `,
+      },
+      {
+        id: 18,
+        questionId: "5",
+        language: "CPP",
+        functionName: "climbStairs",
+        className: null,
+        methodSignature: "int climbStairs(int n)",
+        template: `
+#include <bits/stdc++.h>
+using namespace std;
+
+{{CODE}}
+
+int main() {
+    cout << {{FUNCTION_NAME}}({{INPUT}}) << "\\n";
+    return 0;
+}
+    `,
+      },
+      {
+        id: 19,
+        questionId: "5",
+        language: "PYTHON",
+        functionName: "climbStairs",
+        className: null,
+        methodSignature: "def climbStairs(n: int) -> int:",
+        template: `
+{{CODE}}
+
+if __name__ == "__main__":
+    print({{FUNCTION_NAME}}({{INPUT}}))
+    `,
+      },
+      {
+        id: 20,
+        questionId: "5",
+        language: "JAVASCRIPT",
+        functionName: "climbStairs",
+        className: null,
+        methodSignature: "function climbStairs(n)",
+        template: `
+{{CODE}}
+
+console.log({{FUNCTION_NAME}}({{INPUT}}));
+    `,
+      },
     ]
   }
 ];
+
+
+
+export const languageWrappers = [
+  // ----------------- TWO SUM -----------------
+  {
+    id: 1,
+    questionId: "1",
+    language: "JAVA",
+    functionName: "twoSum",
+    className: "Solution",
+    methodSignature: "public int[] twoSum(int[] nums, int target)",
+    template: `
+class {{CLASS_NAME}} {
+    {{CODE}}
+}
+
+public class Main {
+    public static void main(String[] args) {
+        {{CLASS_NAME}} sol = new {{CLASS_NAME}}();
+        System.out.println(java.util.Arrays.toString(sol.{{FUNCTION_NAME}}({{INPUT}})));
+    }
+}
+    `,
+  },
+  {
+    id: 2,
+    questionId: "1",
+    language: "CPP",
+    functionName: "twoSum",
+    className: null,
+    methodSignature: "vector<int> twoSum(vector<int>& nums, int target)",
+    template: `
+#include <bits/stdc++.h>
+using namespace std;
+
+{{CODE}}
+
+int main() {
+    auto res = {{FUNCTION_NAME}}({{INPUT}});
+    for (auto v : res) cout << v << " ";
+    cout << "\\n";
+    return 0;
+}
+    `,
+  },
+  {
+    id: 3,
+    questionId: "1",
+    language: "PYTHON",
+    functionName: "twoSum",
+    className: null,
+    methodSignature: "def twoSum(nums: List[int], target: int) -> List[int]:",
+    template: `
+{{CODE}}
+
+if __name__ == "__main__":
+    print({{FUNCTION_NAME}}({{INPUT}}))
+    `,
+  },
+  {
+    id: 4,
+    questionId: "1",
+    language: "JAVASCRIPT",
+    functionName: "twoSum",
+    className: null,
+    methodSignature: "function twoSum(nums, target)",
+    template: `
+{{CODE}}
+
+console.log(JSON.stringify({{FUNCTION_NAME}}({{INPUT}})));
+    `,
+  },
+
+  // ----------------- REVERSE LINKED LIST -----------------
+  {
+    id: 5,
+    questionId: "2",
+    language: "JAVA",
+    functionName: "reverseList",
+    className: "Solution",
+    methodSignature: "public ListNode reverseList(ListNode head)",
+    template: `
+class {{CLASS_NAME}} {
+    {{CODE}}
+}
+
+public class Main {
+    public static void main(String[] args) {
+        // Linked list setup omitted for simplicity
+        {{CLASS_NAME}} sol = new {{CLASS_NAME}}();
+        System.out.println(sol.{{FUNCTION_NAME}}({{INPUT}}));
+    }
+}
+    `,
+  },
+  {
+    id: 6,
+    questionId: "2",
+    language: "CPP",
+    functionName: "reverseList",
+    className: null,
+    methodSignature: "ListNode* reverseList(ListNode* head)",
+    template: `
+#include <bits/stdc++.h>
+using namespace std;
+
+{{CODE}}
+
+int main() {
+    // Linked list setup omitted
+    auto res = {{FUNCTION_NAME}}({{INPUT}});
+    cout << res; // print head
+    return 0;
+}
+    `,
+  },
+  {
+    id: 7,
+    questionId: "2",
+    language: "PYTHON",
+    functionName: "reverseList",
+    className: null,
+    methodSignature: "def reverseList(head: ListNode) -> ListNode:",
+    template: `
+{{CODE}}
+
+if __name__ == "__main__":
+    print({{FUNCTION_NAME}}({{INPUT}}))
+    `,
+  },
+  {
+    id: 8,
+    questionId: "2",
+    language: "JAVASCRIPT",
+    functionName: "reverseList",
+    className: null,
+    methodSignature: "function reverseList(head)",
+    template: `
+{{CODE}}
+
+console.log({{FUNCTION_NAME}}({{INPUT}}));
+    `,
+  },
+
+  // ----------------- VALID PARENTHESES -----------------
+  {
+    id: 9,
+    questionId: "3",
+    language: "JAVA",
+    functionName: "isValid",
+    className: "Solution",
+    methodSignature: "public boolean isValid(String s)",
+    template: `
+class {{CLASS_NAME}} {
+    {{CODE}}
+}
+
+public class Main {
+    public static void main(String[] args) {
+        {{CLASS_NAME}} sol = new {{CLASS_NAME}}();
+        System.out.println(sol.{{FUNCTION_NAME}}({{INPUT}}));
+    }
+}
+    `,
+  },
+  {
+    id: 10,
+    questionId: "3",
+    language: "CPP",
+    functionName: "isValid",
+    className: null,
+    methodSignature: "bool isValid(string s)",
+    template: `
+#include <bits/stdc++.h>
+using namespace std;
+
+{{CODE}}
+
+int main() {
+    cout << {{FUNCTION_NAME}}({{INPUT}}) << "\\n";
+    return 0;
+}
+    `,
+  },
+  {
+    id: 11,
+    questionId: "3",
+    language: "PYTHON",
+    functionName: "isValid",
+    className: null,
+    methodSignature: "def isValid(s: str) -> bool:",
+    template: `
+{{CODE}}
+
+if __name__ == "__main__":
+    print({{FUNCTION_NAME}}({{INPUT}}))
+    `,
+  },
+  {
+    id: 12,
+    questionId: "3",
+    language: "JAVASCRIPT",
+    functionName: "isValid",
+    className: null,
+    methodSignature: "function isValid(s)",
+    template: `
+{{CODE}}
+
+console.log({{FUNCTION_NAME}}({{INPUT}}));
+    `,
+  },
+
+  // ----------------- MERGE INTERVALS -----------------
+  {
+    id: 13,
+    questionId: "4",
+    language: "JAVA",
+    functionName: "merge",
+    className: "Solution",
+    methodSignature: "public int[][] merge(int[][] intervals)",
+    template: `
+class {{CLASS_NAME}} {
+    {{CODE}}
+}
+
+public class Main {
+    public static void main(String[] args) {
+        {{CLASS_NAME}} sol = new {{CLASS_NAME}}();
+        System.out.println(java.util.Arrays.deepToString(sol.{{FUNCTION_NAME}}({{INPUT}})));
+    }
+}
+    `,
+  },
+  {
+    id: 14,
+    questionId: "4",
+    language: "CPP",
+    functionName: "merge",
+    className: null,
+    methodSignature: "vector<vector<int>> merge(vector<vector<int>>& intervals)",
+    template: `
+#include <bits/stdc++.h>
+using namespace std;
+
+{{CODE}}
+
+int main() {
+    auto res = {{FUNCTION_NAME}}({{INPUT}});
+    for (auto& v : res) {
+        for (auto x : v) cout << x << " ";
+        cout << "\\n";
+    }
+    return 0;
+}
+    `,
+  },
+  {
+    id: 15,
+    questionId: "4",
+    language: "PYTHON",
+    functionName: "merge",
+    className: null,
+    methodSignature: "def merge(intervals: List[List[int]]) -> List[List[int]]:",
+    template: `
+{{CODE}}
+
+if __name__ == "__main__":
+    print({{FUNCTION_NAME}}({{INPUT}}))
+    `,
+  },
+  {
+    id: 16,
+    questionId: "4",
+    language: "JAVASCRIPT",
+    functionName: "merge",
+    className: null,
+    methodSignature: "function merge(intervals)",
+    template: `
+{{CODE}}
+
+console.log({{FUNCTION_NAME}}({{INPUT}}));
+    `,
+  },
+
+  // ----------------- CLIMBING STAIRS -----------------
+  {
+    id: 17,
+    questionId: "5",
+    language: "JAVA",
+    functionName: "climbStairs",
+    className: "Solution",
+    methodSignature: "public int climbStairs(int n)",
+    template: `
+class {{CLASS_NAME}} {
+    {{CODE}}
+}
+
+public class Main {
+    public static void main(String[] args) {
+        {{CLASS_NAME}} sol = new {{CLASS_NAME}}();
+        System.out.println(sol.{{FUNCTION_NAME}}({{INPUT}}));
+    }
+}
+    `,
+  },
+  {
+    id: 18,
+    questionId: "5",
+    language: "CPP",
+    functionName: "climbStairs",
+    className: null,
+    methodSignature: "int climbStairs(int n)",
+    template: `
+#include <bits/stdc++.h>
+using namespace std;
+
+{{CODE}}
+
+int main() {
+    cout << {{FUNCTION_NAME}}({{INPUT}}) << "\\n";
+    return 0;
+}
+    `,
+  },
+  {
+    id: 19,
+    questionId: "5",
+    language: "PYTHON",
+    functionName: "climbStairs",
+    className: null,
+    methodSignature: "def climbStairs(n: int) -> int:",
+    template: `
+{{CODE}}
+
+if __name__ == "__main__":
+    print({{FUNCTION_NAME}}({{INPUT}}))
+    `,
+  },
+  {
+    id: 20,
+    questionId: "5",
+    language: "JAVASCRIPT",
+    functionName: "climbStairs",
+    className: null,
+    methodSignature: "function climbStairs(n)",
+    template: `
+{{CODE}}
+
+console.log({{FUNCTION_NAME}}({{INPUT}}));
+    `,
+  },
+];
+
 
