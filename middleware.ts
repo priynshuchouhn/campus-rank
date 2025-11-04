@@ -9,7 +9,6 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-
   if (!session) {
       return NextResponse.redirect(new URL("/get-started", req.url)); // Redirect unauthenticated users
   }
@@ -39,5 +38,6 @@ export const config = {
     "/roadmap/:path*",
     "/goals",
     "/admin/:path*",
+    "/quiz/:path*",
   ]
 }
