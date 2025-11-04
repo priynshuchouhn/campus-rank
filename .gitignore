@@ -37,6 +37,7 @@ prisma/seed.ts
 prisma/*.json
 prisma/seed-question.ts
 prisma/seed-response.ts
+prisma/seed-update-score.ts
 middleware.ts
 
 # vercel
