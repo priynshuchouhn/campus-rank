@@ -6,7 +6,6 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Metadata } from "next";
-import Head from "next/head";
 
 export const metadata: Metadata = {
     title: "Frequently Asked Questions | Campus Rank",
@@ -77,29 +76,29 @@ const faqs = [
     }
 ];
 
-export default function FAQ() {
-    // Generate FAQ structured data for Schema.org
-    const faqStructuredData = {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": faqs.map(faq => ({
-            "@type": "Question",
-            "name": faq.question,
-            "acceptedAnswer": {
-                "@type": "Answer",
-                "text": faq.answer
-            }
-        }))
-    };
+// FAQ structured data generated at module scope so it is rendered on the server
+const faqStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqs.map(faq => ({
+        "@type": "Question",
+        "name": faq.question,
+        "acceptedAnswer": {
+            "@type": "Answer",
+            "text": faq.answer
+        }
+    }))
+};
 
+export default function FAQ() {
     return (
         <>
-        <Head>
+        {/* JSON-LD for FAQ — placed in the document so it's included server-side */}
         <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }}
-            />
-        </Head>
+            type="application/ld+json"
+            // eslint-disable-next-line react/no-danger
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }}
+        />
         <div className="min-h-screen bg-background flex flex-col">
             {/* Hero Section */}
             <section aria-labelledby="faq-heading" className="relative bg-primary/5 py-16 overflow-hidden">
