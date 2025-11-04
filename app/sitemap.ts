@@ -27,6 +27,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   });
 
+  // Get all active institutes
+  const institutes = await prisma.institution.findMany({
+    where: {
+      isActive: true,
+    },
+    select: {
+      code: true,
+      updatedAt: true,
+    },
+  });
+
   // Base URLs
   const baseUrls = [
     { url: "https://campusrank.org/", lastModified: new Date() },
@@ -44,15 +55,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Add blog post URLs
   const blogUrls = blogPosts.map((post) => ({
     url: `https://campusrank.org/blogs/${post.slug}`,
-    lastModified: post.updatedAt,
+    lastModified: new Date(),
   }));
 
   // Add user profile URLs
   const userUrls = users.map((user) => ({
     url: `https://campusrank.org/user/${user.username}`,
-    lastModified: user.updatedAt,
+    lastModified: new Date(),
   }));
 
-  return [...baseUrls, ...blogUrls, ...userUrls];
+  // Add institute URLs
+  const instituteUrls = institutes.map((inst) => ({
+    url: `https://campusrank.org/institute/${inst.code.toLowerCase()}`,
+    lastModified: new Date(),
+  }));
+
+  return [...baseUrls, ...blogUrls, ...userUrls, ...instituteUrls];
 }
   
