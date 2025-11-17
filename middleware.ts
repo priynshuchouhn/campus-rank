@@ -69,14 +69,17 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // For matched routes, require a session token (lightweight check)
+  // For matched routes, require a session token (lightweight check).
+  // Note: NextAuth may store opaque session tokens (not JWT). Treat any present
+  // session cookie as authenticated and only parse JWTs when available to
+  // extract a `role`. Default to `USER` when role is not available.
   const token = readSessionToken(req);
-  const payload = parseJwt(token);
-  if (!payload || !payload.role) {
+  if (!token) {
     return NextResponse.redirect(new URL("/get-started", req.url));
   }
 
-  const userRole = String(payload.role || ROLE.USER);
+  const payload = parseJwt(token);
+  const userRole = String(payload?.role ?? ROLE.USER);
 
   if (userRole === ROLE.USER && pathname.startsWith("/admin")) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
