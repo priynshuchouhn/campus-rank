@@ -148,26 +148,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async signIn({ user }) {
       // This callback is triggered on successful sign-in.
-      // If the provider returns a role (for example ADMIN from credentials)
-      // redirect through a small API route that sets a `user-role` cookie
-      // and then forwards the user to the dashboard. For normal users
-      // continue the default flow and ensure they exist in the DB.
       if (user && user.role === "ADMIN") {
-        // Redirect to an endpoint that will set the role cookie
-        return `/api/auth/set-role?role=ADMIN&callbackUrl=/admin/dashboard`;
+        return true;
       }
 
-      // Save or update the user in our DB for non-admin signins.
       await saveUserToDatabase({
         name: user.name ?? null,
         email: user.email ?? null,
         image: user.image ?? null,
       });
 
-      // For regular users we still want a role cookie (USER) so the
-      // edge middleware can make lightweight checks. Redirect through
-      // the same helper which will set `user-role=USER` then forward.
-      return `/api/auth/set-role?role=USER&callbackUrl=/profile`;
+      return true;
     },
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
