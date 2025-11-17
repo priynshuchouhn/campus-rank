@@ -42,9 +42,11 @@ function parseJwt(token?: string | null) {
 }
 
 function readSessionToken(req: NextRequest) {
-  // NextAuth uses `__Secure-next-auth.session-token` in secure contexts,
-  // fall back to `next-auth.session-token` if not set.
+  // Common cookie names used by NextAuth/Auth.js and variants in secure contexts.
+  // Include `__Secure-authjs.session-token` which your environment uses.
   const cookieNames = [
+    "__Secure-authjs.session-token",
+    "authjs.session-token",
     "__Secure-next-auth.session-token",
     "next-auth.session-token",
     "next-auth.sessions",
@@ -53,6 +55,13 @@ function readSessionToken(req: NextRequest) {
     const c = req.cookies.get(name);
     if (c) return c.value;
   }
+  return null;
+}
+
+function readRoleCookie(req: NextRequest) {
+  // Prefer an explicit role cookie if present (set by the auth flow).
+  const roleCookie = req.cookies.get('user-role') || req.cookies.get('userRole');
+  if (roleCookie) return roleCookie.value;
   return null;
 }
 
@@ -76,6 +85,21 @@ export function middleware(req: NextRequest) {
   const token = readSessionToken(req);
   if (!token) {
     return NextResponse.redirect(new URL("/get-started", req.url));
+  }
+
+  // First look for an explicit role cookie set during auth. Fallback to
+  // parsing the session token (JWT) when available.
+  const roleFromCookie = readRoleCookie(req);
+  if (roleFromCookie) {
+    // normalize
+    const userRole = String(roleFromCookie ?? ROLE.USER);
+    if (userRole === ROLE.USER && pathname.startsWith('/admin')) {
+      return NextResponse.redirect(new URL('/dashboard', req.url));
+    }
+    if (userRole === ROLE.ADMIN && !pathname.startsWith('/admin')) {
+      return NextResponse.redirect(new URL('/admin/dashboard', req.url));
+    }
+    return NextResponse.next();
   }
 
   const payload = parseJwt(token);
