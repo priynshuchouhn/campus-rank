@@ -274,42 +274,119 @@ async function fetchHackerRankProfile(username:string, userId:string): Promise<H
   }
 }
 
-async function fetchGFGProfile(username:string, userId:string): Promise<GFGProfile | null> {
-  if(!username){
-    return null;
-  }
+// async function fetchGFGProfile(username:string, userId:string): Promise<GFGProfile | null> {
+//   if(!username){
+//     return null;
+//   }
+//   try {
+//     // GeeksForGeeks doesn't have a public API, so we'll need to scrape the profile page
+//     const response = await axios.get(`https://www.geeksforgeeks.org/user/${username}`);
+//     const $ = cheerio.load(response.data);
+    
+//     const profileData: GFGProfile = {
+//       username,
+//       name: $('.header_user_profile h1').text().trim(),
+//       institution: $('.educationDetails_head_left--text__tgi9I').text().trim(),
+//       rank: $('.educationDetails_head_left_userRankContainer--text__wt81s').text().trim(),
+//       solvedProblems: $('.scoreCard_head_left--score__oSi_x').eq(1).text().trim(),
+//       codingScore: $('.scoreCard_head_left--score__oSi_x').eq(0).text().trim(),
+//     };
+    
+//     await prisma.gFGProfile.upsert ({
+//       where: {
+//         userId
+//       },
+//       update: {
+//         ...profileData
+//       },
+//       create: {
+//         userId,
+//         ...profileData
+//       },
+//     });
+//     return profileData;
+//   } catch (error) {
+//     console.error('GeeksForGeeks scraping error:', error);
+//     await prisma.errorLog.create({
+//       data: {
+//         errorAt: 'fetchGFGProfile - fetch-profile/route.ts',
+//         error: error instanceof Error ? error.message : 'Unknown error',
+//         forUser: username
+//       }
+//     });
+//     return null;
+//   }
+// }
+async function fetchGFGProfile(username: string, userId: string): Promise<GFGProfile | null> {
+  if (!username) return null;
+
   try {
-    // GeeksForGeeks doesn't have a public API, so we'll need to scrape the profile page
-    const response = await axios.get(`https://www.geeksforgeeks.org/user/${username}`);
-    const $ = cheerio.load(response.data);
+    const url = `https://www.geeksforgeeks.org/profile/${username}?tab=activity`;
     
-    const profileData: GFGProfile = {
-      username,
-      name: $('.header_user_profile h1').text().trim(),
-      institution: $('.educationDetails_head_left--text__tgi9I').text().trim(),
-      rank: $('.educationDetails_head_left_userRankContainer--text__wt81s').text().trim(),
-      solvedProblems: $('.scoreCard_head_left--score__oSi_x').eq(1).text().trim(),
-      codingScore: $('.scoreCard_head_left--score__oSi_x').eq(0).text().trim(),
-    };
-    
-    await prisma.gFGProfile.upsert ({
-      where: {
-        userId
-      },
-      update: {
-        ...profileData
-      },
-      create: {
-        userId,
-        ...profileData
-      },
+    // 1. Fetch the raw page content
+    const response = await axios.get(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      }
     });
-    return profileData;
+
+    const rawHtml = response.data as string;
+
+    // 2. Locate the "userData" section in the raw script streams
+    // The data looks like: \"userData\":{\"message\":\"...\",\"data\":{ ...fields... }}
+    const userDataIndex = rawHtml.indexOf('\\"userData\\"');
+    
+    if (userDataIndex === -1) {
+       console.error("Could not find userData in GFG profile");
+       return null;
+    }
+
+    // 3. Extract fields using Regex from that starting point
+    // We slice the string to ensure we only search specifically within the user data section
+    const relevantPart = rawHtml.substring(userDataIndex, userDataIndex + 5000); // Grab enough context
+
+    // Helper to extract values based on the keys seen in your snippet
+    const extractPattern = (key: string, isString: boolean = false) => {
+      // Matches \"key\":123 or \"key\":\"value\"
+      // We escape the key because it appears as \"key\" in the source
+      const pattern = isString 
+        ? new RegExp(`\\\\"${key}\\\\"\\s*:\\s*\\\\"([^\\\"]+)\\\\"`) // Looks for \"key\":\"Value\"
+        : new RegExp(`\\\\"${key}\\\\"\\s*:\\s*(\\d+)`);              // Looks for \"key\":123
+      
+      const match = relevantPart.match(pattern);
+      return match ? match[1] : null;
+    };
+
+    // 4. Parse the specific fields from your snippet
+    const name = extractPattern('name', true);
+    const institution = extractPattern('institute_name', true);
+    const rank = extractPattern('institute_rank');
+    const codingScore = extractPattern('score');
+    const solvedProblems = extractPattern('total_problems_solved');
+
+    const finalProfile: GFGProfile = {
+      username,
+      name: name || username,
+      institution: institution || 'N/A',
+      rank: rank || '0',
+      solvedProblems: solvedProblems || '0',
+      codingScore: codingScore || '0',
+    };
+
+    // 5. Database Sync
+    await prisma.gFGProfile.upsert({
+      where: { userId },
+      update: { ...finalProfile },
+      create: { userId, ...finalProfile },
+    });
+
+    return finalProfile;
+
   } catch (error) {
-    console.error('GeeksForGeeks scraping error:', error);
+    console.error('GeeksForGeeks parsing error:', error);
     await prisma.errorLog.create({
       data: {
-        errorAt: 'fetchGFGProfile - fetch-profile/route.ts',
+        errorAt: 'fetchGFGProfile - Regex Strategy',
         error: error instanceof Error ? error.message : 'Unknown error',
         forUser: username
       }
