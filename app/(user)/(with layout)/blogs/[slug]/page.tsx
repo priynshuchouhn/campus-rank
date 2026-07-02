@@ -4,13 +4,14 @@ import { ArrowLeft, Calendar, Clock, User, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { RenderMarkdown } from '@/components/ui/render-markdown';
 import { Share } from '@/components/ui/share';
-import axios from 'axios';
 import { Metadata } from 'next';
+import { getCachedBlogPost } from '@/lib/public-cache';
+
+export const revalidate = 3600;
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const { slug } = await params;
-    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/blogs/${slug}`);
-    const post = response.data.data;
+    const post = await getCachedBlogPost(slug);
 
     if (!post) {
         return {
@@ -33,7 +34,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
             siteName: 'Campus Rank',
             locale: 'en_US',
             type: 'article',
-            publishedTime: post.publishedAt || post.createdAt,
+            publishedTime: (post.publishedAt || post.createdAt).toISOString(),
             authors: [post.author.name],
             images: post.featuredImage ? [post.featuredImage] : [],
             tags: post.tags,
@@ -49,8 +50,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function BlogPost({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;
-    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/blogs/${slug}`);
-    const post = response.data.data;
+    const post = await getCachedBlogPost(slug);
 
     if (!post) {
         return (
@@ -157,7 +157,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                     url={`https://campusrank.org/blogs/${post.slug}`}
                     title={post.title}
                     description={post.description}
-                    image={post.featuredImage}
+                    image={post.featuredImage ?? undefined}
                 />
             </div>
         </article>

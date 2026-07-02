@@ -1,5 +1,5 @@
 'use server';
-import { prisma } from "../prisma";
+import { getCachedPracticeSubjects } from "../public-cache";
 
 export async function fetchSubjectsToPracticeWithTopic() {
     try {
@@ -15,38 +15,7 @@ export async function fetchSubjectsToPracticeWithTopic() {
         //         }
         //     }
         // });
-        const subjects = await prisma.subject.findMany({
-            where: {
-                isCoreSubject: false,
-            },
-            include: {
-                sections: {
-                    where: {
-                        topics: {
-                            some: {
-                                questions: {
-                                    some: {}, // means "has at least one question"
-                                },
-                            },
-                        },
-                    },
-                    include: {
-                        topics: {
-                            where: {
-                                questions: {
-                                    some: {}, // only include topics that have questions
-                                },
-                            },
-                            include: {
-                                questions: true, // if you want to include the questions too
-                            },
-                        },
-                    },
-                },
-            },
-        });
-
-        return subjects;
+        return getCachedPracticeSubjects();
     } catch (error) {
         console.log(error);
         return [];

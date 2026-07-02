@@ -1,31 +1,12 @@
 'use server';
 
 import { prisma } from "../prisma";
+import { getCachedLeaderboard } from "../public-cache";
 
 
 export async function getLeaderboard() {
     try {
-        const leaderboard = await prisma.leaderboardStats.findMany({
-            orderBy: { globalRank: "asc" },
-            where:{
-                isActive: true,
-                isDeleted: false,
-            },
-            include: {
-                user: {
-                    include: {
-                        gfgProfile: true,
-                        hackerrankProfile: {
-                            include: {
-                                badges: true
-                            }
-                        },
-                        leetcodeProfile: true
-                    }
-                }
-            }
-        });
-        return leaderboard;
+        return getCachedLeaderboard();
     } catch (error) {
         await prisma.errorLog.create({
             data: {
@@ -41,13 +22,14 @@ export async function getLeaderboard() {
 export async function updateApplicationStats() {
     try {
         const applicationStats = await prisma.applicationStats.findFirst();
-        const profileViews = await prisma.profileView.findMany();
-        const totalProfileViews = profileViews.length;
-        const totalSolved = await prisma.user.aggregate({
-            _sum: {
-                totalSolved: true
-            }
-        });
+        const [totalProfileViews, totalSolved] = await Promise.all([
+            prisma.profileView.count(),
+            prisma.user.aggregate({
+                _sum: {
+                    totalSolved: true
+                }
+            }),
+        ]);
         console.log('Total profile views:', totalProfileViews);
         console.log('Total questions solved:', totalSolved._sum.totalSolved);
         if (!applicationStats) {
@@ -55,7 +37,13 @@ export async function updateApplicationStats() {
         }
 
         // Calculate views since last update
-        const viewsSinceLastUpdate = profileViews.filter(view => view.createdAt > applicationStats.lastLeaderboardUpdate).length;
+        const viewsSinceLastUpdate = await prisma.profileView.count({
+            where: {
+                createdAt: {
+                    gt: applicationStats.lastLeaderboardUpdate,
+                },
+            },
+        });
         console.log('Views since last update:', viewsSinceLastUpdate);
         const profileViewsSinceLastUpdate = viewsSinceLastUpdate;
 

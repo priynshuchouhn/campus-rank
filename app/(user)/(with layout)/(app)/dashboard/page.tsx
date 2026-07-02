@@ -77,7 +77,7 @@ export default async function Dashboard() {
                             <div className="flex justify-between items-center">
                                 <span className="text-sm font-medium">Profile Views</span>
                                 <span className="flex items-center text-sm">
-                                    {user.profileView?.length || 0}
+                                    {user._count?.profileView || 0}
                                     <Eye className="ml-1 w-4 h-4" />
                                 </span>
                             </div>
@@ -140,7 +140,7 @@ export default async function Dashboard() {
                                         </p>
                                     </div>
                                 </div>
-                                
+
                             </div>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -356,4 +356,4 @@ export default async function Dashboard() {
             </div>
         </main>
     );
-} 
+}

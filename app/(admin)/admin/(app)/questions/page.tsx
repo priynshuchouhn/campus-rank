@@ -5,6 +5,9 @@ import { DataTable } from '@/components/ui/data-table';
 import Link from 'next/link';
 import { columns } from './columns';
 import { getAdminQuestions } from '@/lib/actions/questions';
+
+export const dynamic = 'force-dynamic';
+
 async function QuestionsPage({ searchParams }: { searchParams: Promise<{ page: string; limit: string }> }) {
   try {
     const {page, limit} = await searchParams;

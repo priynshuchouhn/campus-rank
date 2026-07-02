@@ -6,6 +6,9 @@ import { columns } from './columns';
 import Link from 'next/link';
 import { User } from '@prisma/client';
 import { getAdminUsers } from '@/lib/actions/users';
+
+export const dynamic = 'force-dynamic';
+
 async function UsersPage({ searchParams }: { searchParams: Promise<{ page: string; limit: string }> }) {
   try {
     const {page, limit} = await searchParams;

@@ -1,12 +1,16 @@
 import EmailTemplate from '@/components/ui/email-template';
 import { getLeaderboard } from '@/lib/actions/leaderboard';
+import { authorizeCronRequest } from '@/lib/cron-auth';
 import { prisma } from '@/lib/prisma';
 import { delay } from '@/lib/utils';
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export async function GET() {
+export async function GET(req: Request) {
+    const unauthorized = authorizeCronRequest(req);
+    if (unauthorized) return unauthorized;
+
     const users = await prisma.user.findMany({
       where: {
         isActive: true,

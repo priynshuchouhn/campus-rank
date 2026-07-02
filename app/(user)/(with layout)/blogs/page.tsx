@@ -3,7 +3,10 @@
 
 import { ThreeDMarquee } from '@/components/ui/3d-marquee';
 import BlogPostList from '@/components/ui/blog-post-list';
+import { getCachedBlogPosts } from '@/lib/public-cache';
 import { Metadata } from 'next';
+
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
     title: 'Campus Rank Blogs - Learn, Grow, and Get Ranked',
@@ -61,7 +64,9 @@ const images = [
     "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&auto=format&fit=crop&q=60", // coding close-up
 ];
 
-export default function BlogsPage() {
+export default async function BlogsPage() {
+    const posts = await getCachedBlogPosts();
+
     return (
         <div className="min-h-screen bg-background">
             {/* Hero Section */}
@@ -84,7 +89,7 @@ export default function BlogsPage() {
             </section>
 
             {/* Main Content */}
-            <BlogPostList />
+            <BlogPostList initialPosts={posts} />
         </div>
     );
 }

@@ -24,6 +24,7 @@ export async function fetchAndUpdateProfile(user: any) {
     try {
         // Add a 2-second delay for each user to prevent rate limiting
         await sleep(2000);
+        const internalSecret = process.env.CRON_SECRET_TOKEN || process.env.CRON_SECRET;
 
         // Call the fetch-profile API endpoint using axios
         const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/fetch-profile`, {
@@ -31,7 +32,11 @@ export async function fetchAndUpdateProfile(user: any) {
             hackerrankUsername: user.hackerrankUsername,
             gfgUsername: user.gfgUsername,
             userId: user.id,
-        });
+        }, internalSecret ? {
+            headers: {
+                Authorization: `Bearer ${internalSecret}`,
+            },
+        } : undefined);
 
         if (!response.data) {
             throw new Error('Failed to fetch profiles');
@@ -156,7 +161,11 @@ export async function getUser() {
                 },
                 gfgProfile: true,
                 leaderboardStats: true,
-                profileView: true,
+                _count: {
+                    select: {
+                        profileView: true,
+                    },
+                },
 
             }
         });
@@ -223,7 +232,7 @@ export async function getUserProfile(username: string) {
 
 
     try {
-        const user = await prisma.user.findMany({
+        const user = await prisma.user.findUnique({
             where: {
                 username: username,
             },
@@ -238,11 +247,13 @@ export async function getUserProfile(username: string) {
                 },
             },
         });
-        if (user.length === 0) {
+        if (!user) {
             return null;
         }
-        updateProfileView(username);
-        return user[0];
+        if (process.env.ENABLE_PROFILE_VIEW_LOGGING === "true") {
+            updateProfileView(username);
+        }
+        return user;
     } catch (error) {
         console.error(`Error fetching user profile for username ${username}:`, error);
         return null;
@@ -250,6 +261,10 @@ export async function getUserProfile(username: string) {
 }
 
 export async function updateProfileView(username: string) {
+    if (process.env.ENABLE_PROFILE_VIEW_LOGGING !== "true") {
+        return null;
+    }
+
     const headersList = await headers();
     const userAgent = headersList.get('user-agent');
     const browser = userAgent ? (userAgent.includes("Chrome") ? "Chrome" :
@@ -455,4 +470,3 @@ export async function getAdminUserDataById(userId: string) {
     };
   }
 }
-

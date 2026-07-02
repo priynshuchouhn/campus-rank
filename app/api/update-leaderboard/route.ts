@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { fetchAndUpdateProfile } from "@/lib/actions/users";
 import { prisma } from "@/lib/prisma";
 import axios from "axios";
 import { updateApplicationStats } from "@/lib/actions/leaderboard";
 import { sendLeaderboardUpdateNotification } from "@/lib/notifications";
+import { authorizeCronRequest } from "@/lib/cron-auth";
 
 async function updateGlobalRanks() {
     // Get all leaderboard stats ordered by overall score
@@ -33,7 +34,10 @@ async function updateGlobalRanks() {
     }
 }
 
-export async function GET() {
+export async function GET(req: Request) {
+    const unauthorized = authorizeCronRequest(req);
+    if (unauthorized) return unauthorized;
+
     try {
         // Get all users
         const users = await prisma.user.findMany({
@@ -49,6 +53,7 @@ export async function GET() {
 
         // Update global ranks
         await updateGlobalRanks();
+        revalidateTag('leaderboard');
 
         // Get the updated leaderboard
         const leaderboard = await prisma.leaderboardStats.findMany({
@@ -66,7 +71,11 @@ export async function GET() {
             if (now >= targetDate) {
                 console.log("sending email");
                 console.log(targetDate, now);
-                axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/email/leaderboard`);
+                axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/email/leaderboard`, {
+                    headers: {
+                        Authorization: `Bearer ${process.env.CRON_SECRET_TOKEN || process.env.CRON_SECRET}`,
+                    },
+                });
             }
         }
 
@@ -77,6 +86,7 @@ export async function GET() {
         await sendLeaderboardUpdateNotification();
 
         // Revalidate the leaderboard page
+        revalidateTag('leaderboard');
         revalidatePath('/', 'page');
 
         return NextResponse.json({

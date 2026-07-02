@@ -3,11 +3,18 @@ import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { slugify } from '@/lib/utils';
 import { sendNewBlogPostNotification } from '@/lib/notifications';
+import { revalidateTag } from 'next/cache';
+
+function revalidatePublicBlogCaches(slug?: string) {
+    revalidateTag('blogs');
+    revalidateTag('sitemap');
+    if (slug) revalidateTag(`blog:${slug}`);
+}
 
 export async function GET() {
     try {
         const session = await auth();
-        
+
         if (!session?.user) {
             return new NextResponse('Unauthorized', { status: 401 });
         }
@@ -36,7 +43,7 @@ export async function GET() {
 export async function POST(req: Request) {
     try {
         const session = await auth();
-        
+
         if (!session?.user) {
             return new NextResponse('Unauthorized', { status: 401 });
         }
@@ -66,6 +73,7 @@ export async function POST(req: Request) {
             await sendNewBlogPostNotification(blogPost.title, blogPost.slug);
         }
 
+        revalidatePublicBlogCaches(blogPost.slug);
         return NextResponse.json(blogPost);
     } catch (error) {
         console.error('Error creating blog post:', error);
@@ -76,7 +84,7 @@ export async function POST(req: Request) {
 export async function PUT(req: Request) {
     try {
         const session = await auth();
-        
+
         if (!session?.user) {
             return new NextResponse('Unauthorized', { status: 401 });
         }
@@ -102,6 +110,7 @@ export async function PUT(req: Request) {
             },
         });
 
+        revalidatePublicBlogCaches(blogPost.slug);
         return NextResponse.json(blogPost);
     } catch (error) {
         console.error('Error updating blog post:', error);
@@ -112,7 +121,7 @@ export async function PUT(req: Request) {
 export async function DELETE(req: Request) {
     try {
         const session = await auth();
-        
+
         if (!session?.user) {
             return new NextResponse('Unauthorized', { status: 401 });
         }
@@ -124,7 +133,7 @@ export async function DELETE(req: Request) {
             return new NextResponse('Blog post ID is required', { status: 400 });
         }
 
-        await prisma.blogPost.update({
+        const blogPost = await prisma.blogPost.update({
             where: { id },
             data: {
                 isPublished: false,
@@ -132,9 +141,10 @@ export async function DELETE(req: Request) {
             },
         });
 
+        revalidatePublicBlogCaches(blogPost.slug);
         return new NextResponse(null, { status: 204 });
     } catch (error) {
         console.error('Error deleting blog post:', error);
         return new NextResponse('Internal Server Error', { status: 500 });
     }
-} 
+}

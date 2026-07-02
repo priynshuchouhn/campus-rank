@@ -1,38 +1,16 @@
 'use client'
 import { categories } from '@/lib/data'
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import BlogCard from './blog-card'
 import { Button } from './button'
 import { BookOpen } from 'lucide-react'
 import FilterBar from './blog-filter-bar'
 import { BlogPost } from '@/lib/interfaces'
-import axios from 'axios'
 
-function BlogPostList() {
+function BlogPostList({ initialPosts }: { initialPosts: BlogPost[] }) {
     const [selectedCategory, setSelectedCategory] = useState<string>('all');
     const [visiblePosts, setVisiblePosts] = useState(6);
-    const [posts, setPosts] = useState<BlogPost[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        const fetchPosts = async () => {
-            try {
-                const { data } = await axios.get<BlogPost[]>(`${process.env.NEXT_PUBLIC_API_URL}/api/blogs`);
-                setPosts(data);
-            } catch (err) {
-                if (axios.isAxiosError(err)) {
-                    setError(err.response?.data?.message || err.message);
-                } else {
-                    setError('An unexpected error occurred');
-                }
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchPosts();
-    }, []);
+    const [posts] = useState<BlogPost[]>(initialPosts);
 
     const filteredPosts = selectedCategory === 'all'
         ? posts
@@ -41,26 +19,6 @@ function BlogPostList() {
     const handleLoadMore = () => {
         setVisiblePosts(prev => Math.min(prev + 6, filteredPosts.length));
     };
-
-    if (isLoading) {
-        return (
-            <main className="max-w-7xl mx-auto px-4 py-12">
-                <div className="flex justify-center items-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-                </div>
-            </main>
-        );
-    }
-
-    if (error) {
-        return (
-            <main className="max-w-7xl mx-auto px-4 py-12">
-                <div className="text-center text-red-500">
-                    <p>Error: {error}</p>
-                </div>
-            </main>
-        );
-    }
 
     return (
         <main className="max-w-7xl mx-auto px-4 py-12">

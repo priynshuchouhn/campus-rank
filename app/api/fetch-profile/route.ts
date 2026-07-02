@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { prisma } from '@/lib/prisma';
+import { auth } from '@/auth';
 
 
 interface LeetCodeProfile {
@@ -56,6 +57,21 @@ export async function POST(request:NextRequest) {
 
     if(!userId){
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+    }
+
+    const secret = process.env.CRON_SECRET_TOKEN || process.env.CRON_SECRET;
+    const authHeader = request.headers.get('authorization');
+    const hasInternalAccess = !!secret && authHeader === `Bearer ${secret}`;
+
+    if (!hasInternalAccess) {
+      if (!secret && process.env.NODE_ENV === 'production') {
+        return NextResponse.json({ error: 'Internal secret is not configured' }, { status: 503 });
+      }
+
+      const session = await auth();
+      if (!session?.user || (session.user.id !== userId && session.user.role !== 'ADMIN')) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
     }
     
     const results: ProfileResults = {

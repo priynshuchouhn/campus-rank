@@ -147,17 +147,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   callbacks: {
     async signIn({ user }) {
-      // This callback is triggered on successful sign-in.
       if (user && user.role === "ADMIN") {
         return true;
       }
-
-      await saveUserToDatabase({
-        name: user.name ?? null,
-        email: user.email ?? null,
-        image: user.image ?? null,
-      });
-
       return true;
     },
     authorized({ auth, request: { nextUrl } }) {

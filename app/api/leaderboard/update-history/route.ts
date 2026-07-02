@@ -1,15 +1,11 @@
 import { prisma } from '@/lib/prisma'
+import { authorizeCronRequest } from '@/lib/cron-auth'
 import { NextResponse } from 'next/server'
 
-const CRON_SECRET = process.env.CRON_SECRET_TOKEN!
-
-
 export async function GET(req: Request) {
-    const authHeader = req.headers.get('authorization')
+    const unauthorized = authorizeCronRequest(req)
+    if (unauthorized) return unauthorized
 
-    if (!authHeader || authHeader !== `Bearer ${CRON_SECRET}`) {
-        return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
-    }
     try {
         // Step 1: Get current leaderboard sorted by rank (assuming lower score = better rank)
         const leaderboards = await prisma.leaderboardStats.findMany({

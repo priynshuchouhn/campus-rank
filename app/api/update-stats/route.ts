@@ -1,8 +1,12 @@
 import { NextResponse } from 'next/server';
 import { updateApplicationStats } from '@/lib/actions/leaderboard';
+import { authorizeCronRequest } from '@/lib/cron-auth';
 
 // GET /api/update-stats
-export async function GET() {
+export async function GET(req: Request) {
+  const unauthorized = authorizeCronRequest(req);
+  if (unauthorized) return unauthorized;
+
   try {
     await updateApplicationStats();
     // Optionally, fetch the updated stats from your database here and return them

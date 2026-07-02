@@ -128,13 +128,13 @@ export interface QuestionSubmission {
     createdAt?: Date;
 }
 
-export type SubmissionStatus = 
-    | "ACCEPTED" 
-    | "WRONG_ANSWER" 
-    | "TIME_LIMIT_EXCEEDED" 
-    | "MEMORY_LIMIT_EXCEEDED" 
-    | "RUNTIME_ERROR" 
-    | "COMPILATION_ERROR" 
+export type SubmissionStatus =
+    | "ACCEPTED"
+    | "WRONG_ANSWER"
+    | "TIME_LIMIT_EXCEEDED"
+    | "MEMORY_LIMIT_EXCEEDED"
+    | "RUNTIME_ERROR"
+    | "COMPILATION_ERROR"
     | "PENDING";
 
 export interface TopicFormData {
@@ -142,7 +142,7 @@ export interface TopicFormData {
     description: string;
     section: string;
   }
-  
+
 export interface ResourceFormData {
     type: "article" | "video";
     title: string;
@@ -180,18 +180,18 @@ export interface BlogPost {
     description: string;
     author: {
         name: string;
-        image: string;
+        image: string | null;
     };
-    category: string;
+    category: string | null;
     isPublished: boolean;
     isFeatured: boolean;
     isApproved: boolean;
     isDeleted: boolean;
     slug: string;
-    publishedAt: Date;
+    publishedAt: Date | null;
     createdAt: Date;
     updatedAt: Date;
-    featuredImage: string;
+    featuredImage: string | null;
     tags: string[];
     content: string;
   }
@@ -208,4 +208,4 @@ export interface MenuSection {
   section: string;
   items: MenuItem[];
 }
-  
+

@@ -1,42 +1,10 @@
 import { MetadataRoute } from "next";
-import { prisma } from "@/lib/prisma";
+import { getCachedSitemapData } from "@/lib/public-cache";
+
+export const revalidate = 86400;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // Get all published blog posts
-  const blogPosts = await prisma.blogPost.findMany({
-    where: {
-      isPublished: true,
-      isApproved: true,
-      isDeleted: false,
-    },
-    select: {
-      slug: true,
-      updatedAt: true,
-    },
-  });
-
-  // Get all users
-  const users = await prisma.user.findMany({
-    where: {
-      isDeleted: false,
-      role: "USER",
-    },
-    select: {
-      username: true,
-      updatedAt: true,
-    },
-  });
-
-  // Get all active institutes
-  const institutes = await prisma.institution.findMany({
-    where: {
-      isActive: true,
-    },
-    select: {
-      code: true,
-      updatedAt: true,
-    },
-  });
+  const { blogPosts, users, institutes } = await getCachedSitemapData();
 
   // Base URLs
   const baseUrls = [
@@ -55,21 +23,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Add blog post URLs
   const blogUrls = blogPosts.map((post) => ({
     url: `https://campusrank.org/blogs/${post.slug}`,
-    lastModified: new Date(),
+    lastModified: post.updatedAt,
   }));
 
   // Add user profile URLs
   const userUrls = users.map((user) => ({
     url: `https://campusrank.org/user/${user.username}`,
-    lastModified: new Date(),
+    lastModified: user.updatedAt,
   }));
 
   // Add institute URLs
   const instituteUrls = institutes.map((inst) => ({
     url: `https://campusrank.org/institute/${inst.code.toLowerCase()}`,
-    lastModified: new Date(),
+    lastModified: inst.updatedAt,
   }));
 
   return [...baseUrls, ...blogUrls, ...userUrls, ...instituteUrls];
 }
-  
+

@@ -1,6 +1,5 @@
 import Footer from '@/components/ui/footer'
 import Navbar from '@/components/ui/nav-bar'
-import Session from '@/components/ui/session'
 import React from 'react'
 
 function Layout({ children }: { children: React.ReactNode }) {

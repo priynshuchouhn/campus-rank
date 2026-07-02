@@ -15,7 +15,7 @@ export default function BlogCard({ post }: BlogCardProps) {
     <Card className="flex flex-col h-full overflow-hidden hover:shadow-lg transition-all duration-300 group pt-0">
       <div className="relative h-52 overflow-hidden">
         <Image
-          src={post.featuredImage}
+          src={post.featuredImage || "/hero-image.jpg"}
           alt={post.title}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-300"
@@ -25,7 +25,7 @@ export default function BlogCard({ post }: BlogCardProps) {
           variant="secondary" 
           className="absolute top-4 left-4 bg-background/80 backdrop-blur-sm"
         >
-          {post.category}
+          {post.category || "Campus Rank"}
         </Badge>
       </div>
       
@@ -40,7 +40,7 @@ export default function BlogCard({ post }: BlogCardProps) {
           </div>
           <div className="flex items-center gap-1">
             <Clock size={14} />
-            <span>{timeAgo(post.publishedAt)}</span>
+            <span>{timeAgo(post.publishedAt || post.createdAt)}</span>
           </div>
         </div>
       </CardHeader>
