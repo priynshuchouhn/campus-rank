@@ -348,45 +348,25 @@ async function fetchGFGProfile(username: string, userId: string): Promise<GFGPro
 
     const rawHtml = response.data as string;
 
-    // 2. Locate the "userData" section in the raw script streams
-    // The data looks like: \"userData\":{\"message\":\"...\",\"data\":{ ...fields... }}
-    const userDataIndex = rawHtml.indexOf('\\"userData\\"');
-    
-    if (userDataIndex === -1) {
-       console.error("Could not find userData in GFG profile");
-       return null;
+    // 2. The stats live in an escaped JSON object inside the Next.js RSC payload, e.g.
+    //    \"articleCount\":{\"name\":\"...\",\"score\":330,\"total_problems_solved\":126,...}
+    //    The parent key has changed before (userData -> articleCount), so anchor on a
+    //    field inside the object instead and parse the whole enclosing object.
+    const stats = extractGFGStats(rawHtml);
+    if (!stats) {
+      // Don't overwrite stored data with zeros when the page layout changes.
+      throw new Error('Could not find GFG stats object (total_problems_solved) in profile page');
     }
 
-    // 3. Extract fields using Regex from that starting point
-    // We slice the string to ensure we only search specifically within the user data section
-    const relevantPart = rawHtml.substring(userDataIndex, userDataIndex + 5000); // Grab enough context
-
-    // Helper to extract values based on the keys seen in your snippet
-    const extractPattern = (key: string, isString: boolean = false) => {
-      // Matches \"key\":123 or \"key\":\"value\"
-      // We escape the key because it appears as \"key\" in the source
-      const pattern = isString 
-        ? new RegExp(`\\\\"${key}\\\\"\\s*:\\s*\\\\"([^\\\"]+)\\\\"`) // Looks for \"key\":\"Value\"
-        : new RegExp(`\\\\"${key}\\\\"\\s*:\\s*(\\d+)`);              // Looks for \"key\":123
-      
-      const match = relevantPart.match(pattern);
-      return match ? match[1] : null;
-    };
-
-    // 4. Parse the specific fields from your snippet
-    const name = extractPattern('name', true);
-    const institution = extractPattern('institute_name', true);
-    const rank = extractPattern('institute_rank');
-    const codingScore = extractPattern('score');
-    const solvedProblems = extractPattern('total_problems_solved');
+    const asString = (v: unknown) => (v === null || v === undefined ? null : String(v));
 
     const finalProfile: GFGProfile = {
       username,
-      name: name || username,
-      institution: institution || 'N/A',
-      rank: rank || '0',
-      solvedProblems: solvedProblems || '0',
-      codingScore: codingScore || '0',
+      name: asString(stats.name) || username,
+      institution: asString(stats.institute_name) || 'N/A',
+      rank: asString(stats.institute_rank) || '0',
+      solvedProblems: asString(stats.total_problems_solved) || '0',
+      codingScore: asString(stats.score) || '0',
     };
 
     // 5. Database Sync
@@ -407,6 +387,47 @@ async function fetchGFGProfile(username: string, userId: string): Promise<GFGPro
         forUser: username
       }
     });
+    return null;
+  }
+}
+
+// Finds the escaped JSON object containing `total_problems_solved` in the GFG profile
+// page's RSC payload and returns it parsed. Returns null if it can't be found or parsed.
+function extractGFGStats(rawHtml: string): Record<string, unknown> | null {
+  const anchor = rawHtml.indexOf('\\"total_problems_solved\\"');
+  if (anchor === -1) return null;
+
+  // Walk back to the opening brace of the enclosing object.
+  let depth = 0;
+  let start = -1;
+  for (let i = anchor; i >= 0; i--) {
+    const ch = rawHtml[i];
+    if (ch === '}') depth++;
+    else if (ch === '{') {
+      if (depth === 0) { start = i; break; }
+      depth--;
+    }
+  }
+  if (start === -1) return null;
+
+  // Walk forward to the matching closing brace.
+  depth = 0;
+  let end = -1;
+  for (let i = start; i < rawHtml.length; i++) {
+    const ch = rawHtml[i];
+    if (ch === '{') depth++;
+    else if (ch === '}') {
+      depth--;
+      if (depth === 0) { end = i; break; }
+    }
+  }
+  if (end === -1) return null;
+
+  try {
+    // The object is embedded in a JS string literal, so unescape it first (\" -> ", \u0026 -> &).
+    const unescaped = JSON.parse(`"${rawHtml.slice(start, end + 1)}"`) as string;
+    return JSON.parse(unescaped);
+  } catch {
     return null;
   }
 }
