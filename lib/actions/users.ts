@@ -48,8 +48,10 @@ export async function fetchAndUpdateProfile(user: any) {
         let leetcodeScore = 0;
         if (profileData.leetcode?.submitStats?.acSubmissionNum) {
             const stats = profileData.leetcode.submitStats.acSubmissionNum as LeetCodeSubmission[];
+            // Easy = 1, Medium = 2, Hard = 3. LeetCode also returns an "All" total, which must not be scored.
+            const difficultyWeights: Record<string, number> = { Easy: 1, Medium: 2, Hard: 3 };
             leetcodeScore = stats.reduce((acc: number, curr: LeetCodeSubmission) => {
-                const weight = curr.difficulty === 'Easy' ? 1 : curr.difficulty === 'Medium' ? 2 : 3;
+                const weight = difficultyWeights[curr.difficulty] ?? 0;
                 return acc + (curr.count * weight);
             }, 0);
         }
